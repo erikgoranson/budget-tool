@@ -30,12 +30,9 @@ import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
-import BudgetTable from '@/components/BudgetTable.vue';import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
-
+import BudgetTable from '@/components/BudgetTable.vue';
+import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
 import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
-
-import { useCategoryStore } from '@/stores/category.ts';
-const categoryStore = useCategoryStore();
 
 const props = defineProps({
     budget : {

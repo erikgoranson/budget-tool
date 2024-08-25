@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-//import { useSidebar } from '../composables/useSidebar';
 import { PiggyBank, Link } from 'lucide-vue-next';
 import { useRoute } from 'vue-router';
-
 import { useSidebarStore } from '@/stores/sidebar.ts';
-const sidebarStore = useSidebarStore();
 
+const sidebarStore = useSidebarStore();
 const route = useRoute();
-//const { isOpen } = useSidebar();
 
 const navOptions = ref([
     {

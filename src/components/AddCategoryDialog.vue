@@ -45,7 +45,6 @@ const validationSchema = toTypedSchema(
     zod.object({
         name: zod.string().min(1, { message: 'Category name is required' }),
         description: zod.string().optional(),
-        //amount
         hasDueDates: zod.boolean().default(false).optional(),
     })
 )
