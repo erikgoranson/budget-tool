@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, toRef, computed } from "vue";
 import type { Budget, Category } from '../types/';
 import {
   Table,
@@ -45,6 +45,21 @@ const isOpen = ref(false);
 const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
 };
+
+const budgetTotal = computed(() => {
+    if(props.budget.budgets.length == 0){
+        return 0.00;
+    } else {
+        const amounts = props.budget.budgets.map((x) => x.amount);
+        return amounts.reduce((a, b) => a + b);
+    }
+});
+
+const expensedTotal = ref(0);
+
+const remainingTotal = computed(() => {
+    return budgetTotal.value - expensedTotal.value
+});
 </script>
 
 <template>
@@ -69,9 +84,9 @@ const toggleBudgetdata = () => {
                 </div>
             </div>
             <div class="font-semibold text-sm w-sm">
-                <div>budget progress</div>
-                <div>out progress</div>
-                <div>rem progress</div>
+                <div>Budgeted ${{ budgetTotal }}</div>
+                <div>Expensed $0.00</div>
+                <div>Remaining ${{ remainingTotal }}</div>
             </div>
         </div>
 
@@ -81,7 +96,7 @@ const toggleBudgetdata = () => {
                 <Collapsible v-model:open="isOpen">
                     <CollapsibleContent>
                         
-                        <BudgetTable :budgets="$props.budget.budgets"/>
+                        <BudgetTable :budgets="budget.budgets"/>
                 
                     </CollapsibleContent>
                 </Collapsible>

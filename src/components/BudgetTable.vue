@@ -55,15 +55,8 @@ const validationSchema = toTypedSchema(
         name: zod.string().min(1, { message: 'Budget name is required' }),
         dueDate: zod.number().optional(),
         amount: zod.string().min(1, { message: 'Budget amount is required' })
-        /*amount: zod.preprocess(
-            (a) => parseFloat(zod.string().parse(a)),
-            zod.number({
-                invalid_type_error: "Price must be Number",
-            })
-        )*/
     })
 )
-
 
 const { handleSubmit, errors, resetForm } = useForm({
   validationSchema,
