@@ -29,6 +29,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
@@ -41,9 +43,10 @@ const categoryStore = useCategoryStore();
 
 const validationSchema = toTypedSchema(
     zod.object({
-        name: zod.string().min(1, { message: 'This is required' }),
+        name: zod.string().min(1, { message: 'Category name is required' }),
         description: zod.string().optional(),
         //amount
+        hasDueDates: zod.boolean().default(false).optional(),
     })
 )
 
@@ -64,7 +67,7 @@ const onSubmit = handleSubmit(values => {
     name: values.name,
     //description: values.description | undefined,
     description: values.description ? values.description : '',
-    hasDueDate: false,
+    hasDueDates: values.hasDueDates ? values.hasDueDates : false,
     budgets: [],
   };
 
@@ -94,13 +97,13 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
 
 <template>
   <UseTemplate>
-    <form class="grid items-start gap-4 px-4" @submit.prevent="onSubmit">
+    <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
 
       <FormField v-slot="{ componentField }" name="name">
         <FormItem>
-            <FormLabel>Category Name</FormLabel>
+            <FormLabel></FormLabel>
             <FormControl>
-                <Input type="text" placeholder="Bills" v-bind="componentField" />
+                <Input type="text" placeholder="Category Name, i.e. 'Monthly Bills'" v-bind="componentField" />
             </FormControl>
             <FormDescription>
             </FormDescription>
@@ -108,11 +111,30 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="description">
+      <FormField v-slot="{ componentField, }" name="description">
         <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel></FormLabel>
             <FormControl>
-                <Input type="text" placeholder="Monthly bills and whatnot" v-bind="componentField" />
+                <Input type="text" placeholder="Add a description" v-bind="componentField" />
+            </FormControl>
+            <FormDescription>
+            </FormDescription>
+            <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ value, componentField, handleChange }" name="hasDueDates">
+        <FormItem>
+            <FormLabel></FormLabel>
+            <FormControl>
+                <div class="flex items-center space-x-2">
+                    <Switch 
+                    v-bind="componentField"
+                    :check="value"
+                    @update:checked="handleChange"
+                    />
+                    <Label>Does this category have due dates?</Label>
+                </div>
             </FormControl>
             <FormDescription>
             </FormDescription>
