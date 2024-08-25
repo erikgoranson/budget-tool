@@ -39,50 +39,52 @@ import * as zod from 'zod';
 import type { Budget, Category } from '../types/';
 import { useCategoryStore } from '@/stores/category.ts';
 
+const props = defineProps({
+    budget : {
+        type: Object as () => Category,
+        required: true
+    }
+});
+
 const categoryStore = useCategoryStore();
 
-const validationSchema = toTypedSchema(
-    zod.object({
-        name: zod.string().min(1, { message: 'Category name is required' }),
-        description: zod.string().optional(),
-        //amount
-        hasDueDates: zod.boolean().default(false).optional(),
-    })
-)
-
 const { handleSubmit, errors } = useForm({
-  validationSchema,
+  //validationSchema,
 });
 
 const onSubmit = handleSubmit(values => {
+    console.log('current dialog state:', isOpen.value)
     console.log(JSON.stringify(values, null, 2))
     isOpen.value = !isOpen.value;
     console.log('name:', values.name)
     console.log('description:', values.description)
     
-    const newCategory: Category = {
-        id: Math.floor(Math.random() * 100000),
-        name: values.name,
-        description: values.description ? values.description : '',
-        hasDueDates: values.hasDueDates ? values.hasDueDates : false,
-        budgets: [],
+    const updatedCategory: Category = {
+        id: props.budget.id, 
+        budgets: props.budget.budgets, 
+        name: values.name ? values.name : props.budget.name,
+        description: values.description ? values.description : props.budget.description,
+        hasDueDates: values.hasDueDates ? values.hasDueDates : props.budget.hasDueDates,
     };
     
-    console.log('new category:', newCategory);
-    categoryStore.addCategory(newCategory);
-});
+    console.log('category with new input:', updatedCategory);
 
-const cancel = () => {
-    isOpen.value = !isOpen.value;
-}
+    const valuesMatch = JSON.stringify(updatedCategory) == JSON.stringify(props.budget);
+    console.log('old value and new values match?:', valuesMatch)
+
+    if(!valuesMatch){
+        categoryStore.updateCategory(updatedCategory);
+    }
+});
 
 const [UseTemplate, GridForm] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 768px)')
+
 const isOpen = ref(false)
 
-const buttonTitle = 'Add Budget Category';
-const popupTitle = 'Add New Budget Category';
-const popupDescription = 'Define a new category to be added to your budget, i.e., "Monthly Bills"';
+const buttonTitle = 'Update';
+const popupTitle = 'Update Budget Category';
+const popupDescription = 'Update details as needed';
 </script>
 
 <template>
@@ -93,7 +95,7 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
         <FormItem>
             <FormLabel></FormLabel>
             <FormControl>
-                <Input type="text" placeholder="Category Name, i.e. 'Monthly Bills'" v-bind="componentField" />
+                <Input type="text" placeholder="Category Name, i.e. 'Monthly Bills'" :default-value="props.budget.name" v-bind="componentField" />
             </FormControl>
             <FormDescription>
             </FormDescription>
@@ -105,7 +107,7 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
         <FormItem>
             <FormLabel></FormLabel>
             <FormControl>
-                <Input type="text" placeholder="Add a description" v-bind="componentField" />
+                <Input type="text" placeholder="Add a description" :default-value="props.budget.description" v-bind="componentField" />
             </FormControl>
             <FormDescription>
             </FormDescription>
@@ -120,7 +122,8 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
                 <div class="flex items-center space-x-2">
                     <Switch 
                     v-bind="componentField"
-                    :check="value"
+                    v-model:checked="props.budget.hasDueDates"
+                    
                     @update:checked="handleChange"
                     />
                     <Label>Does this category have due dates?</Label>
@@ -133,11 +136,9 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
       </FormField>
 
       <Button type="submit">
-        Add
+        Update
       </Button>
-      <Button variant="outline" @click="cancel">
-        Cancel
-      </Button>
+      <Button>Cancel</Button>
     </form>
   </UseTemplate>
 

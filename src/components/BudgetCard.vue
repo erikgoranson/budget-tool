@@ -30,7 +30,7 @@ import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
-import BudgetTable from '@/components/BudgetTable.vue';
+import BudgetTable from '@/components/BudgetTable.vue';import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
 
 import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
 
@@ -97,6 +97,7 @@ const toggleBudgetdata = () => {
                 buttons and pretty stuff goes here 
             </div>
             
+            <UpdateCategoryDialog :budget="$props.budget"/>
             <DeleteCategoryDialog :id="$props.budget.id"/>
         </div>
 

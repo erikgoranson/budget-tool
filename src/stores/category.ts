@@ -12,6 +12,12 @@ export const useCategoryStore = defineStore('category', () => {
     const deleteCategory = (id: number) => {
         categories.value = categories.value.filter(x => x.id !== id);
     };
+
+    const updateCategory = (category: Category) => {
+        const index = categories.value.findIndex(x => x.id == category.id);
+
+        categories.value.splice(index, 1, category);
+    }
     
-    return { categories, addCategory, deleteCategory};
+    return { categories, addCategory, deleteCategory, updateCategory };
 });

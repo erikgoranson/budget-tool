@@ -39,7 +39,7 @@ const props = defineProps({
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
         <AlertDialogAction variant="destructive" @click="categoryStore.deleteCategory(props.id)">
-            Delete Category
+            Delete
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
