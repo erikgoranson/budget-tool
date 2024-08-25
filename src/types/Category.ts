@@ -2,6 +2,7 @@ import type { Budget } from "./Budget";
 
 //parent category: i.e., bills, debt, etc
 export type Category = {
+    id: number,
     name: string,
     //amount: number,
     description: string, //needs to be optional somehow 

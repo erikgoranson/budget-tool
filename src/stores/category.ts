@@ -8,6 +8,10 @@ export const useCategoryStore = defineStore('category', () => {
     const addCategory = (category: Category) => {
         categories.value.unshift(category);
     };
+
+    const deleteCategory = (id: number) => {
+        categories.value = categories.value.filter(x => x.id !== id);
+    };
     
-    return { categories, addCategory };
+    return { categories, addCategory, deleteCategory};
 });

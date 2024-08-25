@@ -15,10 +15,27 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
 import BudgetTable from '@/components/BudgetTable.vue';
+
+import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
+
+import { useCategoryStore } from '@/stores/category.ts';
+const categoryStore = useCategoryStore();
 
 const props = defineProps({
     budget : {
@@ -76,7 +93,11 @@ const toggleBudgetdata = () => {
 
         <!--bottom graph area-->
         <div class="px-6 pt-4 pb-2 mb-2">
-            <div>buttons and pretty stuff goes here </div>
+            <div>
+                buttons and pretty stuff goes here 
+            </div>
+            
+            <DeleteCategoryDialog :id="$props.budget.id"/>
         </div>
 
     </div> 

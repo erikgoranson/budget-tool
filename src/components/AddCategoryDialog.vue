@@ -60,6 +60,7 @@ const onSubmit = handleSubmit(values => {
 
   //ConvertToCategory? 
   const test: Category = {
+    id: Math.floor(Math.random() * 100000),
     name: values.name,
     //description: values.description | undefined,
     description: values.description ? values.description : '',
