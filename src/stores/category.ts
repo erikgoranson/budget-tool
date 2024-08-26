@@ -17,7 +17,17 @@ export const useCategoryStore = defineStore('category', () => {
         const index = categories.value.findIndex(x => x.id == category.id);
 
         categories.value.splice(index, 1, category);
-    }
+    };
+
+    const deleteBudget = (categoryId: number, budgetId: number) => {
+        categories.value = categories.value.map(cat => {
+            if (cat.id == categoryId){
+                cat.budgets = cat.budgets.filter(budget => budget.id !== budgetId);
+            }
+
+            return cat;
+        });
+    };
     
-    return { categories, addCategory, deleteCategory, updateCategory };
+    return { categories, addCategory, deleteCategory, updateCategory, deleteBudget };
 });

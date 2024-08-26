@@ -96,7 +96,7 @@ const remainingTotal = computed(() => {
                 <Collapsible v-model:open="isOpen">
                     <CollapsibleContent>
                         
-                        <BudgetTable :budgets="budget.budgets"/>
+                        <BudgetTable :category="budget"/>
                 
                     </CollapsibleContent>
                 </Collapsible>

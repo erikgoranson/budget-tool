@@ -17,24 +17,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@/components/ui/form';
+
+import UpdateBudgetDialog from '@/components/UpdateBudgetDialog.vue';
+import DeleteBudgetDialog from '@/components/DeleteBudgetDialog.vue';
 
 import { Button } from '@/components/ui/button';
-import { ListPlus } from 'lucide-vue-next';
+import { ListPlus, FilePenLine } from 'lucide-vue-next';
 import { Input } from '@/components/ui/input'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
 import * as zod from 'zod';
 
 const props = defineProps({
-    budgets : {
-        type: Array as () => Budget[],
+    category : {
+        type: Object as () => Category,
         required: true
     }
 });
 
 const checkAddDueDate = computed(() => {
-    const hasDueDate = props.budgets.some(budget => budget.dueDate != null);
+    const hasDueDate = props.category.budgets.some(budget => budget.dueDate != null);
     return hasDueDate
     //or if the category calls for it 
 });
@@ -47,7 +50,7 @@ const addRowTest = () => {
         dueDate: 12,
     };
 
-    props.budgets.push(newBudget);
+    props.category.budgets.push(newBudget);
 }
 
 const validationSchema = toTypedSchema(
@@ -72,7 +75,7 @@ const onSubmit = handleSubmit((values, actions) => {
         dueDate: values.dueDate,
     };
 
-    props.budgets.push(newBudget);
+    props.category.budgets.push(newBudget);
     actions.resetForm();
 });
 </script>
@@ -97,8 +100,14 @@ const onSubmit = handleSubmit((values, actions) => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				<TableRow v-for="b in $props.budgets">
-					<TableCell class="font-medium">{{ b.name }}</TableCell>
+				<TableRow v-for="b in $props.category.budgets">
+					<TableCell class="font-medium">
+                        <div class="flex justify-end items-center">
+                            {{ b.name }}
+                            <UpdateBudgetDialog :budget="b"/>
+                            <DeleteBudgetDialog :categoryId="props.category.id" :budgetId="b.id" />
+                        </div>
+                    </TableCell>
 					<TableCell v-if="checkAddDueDate">{{ b.dueDate }}</TableCell>
 					<TableCell>{{ b.amount }}</TableCell>
 					<TableCell>?</TableCell>
