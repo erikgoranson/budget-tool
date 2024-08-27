@@ -34,9 +34,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/test2',
-      name: 'test2',
-      component: () => import('../views/Test2View.vue'),
+      path: '/transactions',
+      name: 'transactions',
+      component: () => import('../views/TransactionView.vue'),
       meta: {
         layout: 'dash',
       },

@@ -24,9 +24,9 @@ const navOptions = ref([
         displayName: 'Test1'
     },
     {
-        pathName: 'test2',
-        to: '/test2',
-        displayName: 'Test2'
+        pathName: 'transactions',
+        to: '/transactions',
+        displayName: 'Transactions'
     },
 ]);
 

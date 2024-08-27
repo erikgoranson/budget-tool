@@ -79,7 +79,7 @@ const [UseTemplate, GridForm] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 768px)')
 const isOpen = ref(false)
 
-const buttonTitle = 'Add Budget Category';
+const buttonTitle = '+ Category';
 const popupTitle = 'Add New Budget Category';
 const popupDescription = 'Define a new category to be added to your budget, i.e., "Monthly Bills"';
 </script>
