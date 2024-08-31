@@ -84,7 +84,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-for="bud in categories">
-        <BudgetCard :budget="bud"/>
+    <div v-for="budgetCategory in categories">
+        <BudgetCard :budgetCategory="budgetCategory"/>
     </div>
 </template>

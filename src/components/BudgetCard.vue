@@ -38,7 +38,7 @@ import { useTransactionStore } from '@/stores/transaction';
 import currencyFormatter from '@/helpers/numberFormat';
 
 const props = defineProps({
-    budget : {
+    budgetCategory : {
         type: Object as () => Category,
         required: true
     }
@@ -53,17 +53,17 @@ const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 
 const budgetTotal = computed(() => {
-    if(props.budget.budgets.length == 0){
+    if(props.budgetCategory.budgets.length == 0){
         return 0.00;
     } else {
-        const amounts = props.budget.budgets.map((x) => x.amount);
+        const amounts = props.budgetCategory.budgets.map((x) => x.amount);
         return amounts.reduce((a, b) => a + b);
     }
 });
 
 const expensedTotal = computed(() => {
 
-    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budget.id && x.income == false)
+    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false)
     console.log('wat', JSON.stringify(transactionsStuff, null, 2))
 
     if(transactionsStuff.length == 0){
@@ -93,10 +93,10 @@ const remainingTotal = computed(() => {
                 </div>
                 <div class="">
                     <div class="font-semibold text-2xl">
-                        {{ props.budget.name }}
+                        {{ props.budgetCategory.name }}
                     </div>
                     <div class="text-sm">
-                        {{ props.budget.description }}
+                        {{ props.budgetCategory.description }}
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@ const remainingTotal = computed(() => {
                 <Collapsible v-model:open="isOpen">
                     <CollapsibleContent>
                         
-                        <BudgetTable :category="budget"/>
+                        <BudgetTable :category="budgetCategory"/>
                 
                     </CollapsibleContent>
                 </Collapsible>
@@ -126,8 +126,8 @@ const remainingTotal = computed(() => {
                 buttons and pretty stuff goes here 
             </div>
             
-            <UpdateCategoryDialog :budget="$props.budget"/>
-            <DeleteCategoryDialog :id="$props.budget.id"/>
+            <UpdateCategoryDialog :budget="budgetCategory"/>
+            <DeleteCategoryDialog :id="budgetCategory.id"/>
         </div>
 
     </div> 

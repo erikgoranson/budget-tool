@@ -35,12 +35,6 @@ const props = defineProps({
     }
 });
 
-const checkAddDueDate = computed(() => {
-    const hasDueDate = props.category.budgets.some(budget => budget.dueDate != null);
-    return hasDueDate
-    //or if the category calls for it 
-});
-
 const addRowTest = () => {
     const newBudget = <Budget>{
         id: Math.floor(Math.random() * 100000),
@@ -92,7 +86,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             </Button>
                         </div>     
                     </TableHead>
-					<TableHead v-if="checkAddDueDate" class="w-6">Due</TableHead>
+					<TableHead v-if="category.hasDueDates" class="w-6">Due</TableHead>
 					<TableHead>Budget</TableHead>
 					<TableHead>Out</TableHead>
 					<TableHead class="text-right">Remain</TableHead>
@@ -118,7 +112,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             </FormField>
                         </TableCell>
 
-                        <TableCell v-if="checkAddDueDate">
+                        <TableCell v-if="category.hasDueDates">
                             <FormField v-slot="{ componentField, }" name="dueDate">
                                 <FormItem>
                                     <FormControl>

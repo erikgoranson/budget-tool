@@ -48,11 +48,6 @@ const totalRemaining = computed(() => {
     return props.budget.amount - totalExpensed.value;
 })
 
-const checkAddDueDate = computed(() => {
-    const hasDueDate = props.category.budgets.some(budget => budget.dueDate != null);
-    return hasDueDate
-});
-
 </script>
 
 <template>
@@ -65,7 +60,7 @@ const checkAddDueDate = computed(() => {
             </div>
         </TableCell>
 
-        <TableCell v-if="checkAddDueDate">
+        <TableCell v-if="category.hasDueDates">
             {{ budget.dueDate }}
         </TableCell>
 
