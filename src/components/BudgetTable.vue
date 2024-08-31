@@ -19,8 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import UpdateBudgetDialog from '@/components/UpdateBudgetDialog.vue';
-import DeleteBudgetDialog from '@/components/DeleteBudgetDialog.vue';
+import BudgetTableRow from '@/components/BudgetTableRow.vue';
 
 import { Button } from '@/components/ui/button';
 import { ListPlus, FilePenLine } from 'lucide-vue-next';
@@ -100,19 +99,7 @@ const onSubmit = handleSubmit((values, actions) => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				<TableRow v-for="b in $props.category.budgets">
-					<TableCell class="font-medium">
-                        <div class="flex justify-end items-center">
-                            {{ b.name }}
-                            <UpdateBudgetDialog :budget="b"/>
-                            <DeleteBudgetDialog :categoryId="props.category.id" :budgetId="b.id" />
-                        </div>
-                    </TableCell>
-					<TableCell v-if="checkAddDueDate">{{ b.dueDate }}</TableCell>
-					<TableCell>{{ b.amount }}</TableCell>
-					<TableCell>?</TableCell>
-					<TableCell class="text-right">?</TableCell>
-				</TableRow>
+                <BudgetTableRow v-for="b in category.budgets" :category="props.category" :budget="b"/>
 			</TableBody>
 		</Table>
 

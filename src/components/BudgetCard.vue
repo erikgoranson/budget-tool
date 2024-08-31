@@ -33,6 +33,9 @@ import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-
 import BudgetTable from '@/components/BudgetTable.vue';
 import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
 import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
+import { storeToRefs } from 'pinia';
+import { useTransactionStore } from '@/stores/transaction';
+
 
 const props = defineProps({
     budget : {
@@ -46,6 +49,9 @@ const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
 };
 
+const transactionStore = useTransactionStore();
+const { transactions } = storeToRefs(transactionStore);
+
 const budgetTotal = computed(() => {
     if(props.budget.budgets.length == 0){
         return 0.00;
@@ -55,7 +61,24 @@ const budgetTotal = computed(() => {
     }
 });
 
-const expensedTotal = ref(0);
+//const expensedTotal = ref(0);
+const expensedTotal = computed(() => {
+
+    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budget.id && x.income == false)
+    console.log('wat', JSON.stringify(transactionsStuff, null, 2))
+
+    if(transactionsStuff.length == 0){
+        return 0.00;
+    } else {
+        //const amounts = props.budget.budgets.map((x) => x.amount);
+        //return amounts.reduce((a, b) => a + b);
+
+        const transAmts = transactionsStuff.map(x => x.amount);
+        return transAmts.reduce((a, b) => a + b);
+    }
+
+    //return 0;
+})
 
 const remainingTotal = computed(() => {
     return budgetTotal.value - expensedTotal.value
@@ -85,7 +108,7 @@ const remainingTotal = computed(() => {
             </div>
             <div class="font-semibold text-sm w-sm">
                 <div>Budgeted ${{ budgetTotal }}</div>
-                <div>Expensed $0.00</div>
+                <div>Expensed ${{ expensedTotal }}</div>
                 <div>Remaining ${{ remainingTotal }}</div>
             </div>
         </div>
