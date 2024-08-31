@@ -35,7 +35,7 @@ import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
 import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
-
+import currencyFormatter from '@/helpers/numberFormat';
 
 const props = defineProps({
     budget : {
@@ -61,7 +61,6 @@ const budgetTotal = computed(() => {
     }
 });
 
-//const expensedTotal = ref(0);
 const expensedTotal = computed(() => {
 
     const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budget.id && x.income == false)
@@ -70,14 +69,9 @@ const expensedTotal = computed(() => {
     if(transactionsStuff.length == 0){
         return 0.00;
     } else {
-        //const amounts = props.budget.budgets.map((x) => x.amount);
-        //return amounts.reduce((a, b) => a + b);
-
         const transAmts = transactionsStuff.map(x => x.amount);
         return transAmts.reduce((a, b) => a + b);
     }
-
-    //return 0;
 })
 
 const remainingTotal = computed(() => {
@@ -107,9 +101,9 @@ const remainingTotal = computed(() => {
                 </div>
             </div>
             <div class="font-semibold text-sm w-sm">
-                <div>Budgeted ${{ budgetTotal }}</div>
-                <div>Expensed ${{ expensedTotal }}</div>
-                <div>Remaining ${{ remainingTotal }}</div>
+                <div>Budgeted {{ currencyFormatter.format(budgetTotal) }}</div>
+                <div>Expensed {{ currencyFormatter.format(expensedTotal) }}</div>
+                <div>Remaining {{ currencyFormatter.format(remainingTotal) }}</div>
             </div>
         </div>
 
