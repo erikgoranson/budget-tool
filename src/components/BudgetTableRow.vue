@@ -5,6 +5,7 @@ import type { Budget, Category } from '../types/';
 import { ref, computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
+import currencyFormatter from '@/helpers/numberFormat';
 
 import {
   Table,
@@ -69,15 +70,15 @@ const checkAddDueDate = computed(() => {
         </TableCell>
 
         <TableCell>
-            {{ budget.amount }}
+            {{ currencyFormatter.format(budget.amount) }}
         </TableCell>
 
         <TableCell>
-            {{ totalExpensed }}
+            {{ currencyFormatter.format(totalExpensed) }}
         </TableCell>
 
         <TableCell class="text-right">
-            {{ totalRemaining }}
+            {{ currencyFormatter.format(totalRemaining) }}
         </TableCell>
     </TableRow>
 </template>
