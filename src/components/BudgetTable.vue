@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import type { Budget, Category } from '../types/';
+
+import { ref, computed } from "vue";
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm, useField } from 'vee-validate'
+import * as zod from 'zod';
+import { ListPlus, FilePenLine, FilePlus } from 'lucide-vue-next';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -21,30 +29,12 @@ import {
 
 import BudgetTableRow from '@/components/BudgetTableRow.vue';
 
-import { Button } from '@/components/ui/button';
-import { ListPlus, FilePenLine } from 'lucide-vue-next';
-import { Input } from '@/components/ui/input'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm, useField } from 'vee-validate'
-import * as zod from 'zod';
-
 const props = defineProps({
     category : {
         type: Object as () => Category,
         required: true
     }
 });
-
-const addRowTest = () => {
-    const newBudget = <Budget>{
-        id: Math.floor(Math.random() * 100000),
-        name: 'CELL PHONE BILL',
-        amount: 250.25,
-        dueDate: 12,
-    };
-
-    props.category.budgets.push(newBudget);
-}
 
 const validationSchema = toTypedSchema(
     zod.object({
@@ -81,15 +71,17 @@ const onSubmit = handleSubmit((values, actions) => {
                     <TableHead>
                         <div class="flex justify-center items-center">
                             Category
-                            <Button variant="ghost" @click="addRowTest">
-                                <ListPlus class="h-4 w-4" />
-                            </Button>
                         </div>     
                     </TableHead>
-					<TableHead v-if="category.hasDueDates" class="w-6">Due</TableHead>
+					<TableHead v-if="category.hasDueDates" class="w-4">Due</TableHead>
 					<TableHead>Budget</TableHead>
 					<TableHead>Out</TableHead>
 					<TableHead class="text-right">Remain</TableHead>
+                    <TableHead class="w-4">
+                        <div class="flex justify-center items-center">
+                            <FilePenLine class="h-4 w-4"/>
+                        </div>
+                    </TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -132,10 +124,12 @@ const onSubmit = handleSubmit((values, actions) => {
                             </FormField>
                         </TableCell>
 
-                        <TableCell class="flex items-center justify-center">
-                            <Button variant="ghost" class="bg-green-100 h-6">
-                                <ListPlus class="h-4" />
-                            </Button>
+                        <TableCell>
+                            <div class="flex items-center justify-center">
+                                <Button variant="ghost" class="bg-green-100 h-6">
+                                    <FilePlus class="h-4" />
+                                </Button>
+                            </div>
                         </TableCell>
 
                     </TableRow>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import type { Budget, Category } from '../types/';
 
 import { ref, computed } from "vue";
@@ -16,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import UpdateBudgetDialog from '@/components/UpdateBudgetDialog.vue';
-import DeleteBudgetDialog from '@/components/DeleteBudgetDialog.vue';
+
+import UpdateBudgetMenu from '@/components/UpdateBudgetMenu.vue';
 
 const props = defineProps({
     budget : {
@@ -47,7 +46,6 @@ const totalExpensed = computed(() => {
 const totalRemaining = computed(() => {
     return props.budget.amount - totalExpensed.value;
 })
-
 </script>
 
 <template>
@@ -55,8 +53,6 @@ const totalRemaining = computed(() => {
         <TableCell class="font-medium">
             <div class="flex justify-end items-center">
                 {{ budget.name }}
-                <UpdateBudgetDialog :budget="budget"/>
-                <DeleteBudgetDialog :categoryId="category.id" :budgetId="budget.id" />
             </div>
         </TableCell>
 
@@ -74,6 +70,12 @@ const totalRemaining = computed(() => {
 
         <TableCell class="text-right">
             {{ currencyFormatter.format(totalRemaining) }}
+        </TableCell>
+
+        <TableCell>
+            <div class="flex justify-center">
+                <UpdateBudgetMenu :categoryId="category.id" :budget="props.budget"/>
+            </div>
         </TableCell>
     </TableRow>
 </template>
