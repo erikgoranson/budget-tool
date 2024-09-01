@@ -1,41 +1,21 @@
 <script setup lang="ts">
-import { ref, toRef, computed } from "vue";
 import type { Budget, Category } from '../types/';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+
+import { ref, toRef, computed } from "vue";
+import { storeToRefs } from 'pinia';
+import { useTransactionStore } from '@/stores/transaction';
+import currencyFormatter from '@/helpers/numberFormat';
+import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
+import UpdateCategoryMenu from '@/components/UpdateCategoryMenu.vue'
 import BudgetTable from '@/components/BudgetTable.vue';
-import UpdateCategoryDialog from '@/components/UpdateCategoryDialog.vue';
-import DeleteCategoryDialog from '@/components/DeleteCategoryDialog.vue';
-import { storeToRefs } from 'pinia';
-import { useTransactionStore } from '@/stores/transaction';
-import currencyFormatter from '@/helpers/numberFormat';
 
 const props = defineProps({
     budgetCategory : {
@@ -43,14 +23,14 @@ const props = defineProps({
         required: true
     }
 });
+
 const isOpen = ref(false); 
+const transactionStore = useTransactionStore();
+const { transactions } = storeToRefs(transactionStore);
 
 const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
 };
-
-const transactionStore = useTransactionStore();
-const { transactions } = storeToRefs(transactionStore);
 
 const budgetTotal = computed(() => {
     if(props.budgetCategory.budgets.length == 0){
@@ -62,7 +42,6 @@ const budgetTotal = computed(() => {
 });
 
 const expensedTotal = computed(() => {
-
     const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false)
     console.log('wat', JSON.stringify(transactionsStuff, null, 2))
 
@@ -125,9 +104,7 @@ const remainingTotal = computed(() => {
             <div>
                 buttons and pretty stuff goes here 
             </div>
-            
-            <UpdateCategoryDialog :budget="budgetCategory"/>
-            <DeleteCategoryDialog :id="budgetCategory.id"/>
+            <UpdateCategoryMenu :category="budgetCategory"/>
         </div>
 
     </div> 
