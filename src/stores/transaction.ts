@@ -20,9 +20,19 @@ export const useTransactionStore = defineStore('transaction', () => {
         })
     });
     
-    const addTransaction = (transaction: Transaction) => {
-        transactions.value.unshift(transaction);
+    const createTransaction = (transaction: Transaction) => {
+        transactions.value.push(transaction);
     };
 
-    return { transactions, addTransaction, transactionRows  };
+    const updateTransaction = (transaction: Transaction) => {
+        const index = transactions.value.findIndex(x => x.id == transaction.id);
+
+        transactions.value.splice(index, 1, transaction);
+    };
+
+    const deleteTransaction = (id: number) => {
+        transactions.value = transactions.value.filter(x => x.id !== id);
+    };
+
+    return { transactions, transactionRows, createTransaction, updateTransaction, deleteTransaction};
 });

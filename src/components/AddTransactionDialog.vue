@@ -56,9 +56,7 @@ import { useCategoryStore } from '@/stores/category';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
-
 const transactionStore = useTransactionStore();
-const { transactions } = storeToRefs(transactionStore);
 
 const [DefineAddTransactionForm, UseAddTransactionForm] = createReusableTemplate();
 const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
@@ -114,7 +112,7 @@ const onSubmit = handleSubmit(values => {
     };
     
     console.log('new transaction:', newTransaction);
-    transactions.value.push(newTransaction);
+    transactionStore.createTransaction(newTransaction);
 });
 
 const cancelForm = () => {
