@@ -65,7 +65,9 @@ const selectedTotalText = computed(() => {
     }
 });
 
-const data = transactionRows.value;
+const data = transactionRows;
+
+
 const columns: ColumnDef<Transaction>[] = [
     //checkbox column
     {
@@ -92,7 +94,7 @@ const columns: ColumnDef<Transaction>[] = [
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
             }, () => ['Date', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('date')),
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('date')), //TODO: format to MMddyy
     },
     {
         accessorKey: 'budgetCategoryName',
@@ -104,6 +106,7 @@ const columns: ColumnDef<Transaction>[] = [
         },
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('budgetCategoryName')),
     },
+    /* //temp removing these until fix mobile spacing
     {
         accessorKey: 'payee',
         header: ({ column }) => {
@@ -123,7 +126,7 @@ const columns: ColumnDef<Transaction>[] = [
             }, () => ['Note', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
         cell: ({ row }) => h('div', { }, row.getValue('note')),
-    },
+    },*/
     {
         accessorKey: 'amount',
         header: ({ column }) => {
@@ -148,10 +151,8 @@ const columns: ColumnDef<Transaction>[] = [
         header: () => ['', h(FilePenLine, { class: 'ml-2 h-4 w-4' })],
         enableHiding: false,
         cell: ({ row }) => {
-            const payment = row.original.amount;
-
             return h(UpdateTransactionMenu, {
-            payment,
+                transaction: row.original,
             })
         },
     },

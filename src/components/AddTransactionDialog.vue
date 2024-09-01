@@ -156,7 +156,6 @@ const cancelForm = () => {
                 calendar-label="Transaction date"
                 initial-focus
                 :min-value="new CalendarDate(1900, 1, 1)"
-                :max-value="today(getLocalTimeZone())"
                 @update:model-value="(v) => {
                   if (v) {
                     setFieldValue('date', v.toString())

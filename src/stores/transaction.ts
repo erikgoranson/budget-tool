@@ -14,7 +14,7 @@ export const useTransactionStore = defineStore('transaction', () => {
             let transformed = tran as Transaction as TransactionRow; 
 
             transformed.budgetCategoryName = categoryStore.getBudgetCategoryName(tran.categoryId, tran.budgetId);
-            transformed.date = new Date(tran.date).toDateString();
+            //transformed.date = new Date(tran.date).toDateString();
 
             return transformed;
         })
