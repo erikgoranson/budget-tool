@@ -12,7 +12,6 @@ const { transactions } = storeToRefs(transactionStore);
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 
-//addCategory
 const addTestCategory = () => {
     console.log('adding budget category');
     const newBC: Category = {
@@ -38,13 +37,13 @@ const addTestCategory = () => {
     categories.value.push(newBC);
 };
 
-//test transaction
 const addTestTransactions = () => {
     console.log('adding test transaction(s)');
     const testTrans: Transaction[] = [
+        /*
         {
             id: Math.floor(Math.random() * 100000),
-            //date: Date.now(),
+            date: '2024-08-01',
             income: true,
             //monthInt: 8,
             //yearInt: 2024,
@@ -55,9 +54,10 @@ const addTestTransactions = () => {
             hasCleared: false,
             amount: 25.22
         },
+        */
         {
             id: Math.floor(Math.random() * 100000),
-            //date: Date.now(),
+            date: '2024-08-22',
             income: false,
             //monthInt: 8,
             //yearInt: 2024,
@@ -68,9 +68,21 @@ const addTestTransactions = () => {
             hasCleared: true,
             amount: 500.00
         },
+        {
+            id: Math.floor(Math.random() * 100000),
+            date: '2024-08-27',
+            income: false,
+            //monthInt: 8,
+            //yearInt: 2024,
+            payee: 'target',
+            categoryId: 9999,
+            budgetId: 2,
+            note: 'ender dragon lego set',
+            hasCleared: true,
+            amount: 78.54
+        },
     ];
 
-    //transactions.value.concat(testTrans);
     testTrans.forEach(x => {
         transactions.value.unshift(x);
     });

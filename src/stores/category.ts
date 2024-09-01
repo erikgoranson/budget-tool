@@ -28,6 +28,16 @@ export const useCategoryStore = defineStore('category', () => {
             return cat;
         });
     };
-    
-    return { categories, addCategory, deleteCategory, updateCategory, deleteBudget };
+
+    const getBudgetCategoryName = (categoryId: number, budgetId: number) => {
+        const category = categories.value.find(cat => cat.id == categoryId);
+
+        const budget = category?.budgets.find(budget => budget.id == budgetId);
+
+        const name = `${category?.name} : ${budget?.name}`
+
+        return name;
+    };
+
+    return { categories, addCategory, deleteCategory, updateCategory, deleteBudget, getBudgetCategoryName };
 });
