@@ -1,30 +1,20 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { ref } from 'vue'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-
-const isOpen = ref(false)
+import Sidebar from '../components/Sidebar.vue';
+import Header from '../components/Header.vue';
+import Footer from '../components/Footer.vue';
 </script>
 
 <template>
-    <header>
-        <div class="wrapper">
-
-            <nav class="mb-20">
-                <RouterLink to="/">Home</RouterLink> | 
-                <RouterLink to="/about">About</RouterLink> | 
-                <RouterLink to="/test1">Test1</RouterLink> | 
-                <RouterLink to="/test2">Test2</RouterLink>
-            </nav>
-
+  <div class="flex h-screen bg-gray-200 font-roboto">
+    <Sidebar />
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <Header />
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
+        <div class="container mx-auto px-6 py-8">
+          <slot />
         </div>
-    </header>
-    <slot />
+      </main>
+      <Footer />
+    </div>
+  </div>
 </template>
-
-<style scoped>
-</style>

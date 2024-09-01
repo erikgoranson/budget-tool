@@ -23,14 +23,17 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: '404',
-      component: () => import('../views/404View.vue')
+      component: () => import('../views/404View.vue'),
+      meta: {
+        layout: 'default',
+      },
     },
     {
       path: '/test1',
       name: 'test1',
       component: () => import('../views/Test1View.vue'),
       meta: {
-        layout: 'dash',
+        layout: 'default',
       },
     },
     {
@@ -38,7 +41,7 @@ const router = createRouter({
       name: 'transactions',
       component: () => import('../views/TransactionView.vue'),
       meta: {
-        layout: 'dash',
+        layout: 'default',
       },
     },
   ]

@@ -7,7 +7,6 @@ import router from './router';
 //global layouts
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import EmptyLayout from '@/layouts/EmptyLayout.vue';
-import DashLayout from '@/layouts/DashLayout.vue';
 
 import './assets/main.css';
 
@@ -18,6 +17,5 @@ app.use(router);
 
 app.component("DefaultLayout", DefaultLayout);
 app.component("EmptyLayout", EmptyLayout);
-app.component("DashLayout", DashLayout);
 
 app.mount('#app');
