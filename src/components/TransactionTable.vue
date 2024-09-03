@@ -14,6 +14,7 @@ import { valueUpdater } from '../lib/utils';
 import currencyFormatter from '../helpers/numberFormat'; 
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
+import { useMediaQuery } from '@vueuse/core';
 import {
   FlexRender,
   getCoreRowModel,
@@ -50,6 +51,8 @@ const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>('');
 
+const isDesktop = useMediaQuery('(min-width: 768px)');
+
 const transactionStore = useTransactionStore();
 const { transactionRows } = storeToRefs(transactionStore);
 
@@ -64,6 +67,14 @@ const selectedTotalText = computed(() => {
         return `${currencyFormatter.format(total)} total.`;
     }
 });
+
+const transactionsByDate = computed(() => {
+    const wat = transactionRows.value;
+    const selectedRows = table.getFilteredRowModel().rows;
+    const groups = Object.groupBy(selectedRows, row => row.original.date );
+
+    return groups;
+})
 
 const data = transactionRows;
 
@@ -181,29 +192,30 @@ const table = useVueTable({
 </script>
 
 <template>
-    <div class="w-full">
-        <div class="flex items-center py-4">
-            <input
-                type="text"
-                class="border border-gray-400 rounded px-2 py-2"
-                placeholder="Filter by any column ... "
-                v-model="filter"
-            />
-            <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                    <Button variant="outline" class="ml-auto">
-                        Columns <ChevronDown class="ml-2 h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuCheckboxItem v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id" class="capitalize" :checked="column.getIsVisible()" @update:checked="(value) => { 
-                        column.toggleVisibility(!!value)
-                    }">
-                        {{ column.id }}
-                    </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+    <div class="flex items-center py-4">
+        <input
+            type="text"
+            class="border border-gray-400 rounded px-2 py-2"
+            placeholder="Filter by any column ... "
+            v-model="filter"
+        />
+        <DropdownMenu v-if="isDesktop">
+            <DropdownMenuTrigger as-child>
+                <Button variant="outline" class="ml-auto">
+                    Columns <ChevronDown class="ml-2 h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuCheckboxItem v-for="column in table.getAllColumns().filter((column) => column.getCanHide())" :key="column.id" class="capitalize" :checked="column.getIsVisible()" @update:checked="(value) => { 
+                    column.toggleVisibility(!!value)
+                }">
+                    {{ column.id }}
+                </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    </div>
+
+    <div v-if="isDesktop" class="w-full">
         <div class="rounded-md border">
             
             <Table>
@@ -248,5 +260,34 @@ const table = useVueTable({
                 </Button>
             </div>
         </div>
+    </div>
+
+    <div v-else>
+        <Table v-for="(value, name, index) in transactionsByDate">
+            <TableHeader>
+                <TableHead class="px-0 h-8">
+                    <TableRow class="font-semibold ">{{ name }}</TableRow>
+                </TableHead>
+            </TableHeader>
+            <TableBody >
+                <TableRow v-for="item in value" class="px-0  h-14 ">
+                    <TableCell class="w-4 ">
+                        <UpdateTransactionMenu  :transaction="item.original"/>
+                    </TableCell>
+                    <div class="flex justify-between items-center">
+                        <TableCell>
+                            <div>Notes</div>
+                            <div>{{ item.original.budgetCategoryName }}</div>
+                    </TableCell>
+                    <TableCell >
+                        <div>
+                            {{ currencyFormatter.format(item.original.amount) }}
+                        </div>
+                    </TableCell>
+                    </div>
+                    
+                </TableRow>
+            </TableBody>
+        </Table>
     </div>
 </template>
