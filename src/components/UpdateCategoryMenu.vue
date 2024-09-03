@@ -42,7 +42,7 @@ const onSubmit = handleSubmit(values => {
         budgets: props.category.budgets, 
         name: values.name ? values.name : props.category.name,
         description: values.description ? values.description : props.category.description,
-        hasDueDates: values.hasDueDates ? values.hasDueDates : props.category.hasDueDates,
+        hasDueDates: values.hasDueDates !== null ? values.hasDueDates : props.category.hasDueDates,
     };
     
     const valuesMatch = JSON.stringify(updatedCategory) == JSON.stringify(props.category);
@@ -92,18 +92,20 @@ const onSubmit = handleSubmit(values => {
                     </FormItem>
                 </FormField>
 
-                <FormField v-slot="{ value, componentField, handleChange }" name="hasDueDates">
+                <FormField v-slot="{ value, handleChange }" name="hasDueDates">
                     <FormItem>
-                    <FormLabel></FormLabel>
-                    <FormControl>
-                        <div class="flex items-center space-x-2">
-                            <Switch v-bind="componentField" v-model:checked="props.category.hasDueDates"
-                            @update:checked="handleChange"/>
-                            <Label>Does this category have due dates?</Label>
-                        </div>
-                    </FormControl>
-                    <FormDescription></FormDescription>
-                    <FormMessage />
+                        <FormLabel></FormLabel>
+                        <FormControl>
+                            <div class="flex justify-center items-center space-x-2">
+                                <Switch 
+                                :defaultChecked="props.category.hasDueDates" 
+                                :checked="value"
+                                @update:checked="handleChange"/>
+                                <Label>Does this category have due dates?</Label>
+                            </div>
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                        <FormMessage />
                     </FormItem>
                 </FormField>
 
