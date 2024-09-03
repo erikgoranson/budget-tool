@@ -34,11 +34,6 @@ const categoryStore = useCategoryStore();
 const { handleSubmit, errors, resetForm } = useForm({
 });
 
-const updateBudget = (budget: Budget) => {
-    props.budget.name = budget.name;
-    props.budget.amount = budget.amount;
-    props.budget.dueDate = budget.dueDate;
-}
 
 const deleteBudget = () => {
     console.log('deleting budget', props.budget.id);
@@ -55,7 +50,7 @@ const onSubmit = handleSubmit((values, actions) => {
     };
 
     const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(props.budget);
-    if (!valuesMatch) updateBudget(updatedBudget);
+    if (!valuesMatch) categoryStore.updateBudget(props.categoryId, updatedBudget);
     //actions.resetForm();
 });
 </script>

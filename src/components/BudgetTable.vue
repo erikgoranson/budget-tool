@@ -6,6 +6,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
 import * as zod from 'zod';
 import { ListPlus, FilePenLine, FilePlus } from 'lucide-vue-next';
+import { useCategoryStore } from '@/stores/category.ts';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'
@@ -36,6 +37,8 @@ const props = defineProps({
     }
 });
 
+const categoryStore = useCategoryStore();
+
 const validationSchema = toTypedSchema(
     zod.object({
         name: zod.string().min(1, { message: 'Budget name is required' }),
@@ -58,7 +61,7 @@ const onSubmit = handleSubmit((values, actions) => {
         dueDate: values.dueDate,
     };
 
-    props.category.budgets.push(newBudget);
+    categoryStore.createBudget(props.category.id, newBudget);
     actions.resetForm();
 });
 </script>
