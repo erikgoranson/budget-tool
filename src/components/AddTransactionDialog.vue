@@ -1,6 +1,20 @@
 <script setup lang="ts">
 import type { Budget, Category, Transaction } from '../types/';
 
+import { cn } from '@/lib/utils';
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { toDate } from 'radix-vue/date';
+import { computed, h, ref, onMounted, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
+import { SquarePlus, Check, ChevronsUpDown, Calendar as CalendarIcon } from 'lucide-vue-next';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useForm, useField } from 'vee-validate';
+import * as zod from 'zod';
+import { useTransactionStore } from '@/stores/transaction';
+import { useCategoryStore } from '@/stores/category';
+import { v4 as uuidv4 } from 'uuid';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -41,18 +55,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
-import { toDate } from 'radix-vue/date';
-import { computed, h, ref, onMounted, watch } from 'vue';
-import { storeToRefs } from 'pinia';
-import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { SquarePlus, Check, ChevronsUpDown, Calendar as CalendarIcon } from 'lucide-vue-next';
-import { toTypedSchema } from '@vee-validate/zod';
-import { useForm, useField } from 'vee-validate';
-import * as zod from 'zod';
-import { useTransactionStore } from '@/stores/transaction';
-import { useCategoryStore } from '@/stores/category';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -68,6 +70,7 @@ const isComboBoxOpen = ref(false);
 const calendarPlaceholder = ref();
 
 const popupTitle = 'Add Transaction';
+const defaultGuid = '00000000-0000-0000-0000-000000000000';
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
@@ -83,8 +86,8 @@ const validationSchema = toTypedSchema(
         date: zod.string().refine(v => v, { message: 'A date is required.' }),
         amount: zod.number(),
         category: zod.object({
-            budgetId: zod.number(),
-            categoryId: zod.number(),
+            budgetId: zod.string(),
+            categoryId: zod.string(),
             formatedName: zod.string(),
         }),
     })
@@ -102,7 +105,7 @@ const onSubmit = handleSubmit(values => {
     isOpen.value = !isOpen.value;
 
     const newTransaction: Transaction = {
-        id: Math.floor(Math.random() * 100000),
+        id: uuidv4(),
         date: values.date,
         income: false,
         categoryId: values.category.categoryId, 
@@ -213,8 +216,8 @@ const cancelForm = () => {
                       value="Uncategorized"
                       @select="() => {
                         setFieldValue('category', {
-                          budgetId: 0,
-                          categoryId: 0,
+                          budgetId: defaultGuid,
+                          categoryId: defaultGuid,
                           formatedName: 'Uncategorized'
                         });
                         isComboBoxOpen = false;

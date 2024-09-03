@@ -20,7 +20,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     };
 
-    const deleteCategory = (id: number) => {
+    const deleteCategory = (id: string) => {
         categories.value = categories.value.filter(x => x.id !== id);
         console.log('after delete:', JSON.stringify(categories.value));
         setData();
@@ -33,7 +33,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     };
 
-    const createBudget = (categoryId: number, budget: Budget) => {
+    const createBudget = (categoryId: string, budget: Budget) => {
         categories.value = categories.value.map(cat => {
             console.log('checking', cat.id, 'against ', categoryId);
             if (cat.id == categoryId){
@@ -45,7 +45,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     }
 
-    const updateBudget = (categoryId: number, budget: Budget) => {
+    const updateBudget = (categoryId: string, budget: Budget) => {
         categories.value = categories.value.map(cat => {
             console.log('checking', cat.id, 'against ', categoryId);
             if (cat.id == categoryId){
@@ -58,7 +58,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     }
 
-    const deleteBudget = (categoryId: number, budgetId: number) => {
+    const deleteBudget = (categoryId: string, budgetId: string) => {
         categories.value = categories.value.map(cat => {
             if (cat.id == categoryId){
                 cat.budgets = cat.budgets.filter(budget => budget.id !== budgetId);
@@ -68,7 +68,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     };
 
-    const getBudgetCategoryName = (categoryId: number, budgetId: number) => {
+    const getBudgetCategoryName = (categoryId: string, budgetId: string) => {
         const category = categories.value.find(cat => cat.id == categoryId);
         const budget = category?.budgets.find(budget => budget.id == budgetId);
         const name = `${category?.name} : ${budget?.name}`

@@ -6,7 +6,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
 import * as zod from 'zod';
 import { ListPlus, FilePenLine, FilePlus } from 'lucide-vue-next';
-import { useCategoryStore } from '@/stores/category.ts';
+import { useCategoryStore } from '@/stores/category';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input'
@@ -55,7 +56,7 @@ const onSubmit = handleSubmit((values, actions) => {
     console.log(JSON.stringify(values, null, 2));
 
     const newBudget = <Budget>{
-        id: Math.floor(Math.random() * 100000),
+        id: uuidv4(),
         name: values.name,
         amount: parseFloat(values.amount),
         dueDate: values.dueDate,

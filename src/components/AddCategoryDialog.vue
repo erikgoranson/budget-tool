@@ -1,7 +1,15 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { createReusableTemplate, useMediaQuery } from '@vueuse/core'
-import { Button } from '@/components/ui/button'
+import type { Budget, Category } from '../types/';
+
+import { ref } from 'vue';
+import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
+import { v4 as uuidv4 } from 'uuid';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useForm, useField } from 'vee-validate';
+import * as zod from 'zod';
+import { useCategoryStore } from '@/stores/category';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -19,7 +27,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer'
+} from '@/components/ui/drawer';
 import {
   FormControl,
   FormDescription,
@@ -27,17 +35,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm, useField } from 'vee-validate'
-import * as zod from 'zod';
-
-import type { Budget, Category } from '../types/';
-import { useCategoryStore } from '@/stores/category.ts';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 const categoryStore = useCategoryStore();
 
@@ -46,21 +47,24 @@ const validationSchema = toTypedSchema(
         name: zod.string().min(1, { message: 'Category name is required' }),
         description: zod.string().optional(),
         hasDueDates: zod.boolean().default(false).optional(),
-    })
-)
+    }),
+);
 
 const { handleSubmit, errors } = useForm({
   validationSchema,
 });
 
 const onSubmit = handleSubmit(values => {
+
+  const test = uuidv4();
+
     console.log(JSON.stringify(values, null, 2))
     isOpen.value = !isOpen.value;
-    console.log('name:', values.name)
-    console.log('description:', values.description)
+    console.log('name:', values.name);
+    console.log('description:', values.description);
     
     const newCategory: Category = {
-        id: Math.floor(Math.random() * 100000),
+        id: uuidv4(),
         name: values.name,
         description: values.description ? values.description : '',
         hasDueDates: values.hasDueDates ? values.hasDueDates : false,
@@ -75,9 +79,9 @@ const cancel = () => {
     isOpen.value = !isOpen.value;
 }
 
-const [UseTemplate, GridForm] = createReusableTemplate()
-const isDesktop = useMediaQuery('(min-width: 768px)')
-const isOpen = ref(false)
+const [UseTemplate, GridForm] = createReusableTemplate();
+const isDesktop = useMediaQuery('(min-width: 768px)');
+const isOpen = ref(false);
 
 const buttonTitle = '+ Category';
 const popupTitle = 'Add New Budget Category';

@@ -2,7 +2,7 @@
 import type { Budget, Category } from '../types/';
 
 import { useForm, useField } from 'vee-validate'
-import { useCategoryStore } from '@/stores/category.ts';
+import { useCategoryStore } from '@/stores/category';
 
 import { Button } from '@/components/ui/button'
 import {
@@ -24,7 +24,7 @@ const props = defineProps({
         required: true
     },
     categoryId: {
-        type: Number,
+        type: String,
         required: true,
     },
 });

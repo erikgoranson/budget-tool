@@ -38,7 +38,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         setData();
     };
 
-    const deleteTransaction = (id: number) => {
+    const deleteTransaction = (id: string) => {
         transactions.value = transactions.value.filter(x => x.id !== id);
         setData();
     };
