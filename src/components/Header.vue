@@ -1,7 +1,55 @@
 <script setup lang="ts">
+import { ref, toRef, computed } from "vue";
 import { AlignJustify } from 'lucide-vue-next';
-import { useSidebarStore } from '@/stores/sidebar.ts';
+import { storeToRefs } from 'pinia';
+import { useSidebarStore } from '@/stores/sidebar';
+import { useTransactionStore } from '@/stores/transaction';
+import { useCategoryStore } from '@/stores/category';
+import currencyFormatter from '@/helpers/numberFormat';
+
+import { Badge } from '@/components/ui/badge';
+
 const sidebarStore = useSidebarStore();
+
+const transactionStore = useTransactionStore();
+const { transactions } = storeToRefs(transactionStore);
+
+const categoryStore = useCategoryStore();
+const { categories } = storeToRefs(categoryStore);
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric'
+});
+
+const incomeTotal = computed(() => {
+    const amounts = transactions.value
+        .filter(x => x.income)
+        .map(tran => tran.amount);
+    if (amounts.length == 0) return 0.00;
+    return amounts.reduce((a, b) => a + b);
+});
+
+const budgetTotal = computed(() => {
+    let budgetAmts = [] as number[];
+    categories.value.forEach(cat => {
+        const amounts = cat.budgets.map((x) => x.amount);
+        if(amounts.length != 0) {
+            budgetAmts.push(amounts.reduce((a, b) => a + b));
+        }
+    });
+
+    if (budgetAmts.length == 0){
+        return 0.00;
+    } 
+    else {
+        return budgetAmts.reduce((a, b) => a + b);
+    }
+});
+
+const remainingBudgetTotal = computed(() => {
+    return incomeTotal.value - budgetTotal.value
+});
 </script>
 
 <template>
@@ -13,7 +61,27 @@ const sidebarStore = useSidebarStore();
         </div>
         <div class="flex-1 items-center justify-center">
             <div class="flex ml-auto items-center justify-center">
-                MONTH NAME
+
+                <!-- here is where month used to be-->
+                <div class="flex flex-col">
+                    <span class="text-3xl mb-2">{{  dateFormatter.format(new Date()) }}</span>
+                    <div class="flex flex-col justify-center items-center">
+                        <div class="text-sm flex flex-col items-end justify-end">
+                            <div>
+                                Total Income: 
+                                <Badge class="w-30" :class="{'bg-red-500': incomeTotal < 0, 'bg-green-500': incomeTotal > 0}">{{ currencyFormatter.format(incomeTotal) }}</Badge>
+                            </div>
+                            <div>
+                                Total Budgeted: 
+                                <Badge class="w-30 bg-blue-800">{{ currencyFormatter.format(budgetTotal) }}</Badge>
+                            </div>
+                            <div>
+                                Left to Budget: 
+                                <Badge class="w-30"  :class="{'bg-red-500': remainingBudgetTotal < 0, 'bg-green-500': remainingBudgetTotal > 0}">{{ currencyFormatter.format(remainingBudgetTotal) }}</Badge>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>

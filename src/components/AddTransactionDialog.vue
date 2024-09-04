@@ -55,6 +55,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -76,6 +77,11 @@ const df = new DateFormatter('en-US', {
   dateStyle: 'long',
 })
 
+const mf = new DateFormatter('en-US', {
+  month: 'long',
+  year: 'numeric'
+})
+
 const dateValue = computed({
   get: () => values.date ? parseDate(values.date) : undefined,
   set: val => val,
@@ -90,6 +96,7 @@ const validationSchema = toTypedSchema(
             categoryId: zod.string(),
             formatedName: zod.string(),
         }),
+        income: zod.boolean(),
     })
 );
 
@@ -97,6 +104,12 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
   validationSchema,
   initialValues: {
     date: today(getLocalTimeZone()).toString(),
+    category: {
+      budgetId: defaultGuid,
+      categoryId: defaultGuid,
+      formatedName: 'Uncategorized'
+    },
+    income: false,
   },
 });
 
@@ -107,11 +120,16 @@ const onSubmit = handleSubmit(values => {
     const newTransaction: Transaction = {
         id: uuidv4(),
         date: values.date,
-        income: false,
+        income: values.income,
         categoryId: values.category.categoryId, 
         budgetId: values.category.budgetId,
         hasCleared: false,
         amount: values.amount
+    };
+
+    if(values.income){
+      newTransaction.budgetId = '1';
+      newTransaction.categoryId = '1';
     };
     
     console.log('new transaction:', newTransaction);
@@ -175,13 +193,18 @@ const cancelForm = () => {
       
       <FormField :keepValue=true name="category">
         <FormItem class="flex flex-col">
-          <FormLabel>Category Select</FormLabel>
+          <FormLabel>Budget Category</FormLabel>
           <Popover v-model:open="isComboBoxOpen">
             <PopoverTrigger as-child>
               <FormControl>
-                <Button variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
-                  {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
-                  <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <Button :disabled="values.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
+                  <template v-if="values.income">
+                    Income for {{  mf.format(new Date()) }}
+                  </template>
+                  <template v-else>
+                    {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
+                    <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </template>
                 </Button>
               </FormControl>
             </PopoverTrigger>
@@ -231,6 +254,26 @@ const cancelForm = () => {
           <FormMessage />
         </FormItem>
       </FormField>
+
+      <div class="text-sm font-medium">Income / Expense</div>
+      <div class="space-y-4">
+        <FormField v-slot="{ value, handleChange }" name="income">
+          <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+            <div class="space-y-0.5">
+              <FormLabel class="text-muted-foreground">
+                Is this transaction income?
+              </FormLabel>
+            </div>
+            <FormControl>
+              <Switch 
+                :class="'data-[state=checked]:bg-green-500'"
+                :checked="value"
+                @update:checked="handleChange"
+              />
+            </FormControl>
+          </FormItem>
+        </FormField>
+      </div>
       
       <FormField v-slot="{ componentField, }" name="amount">
         <FormItem class="flex flex-col">

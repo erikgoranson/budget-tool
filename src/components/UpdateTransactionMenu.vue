@@ -33,6 +33,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { Switch } from '@/components/ui/switch';
 
 import UpdateMenu from '../components/UpdateMenu.vue';
 
@@ -53,11 +54,16 @@ const dateFormatter = new DateFormatter('en-US', {
   dateStyle: 'long',
 })
 
+const mf = new DateFormatter('en-US', {
+  month: 'long',
+  year: 'numeric'
+})
+
 const deleteTransaction = () => {
     transactionStore.deleteTransaction(props.transaction.id);
 };
 
-const wat = computed(() => {
+const defaultDateValue = computed(() => {
     return parseDate(props.transaction.date) as DateValue;
 });
 
@@ -86,6 +92,11 @@ const onSubmit = handleSubmit((values, actions) => {
             hasCleared: values.hasCleared ?? props.transaction.hasCleared,
             amount: values.amount ?? props.transaction.amount,
         }
+
+        if(values.income){
+            updatedTransaction.budgetId = '1';
+            updatedTransaction.categoryId = '1';
+        };
 
         transactionStore.updateTransaction(updatedTransaction);
     }
@@ -125,7 +136,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             </PopoverTrigger>
                             <PopoverContent class="w-auto p-0">
                                 <Calendar 
-                                    :defaultValue="wat"
+                                    :defaultValue="defaultDateValue"
                                     v-model:placeholder="calendarPlaceholder"
                                     calendar-label="Transaction date"
                                     initial-focus
@@ -148,13 +159,18 @@ const onSubmit = handleSubmit((values, actions) => {
 
                 <FormField name="category">
                     <FormItem class="flex flex-col">
-                        <FormLabel>Category Select</FormLabel>
+                        <FormLabel>Budget Category</FormLabel>
                         <Popover v-model:open="isComboBoxOpen">
                             <PopoverTrigger as-child>
                                 <FormControl>
-                                    <Button variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
-                                        {{ values.category?.formatedName ?? transaction.budgetCategoryName }}
-                                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    <Button :disabled="values.income || props.transaction.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
+                                        <template v-if="values.income || props.transaction.income">
+                                            Income for {{  mf.format(new Date()) }}
+                                        </template>
+                                        <template v-else>
+                                            {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
+                                            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </template>
                                     </Button>
                                 </FormControl>
                             </PopoverTrigger>
@@ -192,6 +208,27 @@ const onSubmit = handleSubmit((values, actions) => {
                         <FormMessage />
                     </FormItem>
                 </FormField>
+
+                <div class="text-sm font-medium">Income / Expense</div>
+                <div class="space-y-4">
+                    <FormField v-slot="{ value, handleChange }" name="income">
+                    <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div class="space-y-0.5">
+                        <FormLabel class="text-muted-foreground">
+                            Is this transaction income?
+                        </FormLabel>
+                        </div>
+                        <FormControl>
+                        <Switch 
+                            :defaultChecked="props.transaction.income" 
+                            :class="'data-[state=checked]:bg-green-500'"
+                            :checked="value"
+                            @update:checked="handleChange"
+                        />
+                        </FormControl>
+                    </FormItem>
+                    </FormField>
+                </div>
 
                 <FormField v-slot="{ componentField, }" name="amount">
                     <FormItem class="flex flex-col">
