@@ -43,7 +43,7 @@ const budgetTotal = computed(() => {
 
 const expensedTotal = computed(() => {
     const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false)
-    console.log('wat', JSON.stringify(transactionsStuff, null, 2))
+    //console.log('wat', JSON.stringify(transactionsStuff, null, 2))
 
     if(transactionsStuff.length == 0){
         return 0.00;

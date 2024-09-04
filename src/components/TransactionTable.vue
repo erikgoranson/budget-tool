@@ -153,8 +153,8 @@ const columns: ColumnDef<Transaction>[] = [
             const formattedAmt = currencyFormatter.format(amount);
 
             const flowStyle = isIncome ? 'text-green-500' : 'text-red-500';
-            const flowSign = isIncome ? '+' : '-';
-            return h('div', { class: `text-right font-medium font-semibold ${flowStyle}` }, `${flowSign}${formattedAmt}`)
+            //const flowSign = isIncome ? '+' : '-';
+            return h('div', { class: `text-right font-medium font-semibold ${flowStyle}` }, formattedAmt)
         },
     },
     {
@@ -280,7 +280,10 @@ const table = useVueTable({
                             <div>{{ item.original.budgetCategoryName }}</div>
                     </TableCell>
                     <TableCell >
-                        <div>
+                        <div class="font-medium font-semibold" :class="{
+                            'text-red-500': item.original.income == false, 
+                            'text-green-500': item.original.income
+                        }">
                             {{ currencyFormatter.format(item.original.amount) }}
                         </div>
                     </TableCell>

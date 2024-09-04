@@ -27,7 +27,7 @@ export const useTransactionStore = defineStore('transaction', () => {
     });
     
     const createTransaction = (transaction: Transaction) => {
-        transactions.value.push(transaction);
+        transactions.value.unshift(transaction);
         setData();
     };
 
