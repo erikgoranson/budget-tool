@@ -68,16 +68,7 @@ const selectedTotalText = computed(() => {
     }
 });
 
-const transactionsByDate = computed(() => {
-    //const wat = transactionRows.value;
-
-    if(table.getRowModel().rows?.length){
-        return (<any>Object).groupBy(table.getRowModel().rows, (row: any) => row.original.date );
-    }
-})
-
 const data = transactionRows;
-
 
 const columns: ColumnDef<Transaction>[] = [
     //checkbox column
