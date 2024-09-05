@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, useField } from 'vee-validate';
 import * as zod from 'zod';
+import { Plus } from 'lucide-vue-next';
 import { useCategoryStore } from '@/stores/category';
 
 import { Button } from '@/components/ui/button';
@@ -80,6 +81,7 @@ const cancel = () => {
 }
 
 const [UseTemplate, GridForm] = createReusableTemplate();
+const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const isOpen = ref(false);
 
@@ -89,6 +91,16 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
 </script>
 
 <template>
+
+  <DefineTriggerTemplate>
+    <div class="flex justify-center items-center">
+      <Button class="bg-rose-200 flex justify-center items-center w-50" variant="secondary">
+        <Plus class="h-4 w-4 mr-1 px-0"/>
+        Budget Category
+      </Button>
+    </div>
+  </DefineTriggerTemplate>
+
   <UseTemplate>
     <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
 
@@ -146,9 +158,7 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
 
   <Dialog v-if="isDesktop" v-model:open="isOpen">
     <DialogTrigger as-child>
-      <Button variant="outline">
-        {{ buttonTitle }}
-      </Button>
+      <ReuseTriggerTemplate />
     </DialogTrigger>
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
@@ -161,9 +171,7 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
 
   <Drawer v-else v-model:open="isOpen">
     <DrawerTrigger as-child>
-      <Button variant="outline">
-        {{ buttonTitle }}
-      </Button>
+      <ReuseTriggerTemplate />
     </DrawerTrigger>
     <DrawerContent>
       <DrawerHeader class="text-left">

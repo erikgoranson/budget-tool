@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { PiggyBank, Link } from 'lucide-vue-next';
 import { useRoute } from 'vue-router';
-import { useSidebarStore } from '@/stores/sidebar.ts';
+import { useSidebarStore } from '@/stores/sidebar';
 
 const sidebarStore = useSidebarStore();
 const route = useRoute();
@@ -12,16 +12,6 @@ const navOptions = ref([
         pathName: 'home',
         to: '/',
         displayName: 'Home'
-    },
-    {
-        pathName: 'about',
-        to: '/about',
-        displayName: 'About'
-    },
-    {
-        pathName: 'test1',
-        to: '/test1',
-        displayName: 'Test1'
     },
     {
         pathName: 'transactions',

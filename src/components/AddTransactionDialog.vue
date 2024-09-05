@@ -7,7 +7,7 @@ import { toDate } from 'radix-vue/date';
 import { computed, h, ref, onMounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { SquarePlus, Check, ChevronsUpDown, Calendar as CalendarIcon } from 'lucide-vue-next';
+import { Check, ChevronsUpDown, Calendar as CalendarIcon, Plus } from 'lucide-vue-next';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, useField } from 'vee-validate';
 import * as zod from 'zod';
@@ -143,9 +143,9 @@ const cancelForm = () => {
 <template>
 
   <DefineTriggerTemplate>
-    <div class="flex justify-center">
-      <Button class="bg-green-600" variant="outline">
-        <SquarePlus class="h-4 w-4 mr-1 px-0"/>
+    <div class="flex justify-center items-center">
+      <Button class="bg-orange-200 flex justify-center items-center" variant="secondary">
+        <Plus class="h-4 w-4 mr-1 px-0"/>
         Transaction
       </Button>
     </div>
@@ -284,7 +284,7 @@ const cancelForm = () => {
           <FormMessage />
         </FormItem>
       </FormField>
-      
+
       <Button type="submit">Add</Button>
       <Button variant="outline" @click="cancelForm">Cancel</Button>
     </form>

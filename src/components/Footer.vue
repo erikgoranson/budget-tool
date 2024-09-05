@@ -9,7 +9,7 @@ import AddTransactionDialog from '@/components/AddTransactionDialog.vue';
         <div class="flex justify-start">
         </div>
         <div class="flex-1 items-center justify-center">
-            <div class="flex ml-auto items-center justify-center">
+            <div class="flex ml-auto items-center justify-center flex space-x-2" >
                 <AddTransactionDialog />
                 <AddCategoryDialog />
             </div>
