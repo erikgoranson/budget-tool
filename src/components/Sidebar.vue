@@ -60,7 +60,7 @@ const inactiveClass = ref(
             </div>
             
             <nav class="mt-10">
-                <router-link v-for="option in navOptions" class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4" :class="[route.name === option.pathName ? activeClass : inactiveClass]" :to=option.to>
+                <router-link v-for="option in navOptions" class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4" :class="[route.name === option.pathName ? activeClass : inactiveClass]" :to=option.to @click="sidebarStore.isOpen = false">
                     <Link class="h-4 w-4" />
                     <span class="mx-4">{{ option.displayName }}</span>
                 </router-link>
