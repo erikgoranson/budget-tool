@@ -49,7 +49,7 @@ const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
-const filter = ref<GlobalFilterTableState>('');
+const filter = ref<GlobalFilterTableState>();
 
 const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -71,7 +71,7 @@ const selectedTotalText = computed(() => {
 const transactionsByDate = computed(() => {
     const wat = transactionRows.value;
     const selectedRows = table.getFilteredRowModel().rows;
-    const groups = Object.groupBy(selectedRows, row => row.original.date );
+    const groups = (<any>Object).groupBy(selectedRows, (row: any) => row.original.date );
 
     return groups;
 })
@@ -181,7 +181,7 @@ const table = useVueTable({
     onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
     onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
     state: {
-        pageSize: 50, //???
+        //pageSize: 50, //???
         get sorting() { return sorting.value },
         get columnFilters() { return columnFilters.value },
         get columnVisibility() { return columnVisibility.value },
