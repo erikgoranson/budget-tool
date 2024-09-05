@@ -101,7 +101,7 @@ const onSubmit = handleSubmit((values, actions) => {
                 <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                        <Input type="text" :default-value="budget.amount" placeholder="Budget amount" v-bind="componentField" />
+                        <Input type="number" step=0.01 inputmode='decimal' :default-value="budget.amount" placeholder="Budget amount" v-bind="componentField" />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />

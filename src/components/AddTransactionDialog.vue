@@ -278,7 +278,7 @@ const cancelForm = () => {
         <FormItem class="flex flex-col">
           <FormLabel>Amount</FormLabel>
           <FormControl>
-            <Input type="number" step=0.01 placeholder="0" v-bind="componentField" />
+            <Input type="number" inputmode='decimal' step=0.01 placeholder="0" v-bind="componentField" />
           </FormControl>
           <FormDescription></FormDescription>
           <FormMessage />

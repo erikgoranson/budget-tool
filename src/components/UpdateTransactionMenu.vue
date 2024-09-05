@@ -234,7 +234,7 @@ const onSubmit = handleSubmit((values, actions) => {
                     <FormItem class="flex flex-col">
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                            <Input type="number" step=0.01 placeholder="0" v-bind="componentField" :default-value="transaction.amount" />
+                            <Input type="number" inputmode='decimal' step=0.01 placeholder="0" v-bind="componentField" :default-value="transaction.amount" />
                         </FormControl>
                         <FormDescription></FormDescription>
                         <FormMessage />

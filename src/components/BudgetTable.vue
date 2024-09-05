@@ -122,7 +122,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <FormField v-slot="{ componentField, }" name="amount">
                                 <FormItem>
                                     <FormControl>
-                                        <Input type="float" placeholder="Budget amount" v-bind="componentField" />
+                                        <Input type="number" step=0.01 inputmode='decimal' placeholder="Budget amount" v-bind="componentField" />
                                     </FormControl>
                                 </FormItem>
                             </FormField>
