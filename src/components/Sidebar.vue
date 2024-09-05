@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { PiggyBank, Link } from 'lucide-vue-next';
 import { useRoute } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
-import SaveDataButton from '../components/SaveDataButton.vue';
+import SaveDataButton from '@/components/SaveDataButton.vue';
 import { Download } from 'lucide-vue-next';
 
 const sidebarStore = useSidebarStore();

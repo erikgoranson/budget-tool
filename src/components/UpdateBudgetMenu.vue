@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { AlertDialogAction, AlertDialogCancel, AlertDialogFooter, } from '@/components/ui/alert-dialog';
 
 import UpdateMenu from '../components/UpdateMenu.vue';
+import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
 
 const props = defineProps({
     budget : {
@@ -72,6 +73,8 @@ const onSubmit = handleSubmit((values, actions) => {
 
             <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
 
+                <HideVirtualKeyboard />
+                
             <FormField v-slot="{ componentField }" name="name">
                 <FormItem>
                     <FormLabel></FormLabel>
@@ -98,7 +101,7 @@ const onSubmit = handleSubmit((values, actions) => {
                 <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                        <Input type="text" :default-value="budget.amount" placeholder="Budget amount" v-bind="componentField" />
+                        <Input type="number" step=0.01 inputmode='decimal' :default-value="budget.amount" placeholder="Budget amount" v-bind="componentField" />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />

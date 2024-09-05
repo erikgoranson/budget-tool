@@ -18,6 +18,7 @@ import { Switch } from '../components/ui/switch';
 import { AlertDialogAction, AlertDialogCancel, AlertDialogFooter, } from '../components/ui/alert-dialog';
 
 import UpdateMenu from '../components/UpdateMenu.vue';
+import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
 
 const props = defineProps({
     category : {
@@ -69,6 +70,8 @@ const onSubmit = handleSubmit(values => {
         <template v-slot:editForm="{ events: { toggleEditForm } }">
 
             <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
+
+                <HideVirtualKeyboard />
 
                 <FormField v-slot="{ componentField }" name="name">
                     <FormItem>
