@@ -65,7 +65,6 @@ const toggleDeleteForm = () => {
     </DefineDeleteForm>
 
     <DefineEditForm as-child>
-        <input class="focus:outline-none max-h-0 max-w-0 overflow-hidden" inputmode='none'/>
         <slot name="editForm" :events="{ toggleEditForm }"></slot>
     </DefineEditForm>
 

@@ -41,6 +41,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
+import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
+
 const categoryStore = useCategoryStore();
 
 const validationSchema = toTypedSchema(
@@ -103,6 +105,8 @@ const popupDescription = 'Define a new category to be added to your budget, i.e.
 
   <UseTemplate>
     <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
+
+      <HideVirtualKeyboard />
 
       <FormField v-slot="{ componentField }" name="name">
         <FormItem>
