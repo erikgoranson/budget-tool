@@ -48,7 +48,7 @@ const budgetTotal = computed(() => {
 });
 
 const remainingBudgetTotal = computed(() => {
-    return incomeTotal.value - budgetTotal.value
+    return incomeTotal.value - budgetTotal.value; 
 });
 </script>
 
@@ -69,15 +69,20 @@ const remainingBudgetTotal = computed(() => {
                         <div class="text-sm flex flex-col items-end justify-end">
                             <div>
                                 Total Income: 
-                                <Badge class="w-30" :class="{'bg-red-500': incomeTotal < 0, 'bg-green-500': incomeTotal > 0}">{{ currencyFormatter.format(incomeTotal) }}</Badge>
+                                <Badge class="ml-2 w-30" :class="{'bg-red-500': incomeTotal < 0, 'bg-green-500': incomeTotal > 0}">{{ currencyFormatter.format(incomeTotal) }}</Badge>
                             </div>
                             <div>
                                 Total Budgeted: 
-                                <Badge class="w-30 bg-blue-800">{{ currencyFormatter.format(budgetTotal) }}</Badge>
+                                <Badge class="ml-2 w-30 bg-blue-800">{{ currencyFormatter.format(budgetTotal) }}</Badge>
                             </div>
                             <div>
-                                Left to Budget: 
-                                <Badge class="w-30"  :class="{'bg-red-500': remainingBudgetTotal < 0, 'bg-green-500': remainingBudgetTotal > 0}">{{ currencyFormatter.format(remainingBudgetTotal) }}</Badge>
+                                <template v-if="remainingBudgetTotal > 0">
+                                    Left to Budget:
+                                </template>
+                                <template v-else>
+                                    Over Budget:
+                                </template>
+                                <Badge class="ml-2 w-30"  :class="{'bg-red-500': remainingBudgetTotal < 0, 'bg-green-500': remainingBudgetTotal > 0}">{{ currencyFormatter.format(remainingBudgetTotal) }}</Badge>
                             </div>
                         </div>
                     </div>

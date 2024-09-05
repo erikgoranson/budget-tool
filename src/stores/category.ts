@@ -3,9 +3,20 @@ import { defineStore } from 'pinia';
 import type { Category, Budget } from '../types/';
 import * as localStorageHelper from '@/helpers/localStorage';
 
+const currentMonthYear = computed(() => {
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        year: 'numeric'
+    });
+    console.log(dateFormatter.format(new Date()));
+    return dateFormatter.format(new Date());
+});
+
 export const useCategoryStore = defineStore('category', () => {
 
     const storageKey = 'category';
+    const uncategorizedBudgetGuid = '00000000-0000-0000-0000-000000000000';
+    const incomeGuid = '00000000-0000-0000-0000-000000000001';
 
     const getData = () => localStorageHelper.default.getData(storageKey) as Category[];
     const setData = () => {
@@ -69,6 +80,14 @@ export const useCategoryStore = defineStore('category', () => {
     };
 
     const getBudgetCategoryName = (categoryId: string, budgetId: string) => {
+        if (categoryId == incomeGuid && budgetId == incomeGuid){
+            return `Income for ${currentMonthYear.value}`;
+        };
+
+        if (categoryId == uncategorizedBudgetGuid && budgetId == uncategorizedBudgetGuid){
+            return 'Uncategorized';
+        };
+
         const category = categories.value.find(cat => cat.id == categoryId);
         const budget = category?.budgets.find(budget => budget.id == budgetId);
         const name = `${category?.name} : ${budget?.name}`
@@ -76,5 +95,5 @@ export const useCategoryStore = defineStore('category', () => {
         return name;
     };
 
-    return { categories, addCategory, deleteCategory, createBudget, updateCategory, deleteBudget, updateBudget, getBudgetCategoryName };
+    return { categories, uncategorizedBudgetGuid, incomeGuid, addCategory, deleteCategory, createBudget, updateCategory, deleteBudget, updateBudget, getBudgetCategoryName };
 });

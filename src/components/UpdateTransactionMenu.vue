@@ -94,8 +94,8 @@ const onSubmit = handleSubmit((values, actions) => {
         }
 
         if(values.income){
-            updatedTransaction.budgetId = '1';
-            updatedTransaction.categoryId = '1';
+            updatedTransaction.budgetId = categoryStore.incomeGuid;
+            updatedTransaction.categoryId = categoryStore.incomeGuid;
         };
 
         transactionStore.updateTransaction(updatedTransaction);
@@ -181,7 +181,7 @@ const onSubmit = handleSubmit((values, actions) => {
                                     <CommandList>
                                         <CommandGroup>
                                             <span v-for="category in categories">
-                                                <Label>{{ category.name }}</Label>
+                                                <Label v-if="category.budgets.length > 0">{{ category.name }}</Label>
                                                 <CommandItem
                                                     v-for="budget in category.budgets"
                                                     :key="budget.id"

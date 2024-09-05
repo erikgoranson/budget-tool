@@ -71,7 +71,6 @@ const isComboBoxOpen = ref(false);
 const calendarPlaceholder = ref();
 
 const popupTitle = 'Add Transaction';
-const defaultGuid = '00000000-0000-0000-0000-000000000000';
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
@@ -96,7 +95,7 @@ const validationSchema = toTypedSchema(
             categoryId: zod.string(),
             formatedName: zod.string(),
         }),
-        income: zod.boolean(),
+        income: zod.boolean().optional(),
     })
 );
 
@@ -105,10 +104,10 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
   initialValues: {
     date: today(getLocalTimeZone()).toString(),
     category: {
-      budgetId: defaultGuid,
-      categoryId: defaultGuid,
+      budgetId: categoryStore.uncategorizedBudgetGuid,
+      categoryId: categoryStore.uncategorizedBudgetGuid,
       formatedName: 'Uncategorized'
-    },
+    }, 
     income: false,
   },
 });
@@ -120,7 +119,7 @@ const onSubmit = handleSubmit(values => {
     const newTransaction: Transaction = {
         id: uuidv4(),
         date: values.date,
-        income: values.income,
+        income: values.income ? values.income : false,
         categoryId: values.category.categoryId, 
         budgetId: values.category.budgetId,
         hasCleared: false,
@@ -128,8 +127,8 @@ const onSubmit = handleSubmit(values => {
     };
 
     if(values.income){
-      newTransaction.budgetId = '1';
-      newTransaction.categoryId = '1';
+      newTransaction.budgetId = categoryStore.incomeGuid;
+      newTransaction.categoryId = categoryStore.incomeGuid;
     };
     
     console.log('new transaction:', newTransaction);
@@ -215,7 +214,7 @@ const cancelForm = () => {
                 <CommandList>
                   <CommandGroup>
                     <span v-for="category in categories">
-                      <Label>{{ category.name }}</Label>
+                      <Label v-if="category.budgets.length > 0">{{ category.name }}</Label>
                       <CommandItem
                         v-for="budget in category.budgets"
                         :key="budget.id"
@@ -239,8 +238,8 @@ const cancelForm = () => {
                       value="Uncategorized"
                       @select="() => {
                         setFieldValue('category', {
-                          budgetId: defaultGuid,
-                          categoryId: defaultGuid,
+                          budgetId: categoryStore.uncategorizedBudgetGuid,
+                          categoryId: categoryStore.uncategorizedBudgetGuid,
                           formatedName: 'Uncategorized'
                         });
                         isComboBoxOpen = false;
