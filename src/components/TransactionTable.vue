@@ -69,11 +69,11 @@ const selectedTotalText = computed(() => {
 });
 
 const transactionsByDate = computed(() => {
-    const wat = transactionRows.value;
-    const selectedRows = table.getFilteredRowModel().rows;
-    const groups = (<any>Object).groupBy(selectedRows, row => row.original.date );
+    //const wat = transactionRows.value;
 
-    return groups;
+    if(table.getRowModel().rows?.length){
+        return (<any>Object).groupBy(table.getRowModel().rows, (row: any) => row.original.date );
+    }
 })
 
 const data = transactionRows;
@@ -154,7 +154,7 @@ const columns: ColumnDef<Transaction>[] = [
 
             const flowStyle = isIncome ? 'text-green-500' : 'text-red-500';
             //const flowSign = isIncome ? '+' : '-';
-            return h('div', { class: `text-right font-medium font-semibold ${flowStyle}` }, formattedAmt)
+            return h('div', { class: `font-medium font-semibold ${flowStyle}` }, formattedAmt)
         },
     },
     {
@@ -192,6 +192,7 @@ const table = useVueTable({
 </script>
 
 <template>
+ 
     <div class="flex items-center py-4">
         <input
             type="text"
@@ -199,7 +200,7 @@ const table = useVueTable({
             placeholder="Filter by any column ... "
             v-model="filter"
         />
-        <DropdownMenu v-if="isDesktop">
+        <DropdownMenu >
             <DropdownMenuTrigger as-child>
                 <Button variant="outline" class="ml-auto">
                     Columns <ChevronDown class="ml-2 h-4 w-4" />
@@ -215,82 +216,49 @@ const table = useVueTable({
         </DropdownMenu>
     </div>
 
-    <div v-if="isDesktop" class="w-full">
-        <div class="rounded-md border">
-            
-            <Table>
-                <TableHeader>
-                    <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-                        <TableHead v-for="header in headerGroup.headers" :key="header.id">
-                            <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <template v-if="table.getRowModel().rows?.length">
-                        <template v-for="row in table.getRowModel().rows" :key="row.id">
-                            <TableRow :data-state="row.getIsSelected() && 'selected'">
-                                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-                                </TableCell>
-                            </TableRow>
-                        </template>
-                    </template>
-
-                    <TableRow v-else>
-                        <TableCell :colspan="columns.length" class="h-24 text-center">
-                            No results.
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-
-        <div class="flex items-center justify-end space-x-2 py-4">
-            <div class="flex-1 text-sm text-muted-foreground">
-                <div>{{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.</div>
-                <div>{{ selectedTotalText }}</div>
-            </div>
-            <div class="space-x-2">
-                <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
-                    Previous
-                </Button>
-                <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
-                    Next
-                </Button>
-            </div>
-        </div>
-    </div>
-
-    <div v-else>
-        <Table v-for="(value, name, index) in transactionsByDate">
+    <div class="rounded-md border">
+        
+        <Table>
             <TableHeader>
-                <TableHead class="px-0 h-8">
-                    <TableRow class="font-semibold ">{{ name }}</TableRow>
-                </TableHead>
+                <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+                    <TableHead v-for="header in headerGroup.headers" :key="header.id">
+                        <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
+                    </TableHead>
+                </TableRow>
             </TableHeader>
-            <TableBody >
-                <TableRow v-for="item in value" class="px-0  h-14 ">
-                    <TableCell class="w-4 ">
-                        <UpdateTransactionMenu  :transaction="item.original"/>
+            <TableBody>
+                <template v-if="table.getRowModel().rows?.length">
+                    <template v-for="row in table.getRowModel().rows" :key="row.id">
+                        <TableRow :data-state="row.getIsSelected() && 'selected'">
+                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+                            </TableCell>
+                        </TableRow>
+                    </template>
+                </template>
+
+                <TableRow v-else>
+                    <TableCell :colspan="columns.length" class="h-24 text-center">
+                        No results.
                     </TableCell>
-                    <div class="flex justify-between items-center">
-                        <TableCell>
-                            <div>Notes</div>
-                            <div>{{ item.original.budgetCategoryName }}</div>
-                    </TableCell>
-                    <TableCell >
-                        <div class="font-medium font-semibold" :class="{
-                            'text-red-500': item.original.income == false, 
-                            'text-green-500': item.original.income
-                        }">
-                            {{ currencyFormatter.format(item.original.amount) }}
-                        </div>
-                    </TableCell>
-                    </div>
-                    
                 </TableRow>
             </TableBody>
         </Table>
     </div>
+
+    <div class="flex items-center justify-end space-x-2 py-4">
+        <div class="flex-1 text-sm text-muted-foreground">
+            <div>{{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.</div>
+            <div>{{ selectedTotalText }}</div>
+        </div>
+        <div class="space-x-2">
+            <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
+                Previous
+            </Button>
+            <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
+                Next
+            </Button>
+        </div>
+    </div>
+
 </template>

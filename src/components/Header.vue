@@ -76,7 +76,7 @@ const remainingBudgetTotal = computed(() => {
                                 <Badge class="ml-2 w-30 bg-blue-800">{{ currencyFormatter.format(budgetTotal) }}</Badge>
                             </div>
                             <div>
-                                <template v-if="remainingBudgetTotal > 0">
+                                <template v-if="remainingBudgetTotal > 0 || remainingBudgetTotal == 0">
                                     Left to Budget:
                                 </template>
                                 <template v-else>
