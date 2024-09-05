@@ -87,7 +87,7 @@ const remainingTotal = computed(() => {
         </div>
 
         <!--middle (collapsed area of card)-->
-        <div class="pb-4">
+        <div class="pb-2">
             <div>
                 <Collapsible v-model:open="isOpen">
                     <CollapsibleContent>
@@ -100,7 +100,7 @@ const remainingTotal = computed(() => {
         </div>
 
         <!--bottom graph area-->
-        <div class="px-6 pt-4 pb-2 mb-2">
+        <div class="px-3 pt-0 pb-2 mb-2">
             <div>
             </div>
             <UpdateCategoryMenu :category="budgetCategory"/>

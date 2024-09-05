@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { PiggyBank, Link } from 'lucide-vue-next';
 import { useRoute } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
+import SaveDataButton from '../components/SaveDataButton.vue';
+import { Download } from 'lucide-vue-next';
 
 const sidebarStore = useSidebarStore();
 const route = useRoute();
@@ -54,6 +56,11 @@ const inactiveClass = ref(
                     <Link class="h-4 w-4" />
                     <span class="mx-4">{{ option.displayName }}</span>
                 </router-link>
+
+                <div class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4 border-gray-900 text-black hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100">
+                    <Download class="h-4 w-4" />
+                    <span class="mx-4"><SaveDataButton /></span>
+                </div>
             </nav>
         </div>
     </div>
