@@ -102,7 +102,6 @@ const remainingTotal = computed(() => {
         <!--bottom graph area-->
         <div class="px-6 pt-4 pb-2 mb-2">
             <div>
-                buttons and pretty stuff goes here 
             </div>
             <UpdateCategoryMenu :category="budgetCategory"/>
         </div>
