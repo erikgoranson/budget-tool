@@ -44,7 +44,7 @@ const validationSchema = toTypedSchema(
     zod.object({
         name: zod.string().min(1, { message: 'Budget name is required' }),
         dueDate: zod.number().optional(),
-        amount: zod.string().min(1, { message: 'Budget amount is required' })
+        amount: zod.number(),
     })
 )
 
@@ -139,7 +139,6 @@ const onSubmit = handleSubmit((values, actions) => {
                     </TableRow>
                 </TableBody>
             </Table>
-            {{ errors }}
         </form>
 	</div>
 </template>
