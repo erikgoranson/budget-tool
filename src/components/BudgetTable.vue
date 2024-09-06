@@ -58,7 +58,7 @@ const onSubmit = handleSubmit((values, actions) => {
     const newBudget = <Budget>{
         id: uuidv4(),
         name: values.name,
-        amount: parseFloat(values.amount),
+        amount: values.amount,
         dueDate: values.dueDate,
     };
 
