@@ -230,6 +230,21 @@ const onSubmit = handleSubmit((values, actions) => {
                     </FormField>
                 </div>
 
+                <FormField v-slot="{ componentField, }" name="note">
+                    <FormItem class="flex flex-col">
+                        <FormLabel>Note</FormLabel>
+                        <FormControl>
+                            <Input 
+                                type="text" 
+                                v-bind="componentField" 
+                                :default-value="transaction.note"
+                            />
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                </FormField>     
+
                 <FormField v-slot="{ componentField, }" name="amount">
                     <FormItem class="flex flex-col">
                         <FormLabel>Amount</FormLabel>

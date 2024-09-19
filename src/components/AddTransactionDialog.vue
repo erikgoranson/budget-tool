@@ -65,7 +65,7 @@ const [DefineAddTransactionForm, UseAddTransactionForm] = createReusableTemplate
 const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
 const isDesktop = useMediaQuery('(min-width: 768px)')
 
-const isOpen = ref(false)
+const isOpen = ref(false);
 const isComboBoxOpen = ref(false);
 
 const calendarPlaceholder = ref();
@@ -96,6 +96,7 @@ const validationSchema = toTypedSchema(
             formatedName: zod.string(),
         }),
         income: zod.boolean().optional(),
+        note: zod.string().optional(),
     })
 );
 
@@ -123,7 +124,8 @@ const onSubmit = handleSubmit(values => {
         categoryId: values.category.categoryId, 
         budgetId: values.category.budgetId,
         hasCleared: false,
-        amount: values.amount
+        amount: values.amount,
+        note: values.note
     };
 
     if(values.income){
@@ -274,6 +276,17 @@ const cancelForm = () => {
         </FormField>
       </div>
       
+      <FormField v-slot="{ componentField, }" name="note">
+              <FormItem class="flex flex-col">
+                <FormLabel>Note</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Enter a note here" v-bind="componentField" />
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            </FormField>      
+
       <FormField v-slot="{ componentField, }" name="amount">
         <FormItem class="flex flex-col">
           <FormLabel>Amount</FormLabel>

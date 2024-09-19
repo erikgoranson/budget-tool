@@ -118,7 +118,7 @@ const columns: ColumnDef<Transaction>[] = [
             }, () => ['Payee', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('payee')),
-    },
+    },*/
     {
         accessorKey: 'note',
         header: ({ column }) => {
@@ -128,7 +128,7 @@ const columns: ColumnDef<Transaction>[] = [
             }, () => ['Note', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
         cell: ({ row }) => h('div', { }, row.getValue('note')),
-    },*/
+    },
     {
         accessorKey: 'amount',
         header: ({ column }) => {
