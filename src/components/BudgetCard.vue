@@ -16,6 +16,7 @@ import { Toggle } from '@/components/ui/toggle';
 
 import UpdateCategoryMenu from '@/components/UpdateCategoryMenu.vue'
 import BudgetTable from '@/components/BudgetTable.vue';
+import AddBudgetMenu from './AddBudgetMenu.vue';
 
 const props = defineProps({
     budgetCategory : {
@@ -93,6 +94,7 @@ const remainingTotal = computed(() => {
                     <CollapsibleContent>
                         
                         <BudgetTable :category="budgetCategory"/>
+                        <AddBudgetMenu :category="budgetCategory"/>
                 
                     </CollapsibleContent>
                 </Collapsible>

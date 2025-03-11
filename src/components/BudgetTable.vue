@@ -1,168 +1,180 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types/';
+import type { Budget, Category } from '../types';
+import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState, } from '@tanstack/vue-table';
 
-import { ref, computed } from "vue";
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm, useField } from 'vee-validate'
-import * as zod from 'zod';
-import { ListPlus, FilePenLine, FilePlus } from 'lucide-vue-next';
-import { useCategoryStore } from '@/stores/category';
-import { v4 as uuidv4 } from 'uuid';
+import { h, ref, } from 'vue';
+import { storeToRefs } from 'pinia';
+import { ArrowUpDown, } from 'lucide-vue-next';
+import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable, } from '@tanstack/vue-table';
+
+import BudgetCell from './BudgetCell.vue';
+import { valueUpdater } from '../lib/utils'; 
+import currencyFormatter from '../helpers/numberFormat'; 
+import { useTransactionStore } from '@/stores/transaction';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-
-import BudgetTableRow from '@/components/BudgetTableRow.vue';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 
 const props = defineProps({
     category : {
         type: Object as () => Category,
         required: true
-    }
+    },
 });
 
-const categoryStore = useCategoryStore();
+const transactionStore = useTransactionStore();
+const { transactions } = storeToRefs(transactionStore);
 
-const validationSchema = toTypedSchema(
-    zod.object({
-        name: zod.string().min(1, { message: 'Budget name is required' }),
-        dueDate: zod.number().optional(),
-        amount: zod.number(),
+const sorting = ref<SortingState>([]);
+const columnFilters = ref<ColumnFiltersState>([]);
+const columnVisibility = ref<VisibilityState>({});
+const rowSelection = ref({});
+const filter = ref<GlobalFilterTableState>();
+
+//TODO: review this problem and fix
+//https://www.reddit.com/r/vuejs/comments/1c4x7ha/what_is_your_favorite_data_table_library/
+const getTable = (budgets: Budget[]) => {
+    return useVueTable({
+        //data: props.category.budgets,
+        data: budgets,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+        onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+        onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+        onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+        state: {
+            //pageSize: 50, //???
+            get sorting() { return sorting.value },
+            get columnFilters() { return columnFilters.value },
+            get columnVisibility() { return columnVisibility.value },
+            get rowSelection() { return rowSelection.value },
+            get globalFilter() { return filter.value },
+        },
     })
-)
+}
+const getTotalExpensed = (budgetId: string) => {
+    const budgetTransactions = transactions.value.filter(tran => tran.budgetId == budgetId && tran.income == false);
+    
+    let totalExpensed = 0.00;
+    if(budgetTransactions.length > 0){
+        const amounts = budgetTransactions.map(x => x.amount);
+        totalExpensed = amounts.reduce((a, b) => a + b);
+    }
 
-const { handleSubmit, errors, resetForm } = useForm({
-  validationSchema,
-});
+    return totalExpensed;
+};
 
-const onSubmit = handleSubmit((values, actions) => {
-    console.log(JSON.stringify(values, null, 2));
+const columns: ColumnDef<Budget>[] = [
+    {
+        accessorKey: 'name',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Category', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+    },
+    {
+        accessorKey: 'dueDate',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Due', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('dueDate')),
+    },
+    {
+        accessorKey: 'amount',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Budget', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => h('div', { class: 'capitalize' }, currencyFormatter.format(row.getValue('amount'))),
+    },
+    {
+        accessorKey: 'totalExpensed',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Out', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => {
+            const totalExpensed = getTotalExpensed(row.original.id);
+            return h('div', { }, currencyFormatter.format(totalExpensed));
+        },
+    },
+    {
+        accessorKey: 'totalRemaining',
+        header: ({ column }) => {
+            return h(Button, {
+                variant: 'ghost',
+                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+            }, () => ['Remain', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+        },
+        cell: ({ row }) => {
+            const totalExpensed = getTotalExpensed(row.original.id);
+            const totalRemaining = row.original.amount - totalExpensed;
 
-    const newBudget = <Budget>{
-        id: uuidv4(),
-        name: values.name,
-        amount: values.amount,
-        dueDate: values.dueDate,
-    };
-
-    categoryStore.createBudget(props.category.id, newBudget);
-    actions.resetForm();
-});
+            return h('div', { }, currencyFormatter.format(totalRemaining));
+        },
+    },
+];
 </script>
 
 <template>
-	<div class="mb-6 overflow-hidden">
+	<div>
         <Table>
             <TableHeader class="bg-blue-300">
-                <TableRow>
-                    <TableHead>
-                        <div class="flex justify-center items-center">
-                            Category
-                        </div>     
+                <TableRow v-for="headerGroup in getTable(props.category.budgets).getHeaderGroups()" :key="headerGroup.id">
+                    <TableHead v-for="header in headerGroup.headers" :key="header.id">
+                        <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
-					<TableHead v-if="category.hasDueDates" class="w-4">Due</TableHead>
-					<TableHead>Budget</TableHead>
-					<TableHead>Out</TableHead>
-					<TableHead class="text-right">Remain</TableHead>
-                    <TableHead class="w-4">
-                        <div class="flex justify-center items-center">
-                            <FilePenLine class="h-4 w-4"/>
-                        </div>
-                    </TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-                <BudgetTableRow v-for="b in category.budgets" :category="props.category" :budget="b"/>
-			</TableBody>
-		</Table>
+                </TableRow>
+            </TableHeader>
 
-        <form @submit.prevent="onSubmit">
-            <Table>
-                <TableBody>
-                    <TableRow>
+            <TableBody>
+                <template v-if="getTable(props.category.budgets).getRowModel().rows?.length">
+                    <template v-for="row in getTable(props.category.budgets).getRowModel().rows" :key="row.id">
+                        <TableRow :data-state="row.getIsSelected() && 'selected'">
+                            <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
 
-                        <TableCell>
-                            <FormField v-slot="{ componentField, }" name="name">
-                                <FormItem>
-                                    <FormControl>
-                                        <Input class="text-right" type="text" placeholder="Budget name" v-bind="componentField" />
-                                    </FormControl>
-                                </FormItem>
-                            </FormField>
-                        </TableCell>
+                                <BudgetCell :cell="cell" :index="index" :category-id="props.category.id"/>
 
-                        <TableCell v-if="category.hasDueDates">
-                            <FormField v-slot="{ componentField, }" name="dueDate">
-                                <FormItem>
-                                    <FormControl>
-                                        <Input class="text-right" type="number" placeholder="Due date " v-bind="componentField" />
-                                    </FormControl>
-                                </FormItem>
-                            </FormField>
-                        </TableCell>
+                            </TableCell>
+                        </TableRow>
+                    </template>
+                </template>
 
-                        <TableCell>
-                            <FormField v-slot="{ componentField, }" name="amount">
-                                <FormItem>
-                                    <FormControl>
-                                        <Input type="number" step=0.01 inputmode='decimal' placeholder="Budget amount" v-bind="componentField" />
-                                    </FormControl>
-                                </FormItem>
-                            </FormField>
-                        </TableCell>
-
-                        <TableCell>
-                            <div class="flex items-center justify-center">
-                                <Button variant="ghost" class="bg-green-100 h-6">
-                                    <FilePlus class="h-4" />
-                                </Button>
-                            </div>
-                        </TableCell>
-
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </form>
-	</div>
+                <TableRow v-else>
+                    <TableCell :colspan="columns.length" class="h-24 text-center">
+                        No results.
+                    </TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>
+    </div>
 </template>
 
 <style scoped>
-input {
-    @apply h-6 border-none text-right
+th {
+    @apply text-xs tracking-wider text-center text-gray-600 uppercase border border-gray-200;
 }
 
-th {
-  text-transform: capitalize;
-  @apply px-2 py-1 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase /*bg-indigo-100*/ border-r border-t border-b-2 border-indigo-200;
-} 
-tr {
-    @apply hover:bg-gray-200;
+Button {
+    @apply text-xs font-semibold uppercase 
 }
+
 td {
   text-transform: capitalize;
-  @apply px-2 py-1 text-sm text-right border-b border-r border-gray-200;
-}
-table {
-  @apply w-full text-left border-collapse;
-}
-thead {
-  @apply border-b;
+  @apply px-3 py-2.5 text-sm text-right border-b border-r border-gray-200;
 }
 </style>

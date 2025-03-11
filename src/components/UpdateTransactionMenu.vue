@@ -2,7 +2,7 @@
 import type { TransactionRow, Transaction } from '../types/';
 
 import { ref, computed, watch } from 'vue';
-import { Calendar as CalendarIcon, MoreHorizontal } from 'lucide-vue-next';
+import { Calendar as CalendarIcon, MoreHorizontal, Check, ChevronsUpDown } from 'lucide-vue-next';
 import { useForm, useField } from 'vee-validate';
 //zod?
 import { cn } from '@/lib/utils';
