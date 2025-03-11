@@ -24,7 +24,7 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-import { ArrowUpDown, ChevronDown, FilePenLine } from 'lucide-vue-next';
+import { ArrowUpDown,ChevronsUpDown, Check, ChevronDown, FilePenLine, Proportions } from 'lucide-vue-next';
 
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
