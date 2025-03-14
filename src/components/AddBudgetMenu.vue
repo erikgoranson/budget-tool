@@ -55,7 +55,7 @@ const onSubmit = handleSubmit((values, actions) => {
         id: uuidv4(),
         name: values.name,
         amount: values.amount,
-        dueDate: values.dueDate,
+        dueDate: values.dueDate ?? '',
     };
 
     categoryStore.createBudget(props.category.id, newBudget);

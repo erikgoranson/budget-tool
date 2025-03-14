@@ -25,13 +25,13 @@ const props = defineProps({
 
 const categoryStore = useCategoryStore();
 
-const editField = ref('');
+const editField = ref<string | undefined>(undefined);
 const modifiedBudget = ref<Budget>({} as Budget);
 let inputs = ref<HTMLInputElement[]>([]);
 
 const { handleSubmit, errors, resetForm } = useForm({});
 
-const focusInput = async (key: string, index: number) => {
+const focusInput = async (key: string | undefined, index: number) => {
     editField.value = key;
     await nextTick();
     inputs.value[0].focus(); 
@@ -43,12 +43,12 @@ const onSubmit = handleSubmit((values, actions) => {
         id: modifiedBudget.value.id,
         name: values.name ? values.name : modifiedBudget.value.name,
         amount: values.amount ? parseFloat(values.amount) : modifiedBudget.value.amount,
-        dueDate: values.dueDate ? values.dueDate : modifiedBudget.value.dueDate,
+        dueDate: values.dueDate || values.dueDate == '' ? values.dueDate : modifiedBudget.value.dueDate,
     };
 
     const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(modifiedBudget.value);
     if (!valuesMatch) categoryStore.updateBudget(props.category.id, updatedBudget);
-    focusInput('', 0);
+    focusInput(undefined, 0);
 });
 
 const modifyBudget = (budget: Budget) => {
@@ -57,19 +57,20 @@ const modifyBudget = (budget: Budget) => {
 };
 </script>
 
-<template>
-	<span v-show="editField != cell.getValue()" @click="focusInput(String(cell.getValue()), index)">
-		<FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-	</span>
+<template >
+    <div @click="focusInput(String(cell.getValue()), index)">
+	<button v-show="editField != cell.getValue()" >
+        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+    </button>
 
 	<form @submit.prevent="modifyBudget(cell.row.original)" v-show="editField == cell.getValue()" ref="inputs" >
 		<FormField v-slot="{ componentField }" :name="String(cell.column.id)">
 			<FormItem>
 				<FormLabel></FormLabel>
 				<FormControl>
-					<Input 
+					<Input
 						type="text" 
-						@blur="focusInput('', index)"
+						@blur="focusInput(undefined, index)"
 						v-bind="componentField"
 						:placeholder="'budget '+ cell.column.id"
 						:default-value="String(cell.getValue())"
@@ -80,4 +81,5 @@ const modifyBudget = (budget: Budget) => {
 			</FormItem>
 		</FormField>
 	</form>
+    </div>
 </template>
