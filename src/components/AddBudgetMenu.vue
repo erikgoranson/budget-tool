@@ -64,7 +64,10 @@ const onSubmit = handleSubmit((values, actions) => {
 </script>
 
 <template>
+  <div class="w-full ">
     <form @submit.prevent="onSubmit">
+      <Table class="table-auto">
+      <TableBody>
 		<TableRow>
 			<TableCell>
 				<FormField v-slot="{ componentField, }" name="name">
@@ -96,9 +99,6 @@ const onSubmit = handleSubmit((values, actions) => {
 				</FormField>
 			</TableCell>
 
-			<TableCell><Input disabled/></TableCell>
-			<TableCell><Input disabled/></TableCell>
-            
 			<TableCell>
 				<div class="flex items-center justify-center">
 					<Button variant="ghost" class="bg-green-100 h-6">
@@ -107,7 +107,10 @@ const onSubmit = handleSubmit((values, actions) => {
 				</div>
 			</TableCell>
 		</TableRow>
+  </TableBody>
+  </Table>
 	</form>
+</div>
 </template>
 
 <style scoped>
