@@ -107,12 +107,7 @@ const columnDefs: ColumnDef<Budget>[] = [
     },
     {
         accessorKey: 'totalExpensed',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Out', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
+        header: ({ column }) => h('div', { }, 'spent'),
         cell: ({ row }) => {
             const totalExpensed = getTotalExpensed(row.original.id);
             return h('div', { }, currencyFormatter.format(totalExpensed));
@@ -120,12 +115,7 @@ const columnDefs: ColumnDef<Budget>[] = [
     },
     {
         accessorKey: 'totalRemaining',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Remain', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
+        header: ({ column }) => h('div', { }, 'remain'),
         cell: ({ row }) => {
             const totalExpensed = getTotalExpensed(row.original.id);
             const totalRemaining = row.original.amount - totalExpensed;
@@ -187,7 +177,7 @@ const columnDefs: ColumnDef<Budget>[] = [
 
 <style scoped>
 th {
-    @apply text-xs tracking-wider text-center text-gray-600 uppercase border border-gray-200;
+    @apply text-xs tracking-wider text-center font-semibold text-gray-600 uppercase border border-gray-200;
 }
 
 Button {
