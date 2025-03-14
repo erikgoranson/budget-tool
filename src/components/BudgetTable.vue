@@ -28,7 +28,11 @@ const { transactions } = storeToRefs(transactionStore);
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
-const columnVisibility = ref<VisibilityState>({});
+const columnVisibility = computed<VisibilityState>(() => {
+    return {
+        dueDate: props.category.hasDueDates,
+    };
+});
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
 
@@ -38,7 +42,7 @@ const getTable = (budgets: Budget[]) => {
     return useVueTable({
         //data: props.category.budgets,
         data: budgets,
-        columns: columns.value,
+        columns: columnDefs,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -48,7 +52,6 @@ const getTable = (budgets: Budget[]) => {
         onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
         onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
         state: {
-            //pageSize: 50, //???
             get sorting() { return sorting.value },
             get columnFilters() { return columnFilters.value },
             get columnVisibility() { return columnVisibility.value },
@@ -144,15 +147,6 @@ const columnDefs: ColumnDef<Budget>[] = [
         },
     },
 ];
-
-const columns = computed(() => {
-    if(!props.category.hasDueDates){
-        //TODO: make this typesafe
-        return columnDefs.filter(cd => cd.accessorKey != 'dueDate');
-    }
-
-    return columnDefs;
-});
 </script>
 
 <template>
@@ -171,18 +165,18 @@ const columns = computed(() => {
                     <template v-for="row in getTable(props.category.budgets).getRowModel().rows" :key="row.id">
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
-
+                                
                                 <BudgetCell v-if="editableColumns.includes(cell.column.id)" :cell="cell" :index="index" :category="props.category"/>
 
                                 <FlexRender v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-
+                                
                             </TableCell>
                         </TableRow>
                     </template>
                 </template>
 
                 <TableRow v-else>
-                    <TableCell :colspan="columns.length" class="h-24 text-center">
+                    <TableCell :colspan="columnDefs.length" class="h-24 text-center">
                         No results.
                     </TableCell>
                 </TableRow>
