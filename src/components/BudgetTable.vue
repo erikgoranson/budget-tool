@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Budget, Category } from '../types';
-import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState, } from '@tanstack/vue-table';
+import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
 
-import { h, ref, } from 'vue';
+import { h, ref, computed} from 'vue';
 import { storeToRefs } from 'pinia';
 import { ArrowUpDown, } from 'lucide-vue-next';
 import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable, } from '@tanstack/vue-table';
@@ -37,7 +37,7 @@ const getTable = (budgets: Budget[]) => {
     return useVueTable({
         //data: props.category.budgets,
         data: budgets,
-        columns,
+        columns: columns.value,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -68,7 +68,9 @@ const getTotalExpensed = (budgetId: string) => {
     return totalExpensed;
 };
 
-const columns: ColumnDef<Budget>[] = [
+const editableColumns = ['name','dueDate','amount'] as string[];
+
+const columnDefs: ColumnDef<Budget>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => {
@@ -128,6 +130,15 @@ const columns: ColumnDef<Budget>[] = [
         },
     },
 ];
+
+const columns = computed(() => {
+    if(!props.category.hasDueDates){
+        //TODO: make this typesafe
+        return columnDefs.filter(cd => cd.accessorKey != 'dueDate');
+    }
+
+    return columnDefs;
+});
 </script>
 
 <template>
@@ -147,7 +158,9 @@ const columns: ColumnDef<Budget>[] = [
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
 
-                                <BudgetCell :cell="cell" :index="index" :category-id="props.category.id"/>
+                                <BudgetCell v-if="editableColumns.includes(cell.column.id)" :cell="cell" :index="index" :category="props.category"/>
+
+                                <FlexRender v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
 
                             </TableCell>
                         </TableRow>
