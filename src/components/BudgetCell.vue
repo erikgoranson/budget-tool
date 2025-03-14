@@ -69,6 +69,7 @@ const modifyBudget = (budget: Budget) => {
 				<FormLabel></FormLabel>
 				<FormControl>
 					<Input
+                        class="text-end"
 						type="text" 
 						@blur="focusInput(undefined, index)"
 						v-bind="componentField"

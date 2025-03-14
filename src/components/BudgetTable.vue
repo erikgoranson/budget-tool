@@ -4,10 +4,11 @@ import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState
 
 import { h, ref, computed} from 'vue';
 import { storeToRefs } from 'pinia';
-import { ArrowUpDown, } from 'lucide-vue-next';
+import { ArrowUpDown, FilePenLine, } from 'lucide-vue-next';
 import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable, } from '@tanstack/vue-table';
 
 import BudgetCell from './BudgetCell.vue';
+import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
 import { useTransactionStore } from '@/stores/transaction';
@@ -127,6 +128,19 @@ const columnDefs: ColumnDef<Budget>[] = [
             const totalRemaining = row.original.amount - totalExpensed;
 
             return h('div', { }, currencyFormatter.format(totalRemaining));
+        },
+    },
+    {
+        id: 'actions',
+        header: () => h('div', { class:'flex items-center text-center justify-center' }, h(FilePenLine, { class: 'h-4 w-4' })),
+        enableHiding: false,
+        cell: ({ row }) => {
+            return h('div', { class:'flex items-center text-center justify-center' }, 
+                h(UpdateBudgetMenu, {
+                    categoryId: props.category.id,
+                    budget: row.original
+                })
+            );
         },
     },
 ];
