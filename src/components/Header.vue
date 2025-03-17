@@ -6,6 +6,7 @@ import { useSidebarStore } from '@/stores/sidebar';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import currencyFormatter from '@/helpers/numberFormat';
+import BudgetMonthCarousel from "./BudgetMonthCarousel.vue";
 
 import { Badge } from '@/components/ui/badge';
 
@@ -62,9 +63,9 @@ const remainingBudgetTotal = computed(() => {
         <div class="flex-1 items-center justify-center">
             <div class="flex ml-auto items-center justify-center">
 
-                <!-- here is where month used to be-->
-                <div class="flex flex-col">
-                    <span class="text-3xl mb-2">{{  dateFormatter.format(new Date()) }}</span>
+                <div class="flex flex-col items-center">
+                    <BudgetMonthCarousel />
+                    <div class="flex flex-col">
                     <div class="flex flex-col justify-center items-center">
                         <div class="text-sm flex flex-col items-end justify-end">
                             <div>
@@ -86,6 +87,7 @@ const remainingBudgetTotal = computed(() => {
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
