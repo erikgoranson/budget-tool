@@ -8,6 +8,7 @@ import { useForm, useField } from 'vee-validate';
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, type DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { storeToRefs } from 'pinia';
+import { useBudgetStore } from '@/stores/budget';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
 
@@ -44,6 +45,7 @@ const props = defineProps({
     }
 });
 
+const budgetStore = useBudgetStore();
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 const transactionStore = useTransactionStore();
@@ -94,8 +96,8 @@ const onSubmit = handleSubmit((values, actions) => {
         }
 
         if(values.income){
-            updatedTransaction.budgetId = categoryStore.incomeGuid;
-            updatedTransaction.categoryId = categoryStore.incomeGuid;
+            updatedTransaction.budgetId = transactionStore.incomeGuid;
+            updatedTransaction.categoryId = transactionStore.incomeGuid;
         };
 
         transactionStore.updateTransaction(updatedTransaction);
@@ -181,9 +183,9 @@ const onSubmit = handleSubmit((values, actions) => {
                                     <CommandList>
                                         <CommandGroup>
                                             <span v-for="category in categories">
-                                                <Label v-if="category.budgets.length > 0">{{ category.name }}</Label>
+                                                <Label v-if="budgetStore.getBudgetsByCategoryId(category.id).length > 0">{{ category.name }}</Label>
                                                 <CommandItem
-                                                    v-for="budget in category.budgets"
+                                                    v-for="budget in budgetStore.getBudgetsByCategoryId(category.id)"
                                                     :key="budget.id"
                                                     :value="budget.name"
                                                     @select="() => {

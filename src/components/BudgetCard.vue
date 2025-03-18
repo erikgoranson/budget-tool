@@ -4,6 +4,7 @@ import type { Budget, Category } from '../types/';
 import { ref, toRef, computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
+import { useBudgetStore } from '@/stores/budget';
 import currencyFormatter from '@/helpers/numberFormat';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
@@ -28,22 +29,24 @@ const props = defineProps({
 const isOpen = ref(false); 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
+const budgetStore = useBudgetStore();
 
 const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
 };
 
 const budgetTotal = computed(() => {
-    if(props.budgetCategory.budgets.length == 0){
+    const budgets = budgetStore.getBudgetsByCategoryId(props.budgetCategory.id);
+    if(budgets.length == 0){
         return 0.00;
     } else {
-        const amounts = props.budgetCategory.budgets.map((x) => x.amount);
+        const amounts = budgets.map((x) => x.amount);
         return amounts.reduce((a, b) => a + b);
-    }
+    };
 });
 
 const expensedTotal = computed(() => {
-    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false)
+    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false);
     //console.log('wat', JSON.stringify(transactionsStuff, null, 2))
 
     if(transactionsStuff.length == 0){
@@ -51,11 +54,11 @@ const expensedTotal = computed(() => {
     } else {
         const transAmts = transactionsStuff.map(x => x.amount);
         return transAmts.reduce((a, b) => a + b);
-    }
+    };
 })
 
 const remainingTotal = computed(() => {
-    return budgetTotal.value - expensedTotal.value
+    return budgetTotal.value - expensedTotal.value;
 });
 </script>
 

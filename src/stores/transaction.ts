@@ -1,9 +1,9 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import type { Transaction, TransactionRow } from '../types/';
+import { useBudgetStore } from '@/stores/budget';
 import { useCategoryStore } from '@/stores/category';
 import * as localStorageHelper from '@/helpers/localStorage';
-
 
 export const useTransactionStore = defineStore('transaction', () => {
 
@@ -14,6 +14,10 @@ export const useTransactionStore = defineStore('transaction', () => {
         localStorageHelper.default.setData(storageKey, transactions.value);
     };
 
+    const uncategorizedGuid = '00000000-0000-0000-0000-000000000000';
+    const incomeGuid = '00000000-0000-0000-0000-000000000001';
+
+    const budgetStore = useBudgetStore();
     const categoryStore = useCategoryStore();
 
     const transactions = ref(getData());
@@ -21,7 +25,9 @@ export const useTransactionStore = defineStore('transaction', () => {
     const transactionRows = computed(() => {
         return transactions.value.map(tran => {
             let transformed = tran as Transaction as TransactionRow; 
-            transformed.budgetCategoryName = categoryStore.getBudgetCategoryName(tran.categoryId, tran.budgetId);
+
+            const transName = getTransactionName(tran);
+            transformed.budgetCategoryName = transName;
             return transformed;
         })
     });
@@ -43,5 +49,19 @@ export const useTransactionStore = defineStore('transaction', () => {
         setData();
     };
 
-    return { transactions, transactionRows, createTransaction, updateTransaction, deleteTransaction};
+    const getTransactionName = (tran: Transaction) => {
+        if (tran.categoryId == incomeGuid || tran.budgetId == incomeGuid){
+            return 'Income for MONTH';
+        };
+
+        if (tran.categoryId == uncategorizedGuid || tran.budgetId == uncategorizedGuid){
+            return 'Uncategorized';
+        };
+
+        const categoryName = categoryStore.getCategoryName(tran.categoryId);
+        const budgetName = budgetStore.getBudgetName(tran.budgetId);
+        return  `${categoryName} : ${budgetName}`;
+    };
+
+    return { transactions, transactionRows, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid };
 });

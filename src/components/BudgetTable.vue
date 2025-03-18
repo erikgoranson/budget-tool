@@ -11,6 +11,7 @@ import BudgetCell from './BudgetCell.vue';
 import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
+import { useBudgetStore } from '@/stores/budget';
 import { useTransactionStore } from '@/stores/transaction';
 
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ const props = defineProps({
     },
 });
 
+const budgetStore = useBudgetStore();
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 
@@ -35,6 +37,10 @@ const columnVisibility = computed<VisibilityState>(() => {
 });
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
+
+const budgets = computed(() => {
+    return budgetStore.getBudgetsByCategoryId(props.category.id);
+});
 
 //TODO: review this problem and fix
 //https://www.reddit.com/r/vuejs/comments/1c4x7ha/what_is_your_favorite_data_table_library/
@@ -143,7 +149,7 @@ const columnDefs: ColumnDef<Budget>[] = [
 	<div>
         <Table>
             <TableHeader class="bg-blue-300">
-                <TableRow v-for="headerGroup in getTable(props.category.budgets).getHeaderGroups()" :key="headerGroup.id">
+                <TableRow v-for="headerGroup in getTable(budgets).getHeaderGroups()" :key="headerGroup.id">
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">
                         <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
@@ -151,8 +157,8 @@ const columnDefs: ColumnDef<Budget>[] = [
             </TableHeader>
 
             <TableBody>
-                <template v-if="getTable(props.category.budgets).getRowModel().rows?.length">
-                    <template v-for="row in getTable(props.category.budgets).getRowModel().rows" :key="row.id">
+                <template v-if="getTable(budgets).getRowModel().rows?.length">
+                    <template v-for="row in getTable(budgets).getRowModel().rows" :key="row.id">
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
                                 

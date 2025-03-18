@@ -50,6 +50,8 @@ const onSubmit = handleSubmit((values, actions) => {
         name: values.name ? values.name : props.budget.name,
         amount: values.amount ? parseFloat(values.amount) : props.budget.amount,
         dueDate: values.dueDate ? values.dueDate : props.budget.dueDate,
+        budgetMonth: props.budget.budgetMonth,
+        categoryId: props.budget.categoryId,
     };
 
     const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(props.budget);

@@ -3,6 +3,7 @@ import { ref, toRef, computed } from "vue";
 import { AlignJustify } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { useSidebarStore } from '@/stores/sidebar';
+import { useBudgetStore } from '@/stores/budget';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import currencyFormatter from '@/helpers/numberFormat';
@@ -14,6 +15,9 @@ const sidebarStore = useSidebarStore();
 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
+
+const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -32,20 +36,7 @@ const incomeTotal = computed(() => {
 });
 
 const budgetTotal = computed(() => {
-    let budgetAmts = [] as number[];
-    categories.value.forEach(cat => {
-        const amounts = cat.budgets.map((x) => x.amount);
-        if(amounts.length != 0) {
-            budgetAmts.push(amounts.reduce((a, b) => a + b));
-        }
-    });
-
-    if (budgetAmts.length == 0){
-        return 0.00;
-    } 
-    else {
-        return budgetAmts.reduce((a, b) => a + b);
-    }
+    return budgets.value.reduce((b, {amount}) => b + amount, 0);
 });
 
 const remainingBudgetTotal = computed(() => {

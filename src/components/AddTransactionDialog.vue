@@ -107,8 +107,8 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
   initialValues: {
     date: today(getLocalTimeZone()).toString(),
     category: {
-      budgetId: budgetStore.uncategorizedBudgetGuid,
-      categoryId: categoryStore.uncategorizedCategoryGuid,
+      budgetId: transactionStore.uncategorizedGuid,
+      categoryId: transactionStore.uncategorizedGuid,
       formatedName: 'Uncategorized'
     }, 
     income: false,
@@ -131,8 +131,8 @@ const onSubmit = handleSubmit(values => {
     };
 
     if(values.income){
-      newTransaction.budgetId = categoryStore.incomeGuid;
-      newTransaction.categoryId = categoryStore.incomeGuid;
+      newTransaction.budgetId = transactionStore.incomeGuid;
+      newTransaction.categoryId = transactionStore.incomeGuid;
     };
     
     console.log('new transaction:', newTransaction);
@@ -242,8 +242,8 @@ const cancelForm = () => {
                       value="Uncategorized"
                       @select="() => {
                         setFieldValue('category', {
-                          budgetId: budgetStore.uncategorizedBudgetGuid,
-                          categoryId: categoryStore.uncategorizedCategoryGuid,
+                          budgetId: transactionStore.uncategorizedGuid,
+                          categoryId: transactionStore.uncategorizedGuid,
                           formatedName: 'Uncategorized'
                         });
                         isComboBoxOpen = false;

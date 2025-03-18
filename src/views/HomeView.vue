@@ -13,7 +13,7 @@ const { transactions } = storeToRefs(transactionStore);
 
 const uncategorizedTransactionsExist = computed(() => {
   const amounts = transactions.value.filter(tran => {
-    return tran.categoryId == categoryStore.uncategorizedBudgetGuid;
+    return tran.categoryId == transactionStore.uncategorizedGuid;
   });
 
   if (amounts.length > 0){
@@ -26,11 +26,10 @@ const uncategorizedTransactionsExist = computed(() => {
 
 const uncategorizedBudget = computed(() => {
   const uncat = <Category>{
-    id: categoryStore.uncategorizedBudgetGuid,
+    id: transactionStore.uncategorizedGuid,
     name: 'Uncategorized',
     description: 'Transactions have been added that have no budget category.',
     hasDueDates: false,
-    budgets: [],
   }
 
   return uncat;

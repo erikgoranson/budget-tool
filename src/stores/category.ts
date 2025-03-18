@@ -15,8 +15,6 @@ const currentMonthYear = computed(() => {
 export const useCategoryStore = defineStore('category', () => {
 
     const storageKey = 'category';
-    const uncategorizedCategoryGuid = '00000000-0000-0000-0000-000000000000';
-    const incomeGuid = '00000000-0000-0000-0000-000000000001';
 
     const getData = () => localStorageHelper.default.getData(storageKey) as Category[];
     const setData = () => {
@@ -44,57 +42,10 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     };
 
-    const createBudget = (categoryId: string, budget: Budget) => {
-        categories.value = categories.value.map(cat => {
-            console.log('checking', cat.id, 'against ', categoryId);
-            if (cat.id == categoryId){
-                console.log('found matching category for ', categoryId)
-                cat.budgets.push(budget);
-            }
-            return cat;
-        });
-        setData();
-    }
-
-    const updateBudget = (categoryId: string, budget: Budget) => {
-        categories.value = categories.value.map(cat => {
-            console.log('checking', cat.id, 'against ', categoryId);
-            if (cat.id == categoryId){
-                console.log('found matching category for ', categoryId)
-                const index = cat.budgets.findIndex(x => x.id == budget.id);
-                cat.budgets.splice(index, 1, budget);
-            }
-            return cat;
-        });
-        setData();
-    }
-
-    const deleteBudget = (categoryId: string, budgetId: string) => {
-        categories.value = categories.value.map(cat => {
-            if (cat.id == categoryId){
-                cat.budgets = cat.budgets.filter(budget => budget.id !== budgetId);
-            }
-            return cat;
-        });
-        setData();
+    const getCategoryName = (id: string) => {
+        const category = categories.value.find(c => c.id == id);
+        return category?.name;
     };
 
-    /*
-    const getBudgetCategoryName = (categoryId: string, budgetId: string) => {
-        if (categoryId == incomeGuid && budgetId == incomeGuid){
-            return `Income for ${currentMonthYear.value}`;
-        };
-
-        if (categoryId == uncategorizedBudgetGuid && budgetId == uncategorizedBudgetGuid){
-            return 'Uncategorized';
-        };
-
-        const category = categories.value.find(cat => cat.id == categoryId);
-        const budget = category?.budgets.find(budget => budget.id == budgetId);
-        const name = `${category?.name} : ${budget?.name}`
-
-        return name;
-    };*/
-
-    return { categories, uncategorizedCategoryGuid, incomeGuid, addCategory, deleteCategory, updateCategory, };
+    return { categories, addCategory, deleteCategory, updateCategory, getCategoryName };
 });

@@ -2,7 +2,6 @@ import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Budget } from '../types/';
 import * as localStorageHelper from '@/helpers/localStorage';
-import BudgetMonthCarousel from '@/components/BudgetMonthCarousel.vue';
 
 const currentMonthYear = computed(() => {
     const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -16,8 +15,6 @@ const currentMonthYear = computed(() => {
 export const useBudgetStore = defineStore('budget', () => {
 
     const storageKey = 'budget';
-    const uncategorizedBudgetGuid = '00000000-0000-0000-0000-000000000003';
-    const incomeGuid = '00000000-0000-0000-0000-000000000001';
 
     const getData = () => localStorageHelper.default.getData(storageKey) as Budget[];
     const setData = () => {
@@ -46,14 +43,6 @@ export const useBudgetStore = defineStore('budget', () => {
     };
 
     const getBudgetName = (id: string) => {
-        if (id == incomeGuid){
-            return `Income for ${currentMonthYear.value}`;
-        };
-
-        if (id == uncategorizedBudgetGuid){
-            return 'Uncategorized';
-        };
-
         const budget = budgets.value.find(b => b.id == id);
         return budget?.name;
     }
@@ -63,5 +52,5 @@ export const useBudgetStore = defineStore('budget', () => {
         return matches;
     };
 
-    return { budgets, uncategorizedBudgetGuid, incomeGuid, createBudget, deleteBudget, updateBudget, getBudgetName, getBudgetsByCategoryId };
+    return { budgets, createBudget, deleteBudget, updateBudget, getBudgetName, getBudgetsByCategoryId };
 });
