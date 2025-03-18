@@ -3,6 +3,7 @@ import type { Budget, Category } from '../types/';
 
 import { useForm, useField } from 'vee-validate'
 import { useCategoryStore } from '@/stores/category';
+import { useBudgetStore } from '@/stores/budget';
 
 import { Button } from '@/components/ui/button'
 import {
@@ -31,6 +32,7 @@ const props = defineProps({
 });
 
 const categoryStore = useCategoryStore();
+const budgetStore = useBudgetStore();
 
 const { handleSubmit, errors, resetForm } = useForm({
 });
@@ -38,7 +40,7 @@ const { handleSubmit, errors, resetForm } = useForm({
 
 const deleteBudget = () => {
     console.log('deleting budget', props.budget.id);
-    categoryStore.deleteBudget(props.categoryId, props.budget.id)
+    budgetStore.deleteBudget(props.budget.id)
 };
 
 const onSubmit = handleSubmit((values, actions) => {
@@ -51,7 +53,7 @@ const onSubmit = handleSubmit((values, actions) => {
     };
 
     const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(props.budget);
-    if (!valuesMatch) categoryStore.updateBudget(props.categoryId, updatedBudget);
+    if (!valuesMatch) budgetStore.updateBudget(updatedBudget);
     //actions.resetForm();
 });
 </script>

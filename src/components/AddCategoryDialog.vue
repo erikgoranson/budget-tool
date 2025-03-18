@@ -71,7 +71,6 @@ const onSubmit = handleSubmit(values => {
         name: values.name,
         description: values.description ? values.description : '',
         hasDueDates: values.hasDueDates ? values.hasDueDates : false,
-        budgets: [],
     };
     
     console.log('new category:', newCategory);

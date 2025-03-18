@@ -13,6 +13,7 @@ import { useForm, useField } from 'vee-validate';
 import * as zod from 'zod';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
+import { useBudgetStore } from '@/stores/budget';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
@@ -60,6 +61,7 @@ import { Switch } from '@/components/ui/switch';
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 const transactionStore = useTransactionStore();
+const budgetStore = useBudgetStore();
 
 const [DefineAddTransactionForm, UseAddTransactionForm] = createReusableTemplate();
 const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
@@ -105,8 +107,8 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
   initialValues: {
     date: today(getLocalTimeZone()).toString(),
     category: {
-      budgetId: categoryStore.uncategorizedBudgetGuid,
-      categoryId: categoryStore.uncategorizedBudgetGuid,
+      budgetId: budgetStore.uncategorizedBudgetGuid,
+      categoryId: categoryStore.uncategorizedCategoryGuid,
       formatedName: 'Uncategorized'
     }, 
     income: false,
@@ -216,9 +218,9 @@ const cancelForm = () => {
                 <CommandList>
                   <CommandGroup>
                     <span v-for="category in categories">
-                      <Label v-if="category.budgets.length > 0">{{ category.name }}</Label>
+                      <Label v-if="budgetStore.getBudgetsByCategoryId(category.id).length > 0">{{ category.name }}</Label>
                       <CommandItem
-                        v-for="budget in category.budgets"
+                        v-for="budget in budgetStore.getBudgetsByCategoryId(category.id)"
                         :key="budget.id"
                         :value="budget.name"
                         @select="() => {
@@ -240,8 +242,8 @@ const cancelForm = () => {
                       value="Uncategorized"
                       @select="() => {
                         setFieldValue('category', {
-                          budgetId: categoryStore.uncategorizedBudgetGuid,
-                          categoryId: categoryStore.uncategorizedBudgetGuid,
+                          budgetId: budgetStore.uncategorizedBudgetGuid,
+                          categoryId: categoryStore.uncategorizedCategoryGuid,
                           formatedName: 'Uncategorized'
                         });
                         isComboBoxOpen = false;

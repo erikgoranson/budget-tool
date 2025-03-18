@@ -5,6 +5,7 @@ import { ref, nextTick, computed } from 'vue';
 import { useForm } from 'vee-validate';
 import { FlexRender } from '@tanstack/vue-table';
 import { useCategoryStore } from '@/stores/category';
+import { useBudgetStore } from '@/stores/budget';
 import { Input } from '@/components/ui/input';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from '@/components/ui/form';
 
@@ -24,6 +25,7 @@ const props = defineProps({
 });
 
 const categoryStore = useCategoryStore();
+const budgetStore = useBudgetStore();
 
 const editField = ref<string | undefined>(undefined);
 const modifiedBudget = ref<Budget>({} as Budget);
@@ -47,7 +49,7 @@ const onSubmit = handleSubmit((values, actions) => {
     };
 
     const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(modifiedBudget.value);
-    if (!valuesMatch) categoryStore.updateBudget(props.category.id, updatedBudget);
+    if (!valuesMatch) budgetStore.updateBudget(updatedBudget);
     focusInput(undefined, 0);
 });
 

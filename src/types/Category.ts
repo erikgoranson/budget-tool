@@ -5,5 +5,4 @@ export type Category = {
     name: string,
     description: string, 
     hasDueDates: boolean, 
-    budgets: Array<Budget>,
 };

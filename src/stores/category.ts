@@ -15,7 +15,7 @@ const currentMonthYear = computed(() => {
 export const useCategoryStore = defineStore('category', () => {
 
     const storageKey = 'category';
-    const uncategorizedBudgetGuid = '00000000-0000-0000-0000-000000000000';
+    const uncategorizedCategoryGuid = '00000000-0000-0000-0000-000000000000';
     const incomeGuid = '00000000-0000-0000-0000-000000000001';
 
     const getData = () => localStorageHelper.default.getData(storageKey) as Category[];
@@ -79,6 +79,7 @@ export const useCategoryStore = defineStore('category', () => {
         setData();
     };
 
+    /*
     const getBudgetCategoryName = (categoryId: string, budgetId: string) => {
         if (categoryId == incomeGuid && budgetId == incomeGuid){
             return `Income for ${currentMonthYear.value}`;
@@ -93,7 +94,7 @@ export const useCategoryStore = defineStore('category', () => {
         const name = `${category?.name} : ${budget?.name}`
 
         return name;
-    };
+    };*/
 
-    return { categories, uncategorizedBudgetGuid, incomeGuid, addCategory, deleteCategory, createBudget, updateCategory, deleteBudget, updateBudget, getBudgetCategoryName };
+    return { categories, uncategorizedCategoryGuid, incomeGuid, addCategory, deleteCategory, updateCategory, };
 });
