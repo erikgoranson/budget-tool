@@ -1,8 +1,8 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import type { Transaction, TransactionRow } from '../types/';
-import { useBudgetStore } from '@/stores/budget';
 import { useCategoryStore } from '@/stores/category';
+import { useSubcategoryStore } from './subcategory';
 import * as localStorageHelper from '@/helpers/localStorage';
 
 export const useTransactionStore = defineStore('transaction', () => {
@@ -17,8 +17,8 @@ export const useTransactionStore = defineStore('transaction', () => {
     const uncategorizedGuid = '00000000-0000-0000-0000-000000000000';
     const incomeGuid = '00000000-0000-0000-0000-000000000001';
 
-    const budgetStore = useBudgetStore();
     const categoryStore = useCategoryStore();
+    const subcategoryStore = useSubcategoryStore();
 
     const transactions = ref(getData());
 
@@ -51,7 +51,9 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     const getTransactionName = (tran: Transaction) => {
         if (tran.categoryId == incomeGuid || tran.budgetId == incomeGuid){
-            return 'Income for MONTH';
+            const date = new Date(tran.date);
+            const month = date.toLocaleDateString('en-US', { month: 'long' });
+            return `Income for ${month}`;
         };
 
         if (tran.categoryId == uncategorizedGuid || tran.budgetId == uncategorizedGuid){
@@ -59,8 +61,8 @@ export const useTransactionStore = defineStore('transaction', () => {
         };
 
         const categoryName = categoryStore.getCategoryName(tran.categoryId);
-        const budgetName = budgetStore.getBudgetName(tran.budgetId);
-        return  `${categoryName} : ${budgetName}`;
+        const subcategoryName = subcategoryStore.getSubcategoryNameById(tran.subcategoryId);
+        return `${categoryName} : ${subcategoryName}`;
     };
 
     return { transactions, transactionRows, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid };

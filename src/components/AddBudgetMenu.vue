@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types/';
+import type { Budget, Category, Subcategory } from '../types/';
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
 import * as zod from 'zod';
 import { FilePlus, Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp, ArrowUpDown,ChevronsUpDown, Check,  } from 'lucide-vue-next';
 import { useBudgetStore } from '@/stores/budget';
 import { useCarouselStore } from '@/stores/carousel';
+import { useSubcategoryStore } from '@/stores/subcategory';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ const props = defineProps({
 
 const budgetStore = useBudgetStore();
 const carouselStore = useCarouselStore();
+const subcategoryStore = useSubcategoryStore();
 
 const validationSchema = toTypedSchema(
   zod.object({
@@ -52,16 +54,23 @@ const { handleSubmit, errors, resetForm } = useForm({
 
 const onSubmit = handleSubmit((values, actions) => {
   console.log(JSON.stringify(values, null, 2));
-  
-  const newBudget = <Budget>{
+
+  const newSubcategory = <Subcategory>{
     id: uuidv4(),
     name: values.name,
-    amount: values.amount,
     dueDate: values.dueDate ?? '',
     categoryId: props.category.id,
-    budgetMonth: carouselStore.selectedMonthFormatted
+  };
+  subcategoryStore.createSubcategory(newSubcategory);
+
+  const newBudget = <Budget>{
+    id: uuidv4(),
+    amount: values.amount,
+    budgetMonth: carouselStore.selectedMonthFormatted,
+    subcategoryId: newSubcategory.id,
   };
   budgetStore.createBudget(newBudget);
+
   actions.resetForm();
 });
 </script>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Budget, Category, Transaction } from '../types/';
-
+import type { Transaction } from '../types/';
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { toDate } from 'radix-vue/date';
@@ -13,6 +12,7 @@ import { useForm, useField } from 'vee-validate';
 import * as zod from 'zod';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
+import { useSubcategoryStore } from '@/stores/subcategory';
 import { useBudgetStore } from '@/stores/budget';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -60,6 +60,8 @@ import { Switch } from '@/components/ui/switch';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
 const budgetStore = useBudgetStore();
 
@@ -89,17 +91,17 @@ const dateValue = computed({
 })
 
 const validationSchema = toTypedSchema(
-    zod.object({
-        date: zod.string().refine(v => v, { message: 'A date is required.' }),
-        amount: zod.number(),
-        category: zod.object({
-            budgetId: zod.string(),
-            categoryId: zod.string(),
-            formatedName: zod.string(),
-        }),
-        income: zod.boolean().optional(),
-        note: zod.string().optional(),
-    })
+  zod.object({
+    date: zod.string().refine(v => v, { message: 'A date is required.' }),
+    amount: zod.number(),
+    category: zod.object({
+      subcategoryId: zod.string(),
+      categoryId: zod.string(),
+      formatedName: zod.string(),
+    }),
+    income: zod.boolean().optional(),
+    note: zod.string().optional(),
+  })
 );
 
 const { handleSubmit, setFieldValue, values, errors } = useForm({
@@ -107,7 +109,7 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
   initialValues: {
     date: today(getLocalTimeZone()).toString(),
     category: {
-      budgetId: transactionStore.uncategorizedGuid,
+      subcategoryId: transactionStore.uncategorizedGuid,
       categoryId: transactionStore.uncategorizedGuid,
       formatedName: 'Uncategorized'
     }, 
@@ -116,27 +118,28 @@ const { handleSubmit, setFieldValue, values, errors } = useForm({
 });
 
 const onSubmit = handleSubmit(values => {
-    //console.log(JSON.stringify(values, null, 2))
-    isOpen.value = !isOpen.value;
-
-    const newTransaction: Transaction = {
-        id: uuidv4(),
-        date: values.date,
-        income: values.income ? values.income : false,
-        categoryId: values.category.categoryId, 
-        budgetId: values.category.budgetId,
-        hasCleared: false,
-        amount: values.amount,
-        note: values.note
-    };
-
-    if(values.income){
-      newTransaction.budgetId = transactionStore.incomeGuid;
-      newTransaction.categoryId = transactionStore.incomeGuid;
-    };
-    
-    console.log('new transaction:', newTransaction);
-    transactionStore.createTransaction(newTransaction);
+  //console.log(JSON.stringify(values, null, 2))
+  isOpen.value = !isOpen.value;
+  
+  const newTransaction: Transaction = {
+    id: uuidv4(),
+    date: values.date,
+    income: values.income ? values.income : false,
+    categoryId: values.category.categoryId, 
+    budgetId: '',
+    hasCleared: false,
+    amount: values.amount,
+    note: values.note,
+    subcategoryId: values.category.subcategoryId, 
+  };
+  
+  if(values.income){
+    newTransaction.budgetId = transactionStore.incomeGuid;
+    newTransaction.categoryId = transactionStore.incomeGuid;
+  };
+  
+  console.log('new transaction:', newTransaction);
+  transactionStore.createTransaction(newTransaction);
 });
 
 const cancelForm = () => {
@@ -205,7 +208,7 @@ const cancelForm = () => {
                     Income for {{  mf.format(new Date()) }}
                   </template>
                   <template v-else>
-                    {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
+                    {{ values.category?.formatedName ?? 'Select category...' }}
                     <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </template>
                 </Button>
@@ -218,21 +221,21 @@ const cancelForm = () => {
                 <CommandList>
                   <CommandGroup>
                     <span v-for="category in categories">
-                      <Label v-if="budgetStore.getBudgetsByCategoryId(category.id).length > 0">{{ category.name }}</Label>
+                      <Label v-if="subcategories.filter(x => x.categoryId == category.id).length > 0">{{ category.name }}</Label>
                       <CommandItem
-                        v-for="budget in budgetStore.getBudgetsByCategoryId(category.id)"
-                        :key="budget.id"
-                        :value="budget.name"
+                        v-for="subcategory in subcategories.filter(x => x.categoryId == category.id)"
+                        :key="subcategory.id"
+                        :value="subcategory.name"
                         @select="() => {
                           setFieldValue('category', {
-                            budgetId: budget.id,
+                            subcategoryId: subcategory.id,
                             categoryId: category.id,
-                            formatedName: `${category.name} : ${budget.name}`
+                            formatedName: `${category.name} : ${subcategory.name}`
                           });
                           isComboBoxOpen = false;
                         }">
-                          <Check :class="cn('mr-2 h-4 w-4', budget.id === values.category?.budgetId ? 'opacity-100' : 'opacity-0')"/>
-                          {{ budget.name }}
+                          <Check :class="cn('mr-2 h-4 w-4', subcategory.id === values.category?.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
+                          {{ subcategory.name }}
                       </CommandItem>
                     </span>
                     
@@ -242,7 +245,7 @@ const cancelForm = () => {
                       value="Uncategorized"
                       @select="() => {
                         setFieldValue('category', {
-                          budgetId: transactionStore.uncategorizedGuid,
+                          subcategoryId: transactionStore.uncategorizedGuid,
                           categoryId: transactionStore.uncategorizedGuid,
                           formatedName: 'Uncategorized'
                         });

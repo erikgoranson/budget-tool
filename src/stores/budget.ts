@@ -3,15 +3,6 @@ import { defineStore } from 'pinia';
 import type { Budget } from '../types/';
 import * as localStorageHelper from '@/helpers/localStorage';
 
-const currentMonthYear = computed(() => {
-    const dateFormatter = new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        year: 'numeric'
-    });
-    console.log(dateFormatter.format(new Date()));
-    return dateFormatter.format(new Date());
-});
-
 export const useBudgetStore = defineStore('budget', () => {
 
     const storageKey = 'budget';
@@ -41,16 +32,5 @@ export const useBudgetStore = defineStore('budget', () => {
         console.log('after delete:', JSON.stringify(budgets.value));
         setData();
     };
-
-    const getBudgetName = (id: string) => {
-        const budget = budgets.value.find(b => b.id == id);
-        return budget?.name;
-    }
-    
-    const getBudgetsByCategoryId = (categoryId: string) => {
-        const matches = budgets.value.filter(b => b.categoryId == categoryId);
-        return matches;
-    };
-
-    return { budgets, createBudget, deleteBudget, updateBudget, getBudgetName, getBudgetsByCategoryId };
+    return { budgets, createBudget, deleteBudget, updateBudget };
 });

@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-import type { Budget, Category } from '../types/';
+import type { Budget, BudgetRow, Category, Subcategory } from '../types/';
 
-import { useForm, useField } from 'vee-validate'
-import { useCategoryStore } from '@/stores/category';
+import { useForm, useField } from 'vee-validate';
+import { v4 as uuidv4 } from 'uuid';
 import { useBudgetStore } from '@/stores/budget';
+import { useSubcategoryStore } from '@/stores/subcategory';
+import { useCarouselStore } from '@/stores/carousel';
 
 import { Button } from '@/components/ui/button'
 import {
@@ -21,8 +23,8 @@ import UpdateMenu from '../components/UpdateMenu.vue';
 import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
 
 const props = defineProps({
-    budget : {
-        type: Object as () => Budget,
+    row : {
+        type: Object as () => BudgetRow,
         required: true
     },
     categoryId: {
@@ -31,32 +33,66 @@ const props = defineProps({
     },
 });
 
-const categoryStore = useCategoryStore();
+const carouselStore = useCarouselStore();
 const budgetStore = useBudgetStore();
+const subcategoryStore = useSubcategoryStore();
 
 const { handleSubmit, errors, resetForm } = useForm({
 });
 
-
 const deleteBudget = () => {
-    console.log('deleting budget', props.budget.id);
-    budgetStore.deleteBudget(props.budget.id)
+    console.log('deleting budget', props.row.budgetId);
+    budgetStore.deleteBudget(props.row.budgetId);
+    subcategoryStore.deleteSubcategory(props.row.subcategoryId);
 };
 
 const onSubmit = handleSubmit((values, actions) => {
-    //console.log(JSON.stringify(values, null, 2))
-    const updatedBudget = <Budget>{
-        id: props.budget.id,
-        name: values.name ? values.name : props.budget.name,
-        amount: values.amount ? parseFloat(values.amount) : props.budget.amount,
-        dueDate: values.dueDate ? values.dueDate : props.budget.dueDate,
-        budgetMonth: props.budget.budgetMonth,
-        categoryId: props.budget.categoryId,
-    };
 
-    const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(props.budget);
-    if (!valuesMatch) budgetStore.updateBudget(updatedBudget);
-    //actions.resetForm();
+    const updatedBudgetRow: BudgetRow = <BudgetRow>{
+        budgetId: props.row.budgetId,
+        name: values?.name ?? props.row.name, 
+        dueDate: values.dueDate || values.dueDate == '' ? values.dueDate : props.row.dueDate,
+        amount: values.amount ? parseFloat(values.amount) : props.row.amount,
+        budgetMonth: props.row.budgetMonth,
+        categoryId: props.row.categoryId,
+        subcategoryId: props.row.subcategoryId,
+    };
+    const valuesMatch = JSON.stringify(updatedBudgetRow) == JSON.stringify(props.row);
+
+    if (!valuesMatch) 
+    {
+        const budgetExists = updatedBudgetRow.budgetId !== '';
+        console.log('budget exists:', budgetExists, updatedBudgetRow.budgetId);
+
+        if (budgetExists)
+        {
+            const updatedBudget = <Budget>{
+                id: updatedBudgetRow.budgetId,
+                amount: updatedBudgetRow.amount,
+                budgetMonth: updatedBudgetRow.budgetMonth,
+                subcategoryId: updatedBudgetRow.subcategoryId,
+            };
+            budgetStore.updateBudget(updatedBudget);
+        }
+        else 
+        {
+            const newBudget = <Budget>{
+                id: uuidv4(),
+                amount: updatedBudgetRow.amount,
+                budgetMonth: carouselStore.selectedMonthFormatted,
+                subcategoryId: updatedBudgetRow.subcategoryId,
+            };
+            budgetStore.createBudget(newBudget);
+        }
+
+        const updatedSubcategory = <Subcategory>{
+            id: updatedBudgetRow.subcategoryId,
+            name: updatedBudgetRow.name,
+            dueDate: updatedBudgetRow.dueDate,
+            categoryId: updatedBudgetRow.categoryId,
+        }
+        subcategoryStore.updateSubcategory(updatedSubcategory);
+    }
 });
 </script>
 
@@ -83,7 +119,7 @@ const onSubmit = handleSubmit((values, actions) => {
                 <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                        <Input type="text" :default-value="budget.name" placeholder="Budget name" v-bind="componentField" />
+                        <Input type="text" :default-value="row.name" placeholder="Budget name" v-bind="componentField" />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />
@@ -94,7 +130,7 @@ const onSubmit = handleSubmit((values, actions) => {
                 <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                        <Input type="number" :default-value="Number(budget.dueDate)" placeholder="Due date" v-bind="componentField" />
+                        <Input type="number" :default-value="Number(row.dueDate)" placeholder="Due date" v-bind="componentField" />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />
@@ -105,7 +141,7 @@ const onSubmit = handleSubmit((values, actions) => {
                 <FormItem>
                     <FormLabel></FormLabel>
                     <FormControl>
-                        <Input type="number" step=0.01 inputmode='decimal' :default-value="budget.amount" placeholder="Budget amount" v-bind="componentField" />
+                        <Input type="number" step=0.01 inputmode='decimal' :default-value="row.amount" placeholder="Budget amount" v-bind="componentField" />
                     </FormControl>
                     <FormDescription></FormDescription>
                     <FormMessage />

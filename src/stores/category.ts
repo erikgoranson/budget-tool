@@ -3,15 +3,6 @@ import { defineStore } from 'pinia';
 import type { Category, Budget } from '../types/';
 import * as localStorageHelper from '@/helpers/localStorage';
 
-const currentMonthYear = computed(() => {
-    const dateFormatter = new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        year: 'numeric'
-    });
-    console.log(dateFormatter.format(new Date()));
-    return dateFormatter.format(new Date());
-});
-
 export const useCategoryStore = defineStore('category', () => {
 
     const storageKey = 'category';

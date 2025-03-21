@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types';
+import type { Budget, BudgetRow, Category } from '../types';
 import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
 
 import { h, ref, computed} from 'vue';
@@ -11,8 +11,11 @@ import BudgetCell from './BudgetCell.vue';
 import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
+
 import { useBudgetStore } from '@/stores/budget';
+import { useCarouselStore } from '@/stores/carousel';
 import { useTransactionStore } from '@/stores/transaction';
+import { useSubcategoryStore } from '@/stores/subcategory';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
@@ -25,6 +28,13 @@ const props = defineProps({
 });
 
 const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
+
+const carouselStore = useCarouselStore();
+
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
+
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 
@@ -38,16 +48,31 @@ const columnVisibility = computed<VisibilityState>(() => {
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
 
-const budgets = computed(() => {
-    return budgetStore.getBudgetsByCategoryId(props.category.id);
+const budgetRows = computed(() => {
+    const subs = subcategories.value.filter(s => s.categoryId == props.category.id);
+
+    const rows: BudgetRow[] = subs.map(s => {
+        const budgetMatch = budgets.value.find(b => b.subcategoryId == s.id && b.budgetMonth == carouselStore.selectedMonthFormatted);
+        return <BudgetRow>{
+            subcategoryId: s.id,
+            name: s.name,
+            categoryId: s.categoryId,
+            dueDate: s.dueDate,
+            amount: budgetMatch?.amount ?? 0,
+            budgetMonth: budgetMatch?.budgetMonth ?? '',
+            budgetId: budgetMatch?.id ?? '',
+        };
+    });
+
+    return rows;
 });
 
 //TODO: review this problem and fix
 //https://www.reddit.com/r/vuejs/comments/1c4x7ha/what_is_your_favorite_data_table_library/
-const getTable = (budgets: Budget[]) => {
+const getTable = (rows: BudgetRow[]) => {
     return useVueTable({
         //data: props.category.budgets,
-        data: budgets,
+        data: rows,
         columns: columnDefs,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -80,7 +105,7 @@ const getTotalExpensed = (budgetId: string) => {
 
 const editableColumns = ['name','dueDate','amount'] as string[];
 
-const columnDefs: ColumnDef<Budget>[] = [
+const columnDefs: ColumnDef<BudgetRow>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => {
@@ -115,7 +140,7 @@ const columnDefs: ColumnDef<Budget>[] = [
         accessorKey: 'totalExpensed',
         header: ({ column }) => h('div', { }, 'spent'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.id);
+            const totalExpensed = getTotalExpensed(row.original.budgetId);
             return h('div', { }, currencyFormatter.format(totalExpensed));
         },
     },
@@ -123,7 +148,7 @@ const columnDefs: ColumnDef<Budget>[] = [
         accessorKey: 'totalRemaining',
         header: ({ column }) => h('div', { }, 'remain'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.id);
+            const totalExpensed = getTotalExpensed(row.original.budgetId);
             const totalRemaining = row.original.amount - totalExpensed;
 
             return h('div', { }, currencyFormatter.format(totalRemaining));
@@ -137,7 +162,7 @@ const columnDefs: ColumnDef<Budget>[] = [
             return h('div', { class:'flex items-center text-center justify-center' }, 
                 h(UpdateBudgetMenu, {
                     categoryId: props.category.id,
-                    budget: row.original
+                    row: row.original
                 })
             );
         },
@@ -149,7 +174,7 @@ const columnDefs: ColumnDef<Budget>[] = [
 	<div>
         <Table>
             <TableHeader class="bg-blue-300">
-                <TableRow v-for="headerGroup in getTable(budgets).getHeaderGroups()" :key="headerGroup.id">
+                <TableRow v-for="headerGroup in getTable(budgetRows).getHeaderGroups()" :key="headerGroup.id">
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">
                         <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
@@ -157,8 +182,8 @@ const columnDefs: ColumnDef<Budget>[] = [
             </TableHeader>
 
             <TableBody>
-                <template v-if="getTable(budgets).getRowModel().rows?.length">
-                    <template v-for="row in getTable(budgets).getRowModel().rows" :key="row.id">
+                <template v-if="getTable(budgetRows).getRowModel().rows?.length">
+                    <template v-for="row in getTable(budgetRows).getRowModel().rows" :key="row.id">
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
                                 

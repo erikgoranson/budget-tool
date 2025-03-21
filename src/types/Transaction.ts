@@ -4,6 +4,7 @@ export type Transaction = {
     income: boolean,
     payee?: string,
     categoryId: string,
+    subcategoryId: string,
     budgetId: string,
     note?: string,
     hasCleared: boolean,

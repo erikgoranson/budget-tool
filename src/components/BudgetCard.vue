@@ -5,6 +5,7 @@ import { ref, toRef, computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
 import { useBudgetStore } from '@/stores/budget';
+import { useSubcategoryStore } from '@/stores/subcategory';
 import currencyFormatter from '@/helpers/numberFormat';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
@@ -30,19 +31,24 @@ const isOpen = ref(false);
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
 
 const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
 };
 
 const budgetTotal = computed(() => {
-    const budgets = budgetStore.getBudgetsByCategoryId(props.budgetCategory.id);
-    if(budgets.length == 0){
-        return 0.00;
-    } else {
-        const amounts = budgets.map((x) => x.amount);
-        return amounts.reduce((a, b) => a + b);
-    };
+    let total = subcategories.value.reduce((total, s) => {
+        let matches = budgets.value.filter(b => b.subcategoryId == s.id); //AND budgetmonth code matches selection 
+        let subtotal =  matches.reduce((subtotal, budget) => {
+            return subtotal + budget.amount;
+        }, 0);
+        return total + subtotal;
+    }, 0);
+
+    return total;
 });
 
 const expensedTotal = computed(() => {
