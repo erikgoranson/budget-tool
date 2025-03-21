@@ -4,13 +4,13 @@ import type { TransactionRow, Transaction } from '../types/';
 import { ref, computed, watch } from 'vue';
 import { Calendar as CalendarIcon, MoreHorizontal, Check, ChevronsUpDown } from 'lucide-vue-next';
 import { useForm, useField } from 'vee-validate';
-//zod?
+
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, type DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { storeToRefs } from 'pinia';
-import { useBudgetStore } from '@/stores/budget';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
+import { useSubcategoryStore } from '@/stores/subcategory';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -45,9 +45,10 @@ const props = defineProps({
     }
 });
 
-const budgetStore = useBudgetStore();
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
 
 const isComboBoxOpen = ref(false);
@@ -89,10 +90,11 @@ const onSubmit = handleSubmit((values, actions) => {
             income: values.income ?? props.transaction.income,
             payee: values.payee ?? props.transaction.payee,
             categoryId: values?.category?.categoryId ?? props.transaction.categoryId,
-            budgetId: values?.category?.budgetId ?? props.transaction.budgetId,
+            budgetId: '',
             note: values.note ?? props.transaction.note,
             hasCleared: values.hasCleared ?? props.transaction.hasCleared,
             amount: values.amount ?? props.transaction.amount,
+            subcategoryId: values?.category?.subcategoryId ?? props.transaction.subcategoryId
         }
 
         if(values.income){
@@ -183,22 +185,22 @@ const onSubmit = handleSubmit((values, actions) => {
                                     <CommandList>
                                         <CommandGroup>
                                             <span v-for="category in categories">
-                                                <Label v-if="budgetStore.getBudgetsByCategoryId(category.id).length > 0">{{ category.name }}</Label>
+                                                <Label v-if="subcategories.filter(x => x.categoryId == category.id).length > 0">{{ category.name }}</Label>
                                                 <CommandItem
-                                                    v-for="budget in budgetStore.getBudgetsByCategoryId(category.id)"
-                                                    :key="budget.id"
-                                                    :value="budget.name"
+                                                    v-for="subcategory in subcategories.filter(x => x.categoryId == category.id)"
+                                                    :key="subcategory.id"
+                                                    :value="subcategory.name"
                                                     @select="() => {
                                                         setFieldValue('category', {
-                                                            budgetId: budget.id,
+                                                            subcategoryId: subcategory.id,
                                                             categoryId: category.id,
-                                                            formatedName: `${category.name} : ${budget.name}`
+                                                            formatedName: `${category.name} : ${subcategory.name}`
                                                         });
                                                         isComboBoxOpen = false;
                                                     }"
                                                 >
-                                                    <Check :class="cn('mr-2 h-4 w-4', budget.id === values.category?.budgetId ? 'opacity-100' : 'opacity-0')"/>
-                                                    {{ budget.name }}
+                                                    <Check :class="cn('mr-2 h-4 w-4', subcategory.id === values.category?.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
+                                                    {{ subcategory.name }}
                                                 </CommandItem>
                                             </span>
                                         </CommandGroup>
