@@ -13,10 +13,11 @@ export const useCarouselStore = defineStore('carousel', () => {
         const jsDate = calendarDate.toDate(getLocalTimeZone());
         return jsDate.getFullYear();
     };
-
+    
+    const now = ref<CalendarDate>( today(getLocalTimeZone()) );
     const selectedMonth = ref<CalendarDate>( today(getLocalTimeZone()).set({day: 1}) );
     const selectedMonthString = computed(() => selectedMonth.value?.toString()); 
     const selectedMonthName = computed(() => getMonthName(selectedMonth.value as CalendarDate)); 
 
-    return { selectedMonth, selectedMonthString, selectedMonthName, getMonthName, getYear };
+    return { now, selectedMonth, selectedMonthString, selectedMonthName, getMonthName, getYear };
 });
