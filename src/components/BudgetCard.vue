@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
 import { useBudgetStore } from '@/stores/budget';
 import { useSubcategoryStore } from '@/stores/subcategory';
+import { useCarouselStore } from '@/stores/carousel';
 import currencyFormatter from '@/helpers/numberFormat';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
@@ -34,6 +35,7 @@ const budgetStore = useBudgetStore();
 const { budgets } = storeToRefs(budgetStore);
 const subcategoryStore = useSubcategoryStore();
 const { subcategories } = storeToRefs(subcategoryStore);
+const carouselStore = useCarouselStore();
 
 const toggleBudgetdata = () => {
     isOpen.value = !isOpen.value;
@@ -41,7 +43,7 @@ const toggleBudgetdata = () => {
 
 const budgetTotal = computed(() => {
     let total = subcategories.value.reduce((total, s) => {
-        let matches = budgets.value.filter(b => b.subcategoryId == s.id); //AND budgetmonth code matches selection 
+        let matches = budgets.value.filter(b => b.subcategoryId == s.id && b.date == carouselStore.selectedMonthString);
         let subtotal =  matches.reduce((subtotal, budget) => {
             return subtotal + budget.amount;
         }, 0);
@@ -52,15 +54,14 @@ const budgetTotal = computed(() => {
 });
 
 const expensedTotal = computed(() => {
-    const transactionsStuff = transactions.value.filter(x => x.categoryId == props.budgetCategory.id && x.income == false);
-    //console.log('wat', JSON.stringify(transactionsStuff, null, 2))
-
-    if(transactionsStuff.length == 0){
-        return 0.00;
-    } else {
-        const transAmts = transactionsStuff.map(x => x.amount);
-        return transAmts.reduce((a, b) => a + b);
-    };
+    return transactions.value
+        .filter(t => 
+            t.categoryId == props.budgetCategory.id && 
+            t.income === false && 
+            t.date < carouselStore.selectedMonth.add({months:1}).toString() &&
+            t.date >= carouselStore.selectedMonth.toString()
+        )
+        .reduce((t, {amount}) => t + amount, 0);
 })
 
 const remainingTotal = computed(() => {

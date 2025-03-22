@@ -3,9 +3,9 @@ import type { CarouselApi } from '@/components/ui/carousel';
 import { computed, ref,  watch, nextTick } from 'vue';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCarouselStore } from '@/stores/carousel';
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 
-const locale: string = 'en-US';
-const now = ref(new Date()); 
+const now = ref(today(getLocalTimeZone()).set({day: 1})); 
 
 const carouselApi = ref<CarouselApi>();
 const carouselStore = useCarouselStore();
@@ -13,31 +13,25 @@ const setCarouselApi = (api: CarouselApi) => {
   carouselApi.value = api;
 }
 
-const formatDate = (date : Date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  return `${year}${month}`;
-};
-
 const monthOptions = computed(() => {
-  const previousYear = new Date(now.value.getFullYear() -1, 0, 1); //or oldest budget category date 
-  const nextYear = new Date(now.value.getFullYear() +1, 0, 1);
+  const previousYear = now.value.set({day: 1}).subtract({years: 1}); //or oldest budget category date
+  const nextYear = now.value.set({day: 1}).add({years: 1});
 
-  const options = [] as Date[];
-  let date = new Date(previousYear);
+  const options = [] as CalendarDate[];
+  let date = previousYear;
   while (date <= nextYear) {
-    options.push(new Date(date));
-    date.setMonth(date.getMonth() + 1);
+    options.push(date);
+    date = date.add({months: 1}); 
   }
   
   return options; 
 });
 
 const currentMonthIndex = computed(() => {
-  const currentDate = formatDate(now.value);
+  const currentDate = now.value.toString();
   let monthIndex = 0;
   monthOptions.value.forEach((option, index) => {
-    const optionDate = formatDate(option);
+    const optionDate = option.toString();
     if (currentDate == optionDate){
       console.log('match found!:',currentDate, optionDate);
       monthIndex = index;
@@ -70,8 +64,8 @@ const stopWatch = watch(carouselApi, (api) => {
         <div class="p-1">
           <div>
             <div class="flex flex-col items-center justify-center p-6">
-              <span class="text-4xl font-semibold"> {{ month.toLocaleString(locale, { month: 'long' }) }} </span>
-              <span class="text-2xl" > {{ month.getFullYear() }} </span>
+              <span class="text-4xl font-semibold"> {{ carouselStore.getMonthName(month) }} </span>
+              <span class="text-2xl" > {{ carouselStore.getYear(month) }} </span>
             </div>
           </div>
         </div>

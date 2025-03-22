@@ -66,7 +66,7 @@ const onSubmit = handleSubmit((values, actions) => {
   const newBudget = <Budget>{
     id: uuidv4(),
     amount: values.amount,
-    budgetMonth: carouselStore.selectedMonthFormatted,
+    date: carouselStore.selectedMonthString,
     subcategoryId: newSubcategory.id,
   };
   budgetStore.createBudget(newBudget);

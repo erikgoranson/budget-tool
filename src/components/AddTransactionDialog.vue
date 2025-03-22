@@ -13,6 +13,7 @@ import * as zod from 'zod';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from '@/stores/subcategory';
+import { useCarouselStore } from '@/stores/carousel';
 import { useBudgetStore } from '@/stores/budget';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -63,7 +64,7 @@ const { categories } = storeToRefs(categoryStore);
 const subcategoryStore = useSubcategoryStore();
 const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
-const budgetStore = useBudgetStore();
+const carouselStore = useCarouselStore();
 
 const [DefineAddTransactionForm, UseAddTransactionForm] = createReusableTemplate();
 const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
@@ -205,7 +206,7 @@ const cancelForm = () => {
               <FormControl>
                 <Button :disabled="values.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
                   <template v-if="values.income">
-                    Income for {{  mf.format(new Date()) }}
+                    Income for {{ `${carouselStore.getMonthName(parseDate(values.date as string))} ${carouselStore.getYear(parseDate(values.date as string))}` }}
                   </template>
                   <template v-else>
                     {{ values.category?.formatedName ?? 'Select category...' }}

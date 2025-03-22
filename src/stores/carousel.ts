@@ -1,17 +1,22 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-
-const formatDate = (date : Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    return `${year}${month}`;
-};
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 
 export const useCarouselStore = defineStore('carousel', () => {
-    const selectedMonth = ref<Date>(new Date());
-    const selectedMonthFormatted = computed(() => formatDate(selectedMonth.value));
 
-    console.log('formatted version is:', selectedMonthFormatted.value)
+    const getMonthName = (calendarDate : CalendarDate) => {
+        const jsDate = calendarDate.toDate(getLocalTimeZone());
+        return jsDate.toLocaleString('en-US', { month: 'long' })
+    };
 
-    return { selectedMonth, selectedMonthFormatted };
+    const getYear = (calendarDate : CalendarDate) => {
+        const jsDate = calendarDate.toDate(getLocalTimeZone());
+        return jsDate.getFullYear();
+    };
+
+    const selectedMonth = ref<CalendarDate>( today(getLocalTimeZone()).set({day: 1}) );
+    const selectedMonthString = computed(() => selectedMonth.value?.toString()); 
+    const selectedMonthName = computed(() => getMonthName(selectedMonth.value as CalendarDate)); 
+
+    return { selectedMonth, selectedMonthString, selectedMonthName, getMonthName, getYear };
 });

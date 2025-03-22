@@ -52,14 +52,14 @@ const budgetRows = computed(() => {
     const subs = subcategories.value.filter(s => s.categoryId == props.category.id);
 
     const rows: BudgetRow[] = subs.map(s => {
-        const budgetMatch = budgets.value.find(b => b.subcategoryId == s.id && b.budgetMonth == carouselStore.selectedMonthFormatted);
+        const budgetMatch = budgets.value.find(b => b.subcategoryId == s.id && b.date == carouselStore.selectedMonthString);
         return <BudgetRow>{
             subcategoryId: s.id,
             name: s.name,
             categoryId: s.categoryId,
             dueDate: s.dueDate,
             amount: budgetMatch?.amount ?? 0,
-            budgetMonth: budgetMatch?.budgetMonth ?? '',
+            budgetMonth: budgetMatch?.date ?? '',
             budgetId: budgetMatch?.id ?? '',
         };
     });
@@ -91,16 +91,16 @@ const getTable = (rows: BudgetRow[]) => {
         },
     })
 }
-const getTotalExpensed = (budgetId: string) => {
-    const budgetTransactions = transactions.value.filter(tran => tran.budgetId == budgetId && tran.income == false);
-    
-    let totalExpensed = 0.00;
-    if(budgetTransactions.length > 0){
-        const amounts = budgetTransactions.map(x => x.amount);
-        totalExpensed = amounts.reduce((a, b) => a + b);
-    }
 
-    return totalExpensed;
+const getTotalExpensed = (row: BudgetRow) => {
+    return transactions.value
+        .filter(t => 
+            t.subcategoryId == row.subcategoryId && 
+            t.income === false && 
+            t.date < carouselStore.selectedMonth.add({months:1}).toString() &&
+            t.date >= carouselStore.selectedMonth.toString()
+        )
+        .reduce((t, {amount}) => t + amount, 0);
 };
 
 const editableColumns = ['name','dueDate','amount'] as string[];
@@ -140,7 +140,7 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
         accessorKey: 'totalExpensed',
         header: ({ column }) => h('div', { }, 'spent'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.budgetId);
+            const totalExpensed = getTotalExpensed(row.original);
             return h('div', { }, currencyFormatter.format(totalExpensed));
         },
     },
@@ -148,7 +148,7 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
         accessorKey: 'totalRemaining',
         header: ({ column }) => h('div', { }, 'remain'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.budgetId);
+            const totalExpensed = getTotalExpensed(row.original);
             const totalRemaining = row.original.amount - totalExpensed;
 
             return h('div', { }, currencyFormatter.format(totalRemaining));

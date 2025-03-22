@@ -69,7 +69,7 @@ const onSubmit = handleSubmit((values, actions) => {
             const updatedBudget = <Budget>{
                 id: updatedBudgetRow.budgetId,
                 amount: updatedBudgetRow.amount,
-                budgetMonth: updatedBudgetRow.budgetMonth,
+                date: updatedBudgetRow.budgetMonth,
                 subcategoryId: updatedBudgetRow.subcategoryId,
             };
             budgetStore.updateBudget(updatedBudget);
@@ -79,7 +79,7 @@ const onSubmit = handleSubmit((values, actions) => {
             const newBudget = <Budget>{
                 id: uuidv4(),
                 amount: updatedBudgetRow.amount,
-                budgetMonth: carouselStore.selectedMonthFormatted,
+                date: carouselStore.selectedMonthString,
                 subcategoryId: updatedBudgetRow.subcategoryId,
             };
             budgetStore.createBudget(newBudget);
