@@ -47,7 +47,7 @@ const onSubmit = handleSubmit((values, actions) => {
 
     const updatedBudgetRow: BudgetRow = <BudgetRow>{
         budgetId: submittedRow.value.budgetId,
-        name: values?.name ?? submittedRow.value.name, //dheck that this actually works plz
+        name: values?.name ?? submittedRow.value.name,
         dueDate: values.dueDate || values.dueDate == '' ? values.dueDate : submittedRow.value.dueDate,
         amount: values.amount ? parseFloat(values.amount) : submittedRow.value.amount,
         budgetMonth: submittedRow.value.budgetMonth,

@@ -1,9 +1,15 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
+import { CalendarDate, DateFormatter, type DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { toDate } from 'radix-vue/date';
 import type { Transaction, TransactionRow } from '../types/';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from './subcategory';
 import * as localStorageHelper from '@/helpers/localStorage';
+
+const mf = new DateFormatter('en-US', {
+    month: 'long'
+});
 
 export const useTransactionStore = defineStore('transaction', () => {
 
@@ -51,8 +57,8 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     const getTransactionName = (tran: Transaction) => {
         if (tran.categoryId == incomeGuid || tran.budgetId == incomeGuid){
-            const date = new Date(tran.date);
-            const month = date.toLocaleDateString('en-US', { month: 'long' });
+            const date = parseDate(tran.date);
+            const month = mf.format(toDate(date));
             return `Income for ${month}`;
         };
 

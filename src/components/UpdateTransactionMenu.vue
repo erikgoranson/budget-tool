@@ -7,6 +7,7 @@ import { useForm, useField } from 'vee-validate';
 
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, type DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { toDate } from 'radix-vue/date';
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
@@ -70,7 +71,7 @@ const defaultDateValue = computed(() => {
     return parseDate(props.transaction.date) as DateValue;
 });
 
-const calendarPlaceholder = ref();
+const lastSelectedDate = ref<DateValue>();
 
 const { handleSubmit, setFieldValue, errors, values, resetForm } = useForm({
 });
@@ -132,7 +133,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <PopoverTrigger as-child>
                                 <FormControl>
                                     <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !transaction.date && 'text-muted-foreground',)">
-                                        <span>{{ calendarPlaceholder ? dateFormatter.format(new Date(calendarPlaceholder)) : dateFormatter.format(new Date(transaction.date)) }}</span>
+                                        <span>{{ lastSelectedDate ? dateFormatter.format(toDate(lastSelectedDate as DateValue)) : dateFormatter.format(toDate(defaultDateValue)) }}</span>
                                         <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                                     </Button>
                                     <input hidden>
@@ -141,7 +142,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <PopoverContent class="w-auto p-0">
                                 <Calendar 
                                     :defaultValue="defaultDateValue"
-                                    v-model:placeholder="calendarPlaceholder"
+                                    v-model:placeholder="lastSelectedDate"
                                     calendar-label="Transaction date"
                                     initial-focus
                                     :min-value="new CalendarDate(1900, 1, 1)"
