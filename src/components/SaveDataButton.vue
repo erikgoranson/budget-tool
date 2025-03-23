@@ -5,10 +5,12 @@ import { saveAs } from 'file-saver';
 import { Button } from '@/components/ui/button';
 
 const content = computed(() => {
-    const transactions = localStorageHelper.default.getData('transactions');
+    const budgets = localStorageHelper.default.getData('budget');
     const category = localStorageHelper.default.getData('category');
+    const subcategories = localStorageHelper.default.getData('subcategory');
+    const transactions = localStorageHelper.default.getData('transactions');
 
-    const obj = { category, transactions };
+    const obj = { budgets, category, subcategories, transactions };
     return JSON.stringify(obj);
 })
 
