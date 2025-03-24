@@ -67,31 +67,6 @@ const budgetRows = computed(() => {
     return rows;
 });
 
-//TODO: review this problem and fix
-//https://www.reddit.com/r/vuejs/comments/1c4x7ha/what_is_your_favorite_data_table_library/
-const getTable = (rows: BudgetRow[]) => {
-    return useVueTable({
-        //data: props.category.budgets,
-        data: rows,
-        columns: columnDefs,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
-        onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
-        onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
-        onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
-        state: {
-            get sorting() { return sorting.value },
-            get columnFilters() { return columnFilters.value },
-            get columnVisibility() { return columnVisibility.value },
-            get rowSelection() { return rowSelection.value },
-            get globalFilter() { return filter.value },
-        },
-    })
-}
-
 const getTotalExpensed = (row: BudgetRow) => {
     return transactions.value
         .filter(t => 
@@ -168,13 +143,33 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
         },
     },
 ];
+
+const table = useVueTable({
+    data: budgetRows,
+    columns: columnDefs,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    state: {
+        get sorting() { return sorting.value },
+        get columnFilters() { return columnFilters.value },
+        get columnVisibility() { return columnVisibility.value },
+        get rowSelection() { return rowSelection.value },
+        get globalFilter() { return filter.value },
+    },
+});
 </script>
 
 <template>
 	<div>
         <Table>
             <TableHeader class="bg-blue-300">
-                <TableRow v-for="headerGroup in getTable(budgetRows).getHeaderGroups()" :key="headerGroup.id">
+                <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">
                         <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
@@ -182,8 +177,8 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
             </TableHeader>
 
             <TableBody>
-                <template v-if="getTable(budgetRows).getRowModel().rows?.length">
-                    <template v-for="row in getTable(budgetRows).getRowModel().rows" :key="row.id">
+                <template v-if="table.getRowModel().rows?.length">
+                    <template v-for="row in table.getRowModel().rows" :key="row.id">
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
                                 
