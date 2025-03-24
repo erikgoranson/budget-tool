@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { CarouselApi } from '@/components/ui/carousel'; 
 import { computed, ref,  watch, nextTick } from 'vue';
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { useMediaQuery } from '@vueuse/core';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCarouselStore } from '@/stores/carousel';
-import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 
 const now = ref(today(getLocalTimeZone()).set({day: 1})); 
+const isDesktop = useMediaQuery('(min-width: 768px)');
 
 const carouselApi = ref<CarouselApi>();
 const carouselStore = useCarouselStore();
@@ -62,12 +64,16 @@ const stopWatch = watch(carouselApi, (api) => {
     <CarouselContent>
       <CarouselItem v-for="(month, index) in monthOptions" :key="index" :id="index">
         <div class="p-1">
-          <div>
-            <div class="flex flex-col items-center justify-center p-6">
-              <span class="text-4xl font-semibold"> {{ carouselStore.getMonthName(month) }} </span>
-              <span class="text-2xl" > {{ carouselStore.getYear(month) }} </span>
+            <div class="pb-2 text-3xl">
+              <div v-if="isDesktop" class="flex flex-col items-center">
+                <span class="text-5xl font-semibold"> {{ carouselStore.getMonthName(month) }} </span>
+                <span> {{ carouselStore.getYear(month) }} </span>
+              </div>
+              <div v-else class="flex justify-center items-end align-center text-center">
+                <span class="font-semibold">{{ carouselStore.getMonthName(month) }}</span>
+                <span class="pl-2" >{{ carouselStore.getYear(month) }}</span>
+              </div>
             </div>
-          </div>
         </div>
       </CarouselItem>
     </CarouselContent>
