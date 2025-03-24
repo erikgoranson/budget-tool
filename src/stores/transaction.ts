@@ -5,19 +5,16 @@ import { toDate } from 'radix-vue/date';
 import type { Transaction, TransactionRow } from '../types/';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from './subcategory';
-import * as localStorageHelper from '@/helpers/localStorage';
-
-const mf = new DateFormatter('en-US', {
-    month: 'long'
-});
+import localStorageHelper from '@/helpers/localStorage';
+import dateFormatter from '@/helpers/dateFormatter';
 
 export const useTransactionStore = defineStore('transaction', () => {
 
     const storageKey = 'transactions';
-    const getData = () => localStorageHelper.default.getData(storageKey) as Transaction[];
+    const getData = () => localStorageHelper.getData(storageKey) as Transaction[];
     const setData = () => {
         console.log('transaction store saved to localstorage');
-        localStorageHelper.default.setData(storageKey, transactions.value);
+        localStorageHelper.setData(storageKey, transactions.value);
     };
 
     const uncategorizedGuid = '00000000-0000-0000-0000-000000000000';
@@ -57,9 +54,7 @@ export const useTransactionStore = defineStore('transaction', () => {
 
     const getTransactionName = (tran: Transaction) => {
         if (tran.categoryId == incomeGuid){
-            const date = parseDate(tran.date);
-            const month = mf.format(toDate(date));
-            return `Income for ${month}`;
+            return `Income for ${dateFormatter.format(tran.date, 'monthName')}`;
         };
 
         if (tran.categoryId == uncategorizedGuid){

@@ -12,6 +12,7 @@ import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
 import { useSubcategoryStore } from '@/stores/subcategory';
+import dateFormatter from '@/helpers/dateFormatter';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,15 +54,6 @@ const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
 
 const isComboBoxOpen = ref(false);
-
-const dateFormatter = new DateFormatter('en-US', {
-  dateStyle: 'long',
-})
-
-const mf = new DateFormatter('en-US', {
-  month: 'long',
-  year: 'numeric'
-})
 
 const deleteTransaction = () => {
     transactionStore.deleteTransaction(props.transaction.id);
@@ -131,7 +123,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <PopoverTrigger as-child>
                                 <FormControl>
                                     <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !transaction.date && 'text-muted-foreground',)">
-                                        <span>{{ lastSelectedDate ? dateFormatter.format(toDate(lastSelectedDate as DateValue)) : dateFormatter.format(toDate(defaultDateValue)) }}</span>
+                                        <span>{{ lastSelectedDate ? dateFormatter.format(lastSelectedDate as CalendarDate , 'longDate') : dateFormatter.format(defaultDateValue as CalendarDate, 'longDate') }}</span>
                                         <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                                     </Button>
                                     <input hidden>
@@ -168,7 +160,7 @@ const onSubmit = handleSubmit((values, actions) => {
                                 <FormControl>
                                     <Button :disabled="values.income || props.transaction.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
                                         <template v-if="values.income || props.transaction.income">
-                                            Income for {{  mf.format(new Date()) }}
+                                            Income for {{  dateFormatter.format(today(getLocalTimeZone()), 'monthYearDate') }}
                                         </template>
                                         <template v-else>
                                             {{ props.transaction.budgetCategoryName ?? 'Select category...' }}

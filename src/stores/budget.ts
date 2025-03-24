@@ -1,16 +1,16 @@
 import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Budget } from '../types/';
-import * as localStorageHelper from '@/helpers/localStorage';
+import localStorageHelper from '@/helpers/localStorage';
 
 export const useBudgetStore = defineStore('budget', () => {
 
     const storageKey = 'budget';
 
-    const getData = () => localStorageHelper.default.getData(storageKey) as Budget[];
+    const getData = () => localStorageHelper.getData(storageKey) as Budget[];
     const setData = () => {
         console.log('budget store saved to localstorage');
-        localStorageHelper.default.setData(storageKey, budgets.value);
+        localStorageHelper.setData(storageKey, budgets.value);
     };
 
     const budgets = ref(getData());

@@ -1,15 +1,15 @@
 import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Subcategory } from '../types/';
-import * as localStorageHelper from '@/helpers/localStorage';
+import localStorageHelper from '@/helpers/localStorage';
 
 const storageKey : string = 'subcategory';
 export const useSubcategoryStore = defineStore(storageKey, () => {
     
-    const getData = () => localStorageHelper.default.getData(storageKey) as Subcategory[];
+    const getData = () => localStorageHelper.getData(storageKey) as Subcategory[];
     const setData = () => {
         console.log('subcategory store saved to localstorage');
-        localStorageHelper.default.setData(storageKey, subcategories.value);
+        localStorageHelper.setData(storageKey, subcategories.value);
     };
 
     const subcategories = ref(getData());

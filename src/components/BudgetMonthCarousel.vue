@@ -5,6 +5,7 @@ import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from 
 import { useMediaQuery } from '@vueuse/core';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { useCarouselStore } from '@/stores/carousel';
+import dateFormatter from '@/helpers/dateFormatter';
 
 const now = ref(today(getLocalTimeZone()).set({day: 1})); 
 const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -13,7 +14,7 @@ const carouselApi = ref<CarouselApi>();
 const carouselStore = useCarouselStore();
 const setCarouselApi = (api: CarouselApi) => {
   carouselApi.value = api;
-}
+};
 
 const monthOptions = computed(() => {
   const previousYear = now.value.set({day: 1}).subtract({years: 1}); //or oldest budget category date
@@ -35,7 +36,6 @@ const currentMonthIndex = computed(() => {
   monthOptions.value.forEach((option, index) => {
     const optionDate = option.toString();
     if (currentDate == optionDate){
-      console.log('match found!:',currentDate, optionDate);
       monthIndex = index;
     }
   });
@@ -66,12 +66,12 @@ const stopWatch = watch(carouselApi, (api) => {
         <div class="p-1">
             <div class="pb-2 text-3xl">
               <div v-if="isDesktop" class="flex flex-col items-center">
-                <span class="text-5xl font-semibold"> {{ carouselStore.getMonthName(month) }} </span>
-                <span> {{ carouselStore.getYear(month) }} </span>
+                <span class="text-5xl font-semibold"> {{ dateFormatter.format(month, 'monthName') }} </span>
+                <span> {{ dateFormatter.format(month, 'yearNumeric') }} </span>
               </div>
               <div v-else class="flex justify-center items-end align-center text-center">
-                <span class="font-semibold">{{ carouselStore.getMonthName(month) }}</span>
-                <span class="pl-2" >{{ carouselStore.getYear(month) }}</span>
+                <span class="font-semibold">{{ dateFormatter.format(month, 'monthName') }}</span>
+                <span class="pl-2" >{{ dateFormatter.format(month, 'yearNumeric') }}</span>
               </div>
             </div>
         </div>

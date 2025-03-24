@@ -2,7 +2,6 @@
 import type { Transaction } from '../types/';
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
-import { toDate } from 'radix-vue/date';
 import { computed, h, ref, onMounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
@@ -10,12 +9,12 @@ import { Check, ChevronsUpDown, Calendar as CalendarIcon, Plus } from 'lucide-vu
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, useField } from 'vee-validate';
 import * as zod from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import { useCarouselStore } from '@/stores/carousel';
-import { useBudgetStore } from '@/stores/budget';
-import { v4 as uuidv4 } from 'uuid';
+import dateFormatter from '@/helpers/dateFormatter';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -74,17 +73,7 @@ const isOpen = ref(false);
 const isComboBoxOpen = ref(false);
 
 const calendarPlaceholder = ref();
-
 const popupTitle = 'Add Transaction';
-
-const df = new DateFormatter('en-US', {
-  dateStyle: 'long',
-})
-
-const mf = new DateFormatter('en-US', {
-  month: 'long',
-  year: 'numeric'
-})
 
 const dateValue = computed({
   get: () => values.date ? parseDate(values.date) : undefined,
@@ -167,7 +156,7 @@ const cancelForm = () => {
             <PopoverTrigger as-child>
               <FormControl>
                 <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !dateValue && 'text-muted-foreground',)">
-                  <span>{{ dateValue ? df.format(toDate(dateValue)) : "Pick a date" }}</span>
+                  <span>{{ dateValue ? dateFormatter.format(dateValue, 'longDate') : "Pick a date" }}</span>
                   <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                 </Button>
                 <input hidden>
@@ -204,7 +193,7 @@ const cancelForm = () => {
               <FormControl>
                 <Button :disabled="values.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
                   <template v-if="values.income">
-                    Income for {{ `${carouselStore.getMonthName(parseDate(values.date as string))} ${carouselStore.getYear(parseDate(values.date as string))}` }}
+                    Income for {{ dateFormatter.format(values.date as string, 'monthYearDate') }}
                   </template>
                   <template v-else>
                     {{ values.category?.formatedName ?? 'Select category...' }}

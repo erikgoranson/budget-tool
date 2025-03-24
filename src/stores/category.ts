@@ -1,16 +1,16 @@
 import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Category, Budget } from '../types/';
-import * as localStorageHelper from '@/helpers/localStorage';
+import localStorageHelper from '@/helpers/localStorage';
 
 export const useCategoryStore = defineStore('category', () => {
 
     const storageKey = 'category';
 
-    const getData = () => localStorageHelper.default.getData(storageKey) as Category[];
+    const getData = () => localStorageHelper.getData(storageKey) as Category[];
     const setData = () => {
         console.log('category store saved to localstorage');
-        localStorageHelper.default.setData(storageKey, categories.value);
+        localStorageHelper.setData(storageKey, categories.value);
     };
 
     const categories = ref(getData());

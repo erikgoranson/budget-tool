@@ -43,11 +43,9 @@ const totalBudgeted = computed(() => {
 });
 
 const totalSpent = computed(() => {
-    const stuff = transactions.value
+    return transactions.value
         .filter(t => t.income === false && t.date < carouselStore.selectedMonth.add({months:1}).toString()) 
         .reduce((t, {amount}) => t + amount, 0);
-    console.log('total spent', stuff);
-    return stuff;
 });
 
 const totalIncome = computed(() => totalIncomeForMonth.value + previousMonthsIncome.value);
