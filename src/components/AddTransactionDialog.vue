@@ -127,7 +127,6 @@ const onSubmit = handleSubmit(values => {
     date: values.date,
     income: values.income ? values.income : false,
     categoryId: values.category.categoryId, 
-    budgetId: '',
     hasCleared: false,
     amount: values.amount,
     note: values.note,
@@ -135,7 +134,6 @@ const onSubmit = handleSubmit(values => {
   };
   
   if(values.income){
-    newTransaction.budgetId = transactionStore.incomeGuid;
     newTransaction.categoryId = transactionStore.incomeGuid;
   };
   

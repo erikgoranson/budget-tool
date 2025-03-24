@@ -56,13 +56,13 @@ export const useTransactionStore = defineStore('transaction', () => {
     };
 
     const getTransactionName = (tran: Transaction) => {
-        if (tran.categoryId == incomeGuid || tran.budgetId == incomeGuid){
+        if (tran.categoryId == incomeGuid){
             const date = parseDate(tran.date);
             const month = mf.format(toDate(date));
             return `Income for ${month}`;
         };
 
-        if (tran.categoryId == uncategorizedGuid || tran.budgetId == uncategorizedGuid){
+        if (tran.categoryId == uncategorizedGuid){
             return 'Uncategorized';
         };
 

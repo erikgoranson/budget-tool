@@ -91,7 +91,6 @@ const onSubmit = handleSubmit((values, actions) => {
             income: values.income ?? props.transaction.income,
             payee: values.payee ?? props.transaction.payee,
             categoryId: values?.category?.categoryId ?? props.transaction.categoryId,
-            budgetId: '',
             note: values.note ?? props.transaction.note,
             hasCleared: values.hasCleared ?? props.transaction.hasCleared,
             amount: values.amount ?? props.transaction.amount,
@@ -99,7 +98,6 @@ const onSubmit = handleSubmit((values, actions) => {
         }
 
         if(values.income){
-            updatedTransaction.budgetId = transactionStore.incomeGuid;
             updatedTransaction.categoryId = transactionStore.incomeGuid;
         };
 
