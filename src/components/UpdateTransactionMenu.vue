@@ -173,7 +173,7 @@ const onSubmit = handleSubmit((values, actions) => {
                                             Income for {{  mf.format(new Date()) }}
                                         </template>
                                         <template v-else>
-                                            {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
+                                            {{ props.transaction.budgetCategoryName ?? 'Select category...' }}
                                             <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </template>
                                     </Button>
@@ -200,7 +200,7 @@ const onSubmit = handleSubmit((values, actions) => {
                                                         isComboBoxOpen = false;
                                                     }"
                                                 >
-                                                    <Check :class="cn('mr-2 h-4 w-4', subcategory.id === values.category?.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
+                                                    <Check :class="cn('mr-2 h-4 w-4', subcategory.id === props.transaction.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
                                                     {{ subcategory.name }}
                                                 </CommandItem>
                                             </span>
