@@ -4,12 +4,15 @@ import type { TransactionRow, Transaction } from '../types/';
 import { ref, computed, watch } from 'vue';
 import { Calendar as CalendarIcon, MoreHorizontal, Check, ChevronsUpDown } from 'lucide-vue-next';
 import { useForm, useField } from 'vee-validate';
-//zod?
+
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, type DateValue, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { toDate } from 'radix-vue/date';
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
+import { useSubcategoryStore } from '@/stores/subcategory';
+import dateFormatter from '@/helpers/dateFormatter';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,18 +49,11 @@ const props = defineProps({
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
 
 const isComboBoxOpen = ref(false);
-
-const dateFormatter = new DateFormatter('en-US', {
-  dateStyle: 'long',
-})
-
-const mf = new DateFormatter('en-US', {
-  month: 'long',
-  year: 'numeric'
-})
 
 const deleteTransaction = () => {
     transactionStore.deleteTransaction(props.transaction.id);
@@ -67,7 +63,7 @@ const defaultDateValue = computed(() => {
     return parseDate(props.transaction.date) as DateValue;
 });
 
-const calendarPlaceholder = ref();
+const lastSelectedDate = ref<DateValue>();
 
 const { handleSubmit, setFieldValue, errors, values, resetForm } = useForm({
 });
@@ -87,15 +83,14 @@ const onSubmit = handleSubmit((values, actions) => {
             income: values.income ?? props.transaction.income,
             payee: values.payee ?? props.transaction.payee,
             categoryId: values?.category?.categoryId ?? props.transaction.categoryId,
-            budgetId: values?.category?.budgetId ?? props.transaction.budgetId,
             note: values.note ?? props.transaction.note,
             hasCleared: values.hasCleared ?? props.transaction.hasCleared,
             amount: values.amount ?? props.transaction.amount,
+            subcategoryId: values?.category?.subcategoryId ?? props.transaction.subcategoryId
         }
 
         if(values.income){
-            updatedTransaction.budgetId = categoryStore.incomeGuid;
-            updatedTransaction.categoryId = categoryStore.incomeGuid;
+            updatedTransaction.categoryId = transactionStore.incomeGuid;
         };
 
         transactionStore.updateTransaction(updatedTransaction);
@@ -128,7 +123,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <PopoverTrigger as-child>
                                 <FormControl>
                                     <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !transaction.date && 'text-muted-foreground',)">
-                                        <span>{{ calendarPlaceholder ? dateFormatter.format(new Date(calendarPlaceholder)) : dateFormatter.format(new Date(transaction.date)) }}</span>
+                                        <span>{{ lastSelectedDate ? dateFormatter.format(lastSelectedDate as CalendarDate , 'longDate') : dateFormatter.format(defaultDateValue as CalendarDate, 'longDate') }}</span>
                                         <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                                     </Button>
                                     <input hidden>
@@ -137,7 +132,7 @@ const onSubmit = handleSubmit((values, actions) => {
                             <PopoverContent class="w-auto p-0">
                                 <Calendar 
                                     :defaultValue="defaultDateValue"
-                                    v-model:placeholder="calendarPlaceholder"
+                                    v-model:placeholder="lastSelectedDate"
                                     calendar-label="Transaction date"
                                     initial-focus
                                     :min-value="new CalendarDate(1900, 1, 1)"
@@ -165,10 +160,10 @@ const onSubmit = handleSubmit((values, actions) => {
                                 <FormControl>
                                     <Button :disabled="values.income || props.transaction.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
                                         <template v-if="values.income || props.transaction.income">
-                                            Income for {{  mf.format(new Date()) }}
+                                            Income for {{  dateFormatter.format(today(getLocalTimeZone()), 'monthYearDate') }}
                                         </template>
                                         <template v-else>
-                                            {{ values.category?.formatedName ? values.category?.formatedName : 'Select category...' }}
+                                            {{ props.transaction.budgetCategoryName ?? 'Select category...' }}
                                             <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </template>
                                     </Button>
@@ -181,22 +176,22 @@ const onSubmit = handleSubmit((values, actions) => {
                                     <CommandList>
                                         <CommandGroup>
                                             <span v-for="category in categories">
-                                                <Label v-if="category.budgets.length > 0">{{ category.name }}</Label>
+                                                <Label v-if="subcategories.filter(x => x.categoryId == category.id).length > 0">{{ category.name }}</Label>
                                                 <CommandItem
-                                                    v-for="budget in category.budgets"
-                                                    :key="budget.id"
-                                                    :value="budget.name"
+                                                    v-for="subcategory in subcategories.filter(x => x.categoryId == category.id)"
+                                                    :key="subcategory.id"
+                                                    :value="subcategory.name"
                                                     @select="() => {
                                                         setFieldValue('category', {
-                                                            budgetId: budget.id,
+                                                            subcategoryId: subcategory.id,
                                                             categoryId: category.id,
-                                                            formatedName: `${category.name} : ${budget.name}`
+                                                            formatedName: `${category.name} : ${subcategory.name}`
                                                         });
                                                         isComboBoxOpen = false;
                                                     }"
                                                 >
-                                                    <Check :class="cn('mr-2 h-4 w-4', budget.id === values.category?.budgetId ? 'opacity-100' : 'opacity-0')"/>
-                                                    {{ budget.name }}
+                                                    <Check :class="cn('mr-2 h-4 w-4', subcategory.id === props.transaction.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
+                                                    {{ subcategory.name }}
                                                 </CommandItem>
                                             </span>
                                         </CommandGroup>

@@ -1,91 +1,88 @@
 <script setup lang="ts">
-import { ref, toRef, computed } from "vue";
+import { computed } from "vue";
 import { AlignJustify } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { useSidebarStore } from '@/stores/sidebar';
-import { useTransactionStore } from '@/stores/transaction';
-import { useCategoryStore } from '@/stores/category';
-import currencyFormatter from '@/helpers/numberFormat';
 
-import { Badge } from '@/components/ui/badge';
+import { useSidebarStore } from '@/stores/sidebar';
+import { useBudgetStore } from '@/stores/budget';
+import { useTransactionStore } from '@/stores/transaction';
+import { useCarouselStore } from '@/stores/carousel';
+import BudgetMonthCarousel from "./BudgetMonthCarousel.vue";
+import CurrencyBadge from '@/components/CurrencyBadge.vue';
 
 const sidebarStore = useSidebarStore();
+const carouselStore = useCarouselStore();
 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
 
-const categoryStore = useCategoryStore();
-const { categories } = storeToRefs(categoryStore);
+const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric'
+const previousMonthsIncome = computed(() => {
+    return transactions.value
+        .filter(t => t.income === true && t.date < carouselStore.selectedMonth.toString())
+        .reduce((total, i) => total + i.amount, 0);
 });
 
-const incomeTotal = computed(() => {
-    const amounts = transactions.value
-        .filter(x => x.income)
-        .map(tran => tran.amount);
-    if (amounts.length == 0) return 0.00;
-    return amounts.reduce((a, b) => a + b);
+const totalIncomeForMonth = computed(() => {
+    const currentMonthIncome = transactions.value.filter(t => t.date > carouselStore.selectedMonthString && t.income && t.date < carouselStore.selectedMonth.add({months:1}).toString());
+    return currentMonthIncome.reduce((total, i) => total + i.amount, 0);
 });
 
-const budgetTotal = computed(() => {
-    let budgetAmts = [] as number[];
-    categories.value.forEach(cat => {
-        const amounts = cat.budgets.map((x) => x.amount);
-        if(amounts.length != 0) {
-            budgetAmts.push(amounts.reduce((a, b) => a + b));
-        }
-    });
-
-    if (budgetAmts.length == 0){
-        return 0.00;
-    } 
-    else {
-        return budgetAmts.reduce((a, b) => a + b);
-    }
+const totalBudgetForCurrentMonth = computed(() => {
+    return budgets.value.filter(b => b.date >= carouselStore.selectedMonthString && b.date < carouselStore.selectedMonth.add({months:1}).toString()).reduce((b, {amount}) => b + amount, 0)
 });
 
-const remainingBudgetTotal = computed(() => {
-    return incomeTotal.value - budgetTotal.value; 
+const totalBudgetInFuture= computed(() => {
+    return budgets.value.filter(b => b.date >= carouselStore.selectedMonth.add({months:1}).toString()).reduce((b, {amount}) => b + amount, 0);
 });
+
+const totalBudgeted = computed(() => {
+    return budgets.value.reduce((t, {amount}) => t + amount, 0);
+});
+
+const totalSpent = computed(() => {
+    return transactions.value
+        .filter(t => t.income === false && t.date < carouselStore.selectedMonth.add({months:1}).toString()) 
+        .reduce((t, {amount}) => t + amount, 0);
+});
+
+const totalIncome = computed(() => totalIncomeForMonth.value + previousMonthsIncome.value);
+const remainingToSpend = computed(() => totalIncomeForMonth.value + previousMonthsIncome.value - totalSpent.value);
+const totalBudgetRemaining = computed(() => (totalIncome.value > 0) ? totalIncome.value - totalBudgeted.value : 0);
+const totalFutureBudget = computed(() => (totalIncome.value > 0) ? totalBudgetInFuture.value : 0);
 </script>
 
 <template>
     <header class="flex items-center justify-center px-4 py-4 bg-white border-b-4 border-indigo-600">
+
         <div class="flex justify-start">
             <button class="text-gray-500 focus:outline-none lg:hidden" @click="sidebarStore.isOpen = true">
                 <AlignJustify class="h-6 w-6" />
             </button>
         </div>
+
         <div class="flex-1 items-center justify-center">
             <div class="flex ml-auto items-center justify-center">
+                <div class="flex flex-col items-center">
 
-                <!-- here is where month used to be-->
-                <div class="flex flex-col">
-                    <span class="text-3xl mb-2">{{  dateFormatter.format(new Date()) }}</span>
-                    <div class="flex flex-col justify-center items-center">
-                        <div class="text-sm flex flex-col items-end justify-end">
-                            <div>
-                                Total Income: 
-                                <Badge class="ml-2 w-30" :class="{'bg-red-500': incomeTotal < 0, 'bg-green-500': incomeTotal > 0}">{{ currencyFormatter.format(incomeTotal) }}</Badge>
-                            </div>
-                            <div>
-                                Total Budgeted: 
-                                <Badge class="ml-2 w-30 bg-blue-800">{{ currencyFormatter.format(budgetTotal) }}</Badge>
-                            </div>
-                            <div>
-                                <template v-if="remainingBudgetTotal > 0 || remainingBudgetTotal == 0">
-                                    Left to Budget:
-                                </template>
-                                <template v-else>
-                                    Over Budget:
-                                </template>
-                                <Badge class="ml-2 w-30"  :class="{'bg-red-500': remainingBudgetTotal < 0, 'bg-green-500': remainingBudgetTotal > 0}">{{ currencyFormatter.format(remainingBudgetTotal) }}</Badge>
+                    <BudgetMonthCarousel />
+
+                    <div > 
+                        <div class="flex flex-col" id="dashboard thingy">
+                            <div class="flex flex-col justify-center items-center">
+                                <div class="text-sm flex flex-col items-end justify-end">
+                                    <CurrencyBadge :currencyValue="totalIncome" label="Total Income: "/>
+                                    <CurrencyBadge :currencyValue="totalBudgetForCurrentMonth" :label="`Budgeted for ${carouselStore.selectedMonthName}`"/>
+                                    <CurrencyBadge v-if="totalFutureBudget > 0" :currencyValue="totalFutureBudget" label="Budgeted in future"/>
+                                    <CurrencyBadge :currencyValue="remainingToSpend" label="Unspent Income" warning-label="Overspent Income"/>
+                                    <CurrencyBadge :currencyValue="totalBudgetRemaining" label="Left to Budget" warning-label="Over Budgeted"/>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

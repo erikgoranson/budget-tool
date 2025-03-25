@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types/';
+import type { Budget, BudgetRow, Category, Subcategory } from '../types/';
 import type { Cell } from '@tanstack/vue-table';
+import { v4 as uuidv4 } from 'uuid';
 import { ref, nextTick, computed } from 'vue';
 import { useForm } from 'vee-validate';
 import { FlexRender } from '@tanstack/vue-table';
-import { useCategoryStore } from '@/stores/category';
+import { useCarouselStore } from '@/stores/carousel';
+import { useBudgetStore } from '@/stores/budget';
+import { useSubcategoryStore } from '@/stores/subcategory';
 import { Input } from '@/components/ui/input';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from '@/components/ui/form';
 
@@ -14,7 +17,7 @@ const props = defineProps({
         required: true
     },
     cell : {
-        type: Object as () => Cell<Budget, unknown>,
+        type: Object as () => Cell<BudgetRow, unknown>,
         required: true
     },
     index : {
@@ -23,10 +26,12 @@ const props = defineProps({
     },
 });
 
-const categoryStore = useCategoryStore();
+const carouselStore = useCarouselStore();
+const budgetStore = useBudgetStore();
+const subcategoryStore = useSubcategoryStore();
 
 const editField = ref<string | undefined>(undefined);
-const modifiedBudget = ref<Budget>({} as Budget);
+const submittedRow = ref<BudgetRow>({} as BudgetRow); 
 let inputs = ref<HTMLInputElement[]>([]);
 
 const { handleSubmit, errors, resetForm } = useForm({});
@@ -38,21 +43,57 @@ const focusInput = async (key: string | undefined, index: number) => {
 };
 
 const onSubmit = handleSubmit((values, actions) => {
-    console.log(JSON.stringify(values, null, 2)); //debug
-    const updatedBudget = <Budget>{
-        id: modifiedBudget.value.id,
-        name: values.name ? values.name : modifiedBudget.value.name,
-        amount: values.amount ? parseFloat(values.amount) : modifiedBudget.value.amount,
-        dueDate: values.dueDate || values.dueDate == '' ? values.dueDate : modifiedBudget.value.dueDate,
+    console.log(JSON.stringify(values, null, 2)); 
+
+    const updatedBudgetRow: BudgetRow = <BudgetRow>{
+        budgetId: submittedRow.value.budgetId,
+        name: values?.name ?? submittedRow.value.name,
+        dueDate: values.dueDate || values.dueDate == '' ? values.dueDate : submittedRow.value.dueDate,
+        amount: values.amount ? parseFloat(values.amount) : submittedRow.value.amount,
+        budgetMonth: submittedRow.value.budgetMonth,
+        categoryId: submittedRow.value.categoryId,
+        subcategoryId: submittedRow.value.subcategoryId,
     };
 
-    const valuesMatch = JSON.stringify(updatedBudget) == JSON.stringify(modifiedBudget.value);
-    if (!valuesMatch) categoryStore.updateBudget(props.category.id, updatedBudget);
-    focusInput(undefined, 0);
+    const valuesMatch = JSON.stringify(updatedBudgetRow) == JSON.stringify(submittedRow.value);
+    if (!valuesMatch)
+    {
+        const budgetExists = submittedRow.value.budgetId !== '';
+        if (budgetExists)
+        {
+            const updatedBudget = <Budget>{
+                id: updatedBudgetRow.budgetId,
+                amount: updatedBudgetRow.amount,
+                date: updatedBudgetRow.budgetMonth,
+                subcategoryId: updatedBudgetRow.subcategoryId,
+            };
+            budgetStore.updateBudget(updatedBudget);
+        }
+        else 
+        {
+            const newBudget = <Budget>{
+                id: uuidv4(),
+                amount: updatedBudgetRow.amount,
+                date: carouselStore.selectedMonthString,
+                subcategoryId: updatedBudgetRow.subcategoryId,
+            };
+            budgetStore.createBudget(newBudget);
+        }
+
+        const updatedSubcategory = <Subcategory>{
+            id: updatedBudgetRow.subcategoryId,
+            name: updatedBudgetRow.name,
+            dueDate: updatedBudgetRow.dueDate,
+            categoryId: updatedBudgetRow.categoryId,
+        }
+        subcategoryStore.updateSubcategory(updatedSubcategory);
+
+        focusInput(undefined, 0);
+    }
 });
 
-const modifyBudget = (budget: Budget) => {
-    modifiedBudget.value = budget;
+const modifyBudget = (budget: BudgetRow) => {
+    submittedRow.value = budget;
     onSubmit();
 };
 </script>

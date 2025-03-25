@@ -40,7 +40,6 @@ const onSubmit = handleSubmit(values => {
 
     const updatedCategory: Category = {
         id: props.category.id, 
-        budgets: props.category.budgets, 
         name: values.name ? values.name : props.category.name,
         description: values.description ? values.description : props.category.description,
         hasDueDates: values.hasDueDates !== null ? values.hasDueDates : props.category.hasDueDates,

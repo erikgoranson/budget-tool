@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types';
+import type { Budget, BudgetRow, Category } from '../types';
 import type { ColumnDef,ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
 
 import { h, ref, computed} from 'vue';
@@ -11,7 +11,11 @@ import BudgetCell from './BudgetCell.vue';
 import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
+
+import { useBudgetStore } from '@/stores/budget';
+import { useCarouselStore } from '@/stores/carousel';
 import { useTransactionStore } from '@/stores/transaction';
+import { useSubcategoryStore } from '@/stores/subcategory';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
@@ -22,6 +26,14 @@ const props = defineProps({
         required: true
     },
 });
+
+const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
+
+const carouselStore = useCarouselStore();
+
+const subcategoryStore = useSubcategoryStore();
+const { subcategories } = storeToRefs(subcategoryStore);
 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
@@ -36,45 +48,39 @@ const columnVisibility = computed<VisibilityState>(() => {
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
 
-//TODO: review this problem and fix
-//https://www.reddit.com/r/vuejs/comments/1c4x7ha/what_is_your_favorite_data_table_library/
-const getTable = (budgets: Budget[]) => {
-    return useVueTable({
-        //data: props.category.budgets,
-        data: budgets,
-        columns: columnDefs,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
-        onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
-        onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
-        onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
-        state: {
-            get sorting() { return sorting.value },
-            get columnFilters() { return columnFilters.value },
-            get columnVisibility() { return columnVisibility.value },
-            get rowSelection() { return rowSelection.value },
-            get globalFilter() { return filter.value },
-        },
-    })
-}
-const getTotalExpensed = (budgetId: string) => {
-    const budgetTransactions = transactions.value.filter(tran => tran.budgetId == budgetId && tran.income == false);
-    
-    let totalExpensed = 0.00;
-    if(budgetTransactions.length > 0){
-        const amounts = budgetTransactions.map(x => x.amount);
-        totalExpensed = amounts.reduce((a, b) => a + b);
-    }
+const budgetRows = computed(() => {
+    const subs = subcategories.value.filter(s => s.categoryId == props.category.id);
 
-    return totalExpensed;
+    const rows: BudgetRow[] = subs.map(s => {
+        const budgetMatch = budgets.value.find(b => b.subcategoryId == s.id && b.date == carouselStore.selectedMonthString);
+        return <BudgetRow>{
+            subcategoryId: s.id,
+            name: s.name,
+            categoryId: s.categoryId,
+            dueDate: s.dueDate,
+            amount: budgetMatch?.amount ?? 0,
+            budgetMonth: budgetMatch?.date ?? '',
+            budgetId: budgetMatch?.id ?? '',
+        };
+    });
+
+    return rows;
+});
+
+const getTotalExpensed = (row: BudgetRow) => {
+    return transactions.value
+        .filter(t => 
+            t.subcategoryId == row.subcategoryId && 
+            t.income === false && 
+            t.date < carouselStore.selectedMonth.add({months:1}).toString() &&
+            t.date >= carouselStore.selectedMonth.toString()
+        )
+        .reduce((t, {amount}) => t + amount, 0);
 };
 
 const editableColumns = ['name','dueDate','amount'] as string[];
 
-const columnDefs: ColumnDef<Budget>[] = [
+const columnDefs: ColumnDef<BudgetRow>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => {
@@ -109,7 +115,7 @@ const columnDefs: ColumnDef<Budget>[] = [
         accessorKey: 'totalExpensed',
         header: ({ column }) => h('div', { }, 'spent'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.id);
+            const totalExpensed = getTotalExpensed(row.original);
             return h('div', { }, currencyFormatter.format(totalExpensed));
         },
     },
@@ -117,7 +123,7 @@ const columnDefs: ColumnDef<Budget>[] = [
         accessorKey: 'totalRemaining',
         header: ({ column }) => h('div', { }, 'remain'),
         cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original.id);
+            const totalExpensed = getTotalExpensed(row.original);
             const totalRemaining = row.original.amount - totalExpensed;
 
             return h('div', { }, currencyFormatter.format(totalRemaining));
@@ -131,19 +137,39 @@ const columnDefs: ColumnDef<Budget>[] = [
             return h('div', { class:'flex items-center text-center justify-center' }, 
                 h(UpdateBudgetMenu, {
                     categoryId: props.category.id,
-                    budget: row.original
+                    row: row.original
                 })
             );
         },
     },
 ];
+
+const table = useVueTable({
+    data: budgetRows,
+    columns: columnDefs,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    state: {
+        get sorting() { return sorting.value },
+        get columnFilters() { return columnFilters.value },
+        get columnVisibility() { return columnVisibility.value },
+        get rowSelection() { return rowSelection.value },
+        get globalFilter() { return filter.value },
+    },
+});
 </script>
 
 <template>
 	<div>
         <Table>
             <TableHeader class="bg-blue-300">
-                <TableRow v-for="headerGroup in getTable(props.category.budgets).getHeaderGroups()" :key="headerGroup.id">
+                <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">
                         <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
@@ -151,8 +177,8 @@ const columnDefs: ColumnDef<Budget>[] = [
             </TableHeader>
 
             <TableBody>
-                <template v-if="getTable(props.category.budgets).getRowModel().rows?.length">
-                    <template v-for="row in getTable(props.category.budgets).getRowModel().rows" :key="row.id">
+                <template v-if="table.getRowModel().rows?.length">
+                    <template v-for="row in table.getRowModel().rows" :key="row.id">
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
                                 

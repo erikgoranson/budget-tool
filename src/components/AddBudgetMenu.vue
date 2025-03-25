@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { Budget, Category } from '../types/';
+import type { Budget, Category, Subcategory } from '../types/';
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm, useField } from 'vee-validate'
 import * as zod from 'zod';
 import { FilePlus, Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp, ArrowUpDown,ChevronsUpDown, Check,  } from 'lucide-vue-next';
-import { useCategoryStore } from '@/stores/category';
+import { useBudgetStore } from '@/stores/budget';
+import { useCarouselStore } from '@/stores/carousel';
+import { useSubcategoryStore } from '@/stores/subcategory';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button } from '@/components/ui/button';
@@ -28,38 +30,48 @@ import {
 } from '@/components/ui/form';
 
 const props = defineProps({
-    category : {
-        type: Object as () => Category,
-        required: true
-    }
+  category : {
+    type: Object as () => Category,
+    required: true
+  }
 });
 
-const categoryStore = useCategoryStore();
+const budgetStore = useBudgetStore();
+const carouselStore = useCarouselStore();
+const subcategoryStore = useSubcategoryStore();
 
 const validationSchema = toTypedSchema(
-    zod.object({
-        name: zod.string().min(1, { message: 'Budget name is required' }),
-        dueDate: zod.number().optional(),
-        amount: zod.number(),
-    })
-)
+  zod.object({
+    name: zod.string().min(1, { message: 'Budget name is required' }),
+    dueDate: zod.number().optional(),
+    amount: zod.number(),
+  })
+);
 
 const { handleSubmit, errors, resetForm } = useForm({
   validationSchema,
 });
 
 const onSubmit = handleSubmit((values, actions) => {
-    console.log(JSON.stringify(values, null, 2));
+  console.log(JSON.stringify(values, null, 2));
 
-    const newBudget = <Budget>{
-        id: uuidv4(),
-        name: values.name,
-        amount: values.amount,
-        dueDate: values.dueDate ?? '',
-    };
+  const newSubcategory = <Subcategory>{
+    id: uuidv4(),
+    name: values.name,
+    dueDate: values.dueDate ?? '',
+    categoryId: props.category.id,
+  };
+  subcategoryStore.createSubcategory(newSubcategory);
 
-    categoryStore.createBudget(props.category.id, newBudget);
-    actions.resetForm();
+  const newBudget = <Budget>{
+    id: uuidv4(),
+    amount: values.amount,
+    date: carouselStore.selectedMonthString,
+    subcategoryId: newSubcategory.id,
+  };
+  budgetStore.createBudget(newBudget);
+
+  actions.resetForm();
 });
 </script>
 
