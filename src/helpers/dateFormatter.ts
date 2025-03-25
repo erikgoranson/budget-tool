@@ -32,4 +32,22 @@ const format = (dateValue: string | CalendarDate, optionName: string, locale: st
     return formatter.format(date);
 };
 
-export default { format };
+const addDateSuffix = (dateString: string) => {
+    const date = parseInt(dateString);
+    if(isNaN(date)){
+        return '';
+    }
+
+    if (date >= 11 && date <= 13) {
+        return `${date}th`;
+    };
+
+    switch (date % 10) {
+        case 1: return `${date}st`;
+        case 2: return `${date}nd`;
+        case 3: return `${date}rd`;
+        default: return `${date}th`;
+    }
+};
+
+export default { format, addDateSuffix };

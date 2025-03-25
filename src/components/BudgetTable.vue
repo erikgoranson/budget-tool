@@ -11,6 +11,7 @@ import BudgetCell from './BudgetCell.vue';
 import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
+import dateFormatter from '@/helpers/dateFormatter';
 
 import { useBudgetStore } from '@/stores/budget';
 import { useCarouselStore } from '@/stores/carousel';
@@ -99,7 +100,7 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
             }, () => ['Due', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
         },
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('dueDate')),
+        cell: ({ row }) => h('div', { class: 'capitalize' }, dateFormatter.addDateSuffix(row.getValue('dueDate'))),
     },
     {
         accessorKey: 'amount',
