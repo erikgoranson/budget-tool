@@ -10,6 +10,8 @@ import { useCarouselStore } from '@/stores/carousel';
 import currencyFormatter from '@/helpers/numberFormat';
 import { Rows4, ChevronUp, ChevronDown, ChevronsDown, ChevronsUp } from 'lucide-vue-next';
 
+import CategoryActionsMenu from './CategoryActionsMenu.vue';
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -116,6 +118,8 @@ const remainingTotal = computed(() => {
             <div>
             </div>
             <UpdateCategoryMenu :category="budgetCategory"/>
+
+            <CategoryActionsMenu :category="budgetCategory"/>
         </div>
 
     </div> 
