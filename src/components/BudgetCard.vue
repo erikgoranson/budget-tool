@@ -18,8 +18,8 @@ import {
 import { Toggle } from '@/components/ui/toggle';
 
 import BudgetTable from '@/components/BudgetTable.vue';
-import AddBudgetMenu from './AddBudgetMenu.vue';
 import CategoryActionsMenu from './category/CategoryActionsMenu.vue';
+import CreateBudgetForm from './budgetRow/CreateBudgetForm.vue';
 
 const props = defineProps({
     budgetCategory : {
@@ -71,8 +71,6 @@ const remainingTotal = computed(() => {
 
 <template>
     <div class="mt-6 overflow-hidden bg-white rounded-md shadow-lg">
-
-        <!--top part of the card-->
         <div class="flex justify-between px-4 py-4 bg-blue-300">
             <div class="flex items-center">
                 <div class="flex justify-center content-center items-center text-center align-middle h-4 mr-2 ">
@@ -97,24 +95,21 @@ const remainingTotal = computed(() => {
             </div>
         </div>
 
-        <!--middle (collapsed area of card)-->
         <div class="pb-2">
             <div>
                 <Collapsible v-model:open="isOpen">
                     <CollapsibleContent>
                         
                         <BudgetTable :category="budgetCategory"/>
-                        <AddBudgetMenu :category="budgetCategory"/>
+                        <CreateBudgetForm :category="budgetCategory"/>
                 
                     </CollapsibleContent>
                 </Collapsible>
             </div>
         </div>
 
-        <!--bottom graph area-->
         <div class="px-3 pt-0 pb-2 mb-2">
             <CategoryActionsMenu :category="budgetCategory" />
         </div>
-
     </div> 
 </template>

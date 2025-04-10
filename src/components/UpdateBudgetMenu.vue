@@ -27,8 +27,8 @@ const props = defineProps({
         type: Object as () => BudgetRow,
         required: true
     },
-    categoryId: {
-        type: String,
+    category: {
+        type: Object as () => Category,
         required: true,
     },
 });

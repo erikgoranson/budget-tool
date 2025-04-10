@@ -7,8 +7,6 @@ import { storeToRefs } from 'pinia';
 import { ArrowUpDown, FilePenLine, } from 'lucide-vue-next';
 import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable, } from '@tanstack/vue-table';
 
-import BudgetCell from './BudgetCell.vue';
-import UpdateBudgetMenu from './UpdateBudgetMenu.vue';
 import { valueUpdater } from '../lib/utils'; 
 import currencyFormatter from '../helpers/numberFormat'; 
 import dateFormatter from '@/helpers/dateFormatter';
@@ -20,6 +18,8 @@ import { useSubcategoryStore } from '@/stores/subcategory';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
+import BudgetCellEditor from './budgetRow/BudgetCellEditor.vue';
+import BudgetActionsMenu from './budgetRow/BudgetActionsMenu.vue';
 
 const props = defineProps({
     category : {
@@ -136,9 +136,9 @@ const columnDefs: ColumnDef<BudgetRow>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             return h('div', { class:'flex items-center text-center justify-center' }, 
-                h(UpdateBudgetMenu, {
-                    categoryId: props.category.id,
-                    row: row.original
+                h(BudgetActionsMenu, {
+                    category: props.category,
+                    budgetRow: row.original
                 })
             );
         },
@@ -183,7 +183,7 @@ const table = useVueTable({
                         <TableRow :data-state="row.getIsSelected() && 'selected'">
                             <TableCell v-for="(cell, index) in row.getVisibleCells()" :key="cell.id">
                                 
-                                <BudgetCell v-if="editableColumns.includes(cell.column.id)" :cell="cell" :index="index" :category="props.category"/>
+                                <BudgetCellEditor v-if="editableColumns.includes(cell.column.id)" :cell="cell" :index="index" :category="props.category"/>
 
                                 <FlexRender v-else :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                 

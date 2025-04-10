@@ -80,9 +80,7 @@ const onSubmit = handleSubmit(values => {
         }
     }
 
-    if(props.onSubmitFunction !== undefined){
-        props.onSubmitFunction();
-    }
+    props.onSubmitFunction();
 });
 </script>
 
@@ -92,7 +90,7 @@ const onSubmit = handleSubmit(values => {
 
         <FormField v-slot="{ componentField }" name="name">
             <FormItem>
-                <FormLabel></FormLabel>
+                <FormLabel>Category Name</FormLabel>
                 <FormControl>
                     <Input type="text" placeholder="Category Name, i.e. 'Monthly Bills'" v-bind="componentField" />
                 </FormControl>
@@ -103,7 +101,7 @@ const onSubmit = handleSubmit(values => {
 
         <FormField v-slot="{ componentField, }" name="description">
             <FormItem>
-                <FormLabel></FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                     <Input type="text" placeholder="Add a description" v-bind="componentField" />
                 </FormControl>
