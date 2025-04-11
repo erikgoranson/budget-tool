@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TransactionRow } from '@/types';
-import { formProps } from './formHelper';
+import { formProps } from './transactionFormHelper';
 import DialogDropdownMenu from '../DialogDropdownMenu.vue';
 import CreateTransactionForm from './TransactionForm.vue';
 import DeleteTransactionAlert from './DeleteTransactionAlert.vue';

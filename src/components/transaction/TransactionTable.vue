@@ -12,7 +12,7 @@ import { storeToRefs } from 'pinia';
 
 import { valueUpdater } from '@/lib/utils'; 
 import currencyFormatter from '@/helpers/numberFormat'; 
-import { transactionColumns } from './columns';
+import { transactionColumns } from './transactionColumns';
 import { useTransactionStore } from '@/stores/transaction';
 
 import {

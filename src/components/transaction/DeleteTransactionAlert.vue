@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TransactionRow } from '@/types';
-import { formProps } from './formHelper';
+import { formProps } from './transactionFormHelper';
 
 import { useTransactionStore } from '@/stores/transaction';
 import Button from '../ui/button/Button.vue';

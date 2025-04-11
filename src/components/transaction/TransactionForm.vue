@@ -10,7 +10,7 @@ import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import dateFormatter from '@/helpers/dateFormatter';
-import { handleSubmission, formProps, getTransactionRowSchema } from './formHelper';
+import { handleSubmission, formProps, getTransactionRowSchema } from './transactionFormHelper';
 
 import { Button } from '@/components/ui/button';
 import {
