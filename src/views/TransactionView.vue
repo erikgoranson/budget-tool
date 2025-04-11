@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TransactionTable from '@/components/TransactionTable.vue'
+import DataTable from '@/components/transaction/DataTable.vue';
 </script>
 
 <template>
-    <TransactionTable />
+    <DataTable />
 </template>
