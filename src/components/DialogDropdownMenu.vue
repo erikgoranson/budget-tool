@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DialogDropdownItem } from '@/types';
+import type { DialogDropdownItem } from '@/types';
 import { ref } from 'vue';
 import { MoreHorizontal } from 'lucide-vue-next';
 import { Button } from './ui/button';
