@@ -1,16 +1,14 @@
 import type { Budget, BudgetRow, Category, Subcategory } from '@/types/';
 import { toTypedSchema } from '@vee-validate/zod'
 import * as zod from 'zod';
+import { getOrAssignGuid, compareObjects, baseProps } from '@/helpers/baseFormHelper';
+
 import { useBudgetStore } from '@/stores/budget';
 import { useCarouselStore } from '@/stores/carousel';
 import { useSubcategoryStore } from '@/stores/subcategory';
-import { v4 as uuidv4 } from 'uuid';
-
-const compareObjects = (originalValue: any, formInput: BudgetRow) => {
-    return JSON.stringify(originalValue) == JSON.stringify(formInput);
-};
 
 export const formProps = {
+    ...baseProps,
     category : {
         type: Object as () => Category,
         required: true,
@@ -20,10 +18,6 @@ export const formProps = {
         type: Object as () => BudgetRow,
         required: false,
         default: {} as BudgetRow,
-    },
-    onSubmitFunction: { 
-        type: Function as (...args: any) => any,
-        required: false,
     },
 };
 
@@ -39,10 +33,6 @@ export const getValidationSchema = (category: Category) => {
           categoryId: zod.string().default(category.id),
         })
     );
-};
-
-const getOrAssignGuid = (guid: string) => {
-    return (guid != '') ? guid : uuidv4();
 };
 
 export const handleSubmission = (userInput: any, originalRow: BudgetRow) => {

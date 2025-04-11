@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
 import { useCategoryStore } from '@/stores/category';
+import { compareObjects, baseProps } from '@/helpers/baseFormHelper';
 
 import {
   FormControl,
@@ -22,15 +23,12 @@ import { Switch } from '@/components/ui/switch';
 import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
 
 const props = defineProps({
+    ...baseProps,
     category : {
         type: Object as () => Category,
         required: false,
         default: {} as Category,
     }, 
-    onSubmitFunction: { 
-        type: Function as (...args: any) => any,
-        required: true,
-    }
 });
 
 const categoryStore = useCategoryStore();
@@ -40,7 +38,7 @@ const validationSchema = toTypedSchema(
         id: zod.string().default(uuidv4()),
         name: zod.string().min(1, { message: 'Category name is required' }),
         description: zod.string().optional(),
-        hasDueDates: zod.boolean().default(false).optional(),
+        hasDueDates: zod.boolean().default(false),//.optional(),
     }),
 );
 
@@ -48,16 +46,6 @@ const { handleSubmit, errors } = useForm({
     validationSchema,
     initialValues: props.category
 });
-
-const compareObjects = (originalValue: any, formInput: Category) => {
-    const idValuesAltered = originalValue?.id !== formInput.id && formInput.id !== undefined;
-    if (idValuesAltered)
-    {
-        console.error(`ID value is being changed from ${originalValue?.id} to ${formInput.id}`);
-        return;
-    }
-    return JSON.stringify(originalValue) == JSON.stringify(formInput);
-}
 
 const onSubmit = handleSubmit(values => {
     const valuesMatch = compareObjects(values, props.category);
