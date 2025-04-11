@@ -31,8 +31,8 @@ const dropdownOptions = [
         <template v-slot:update="{ dialogFunction: { toggleDialog } }">
             <CreateUpdateForm :category="category" :onSubmitFunction="toggleDialog" />
         </template>
-        <template v-slot:delete="{ dialogFunction: { toggleDialog } }">
-            <DeleteCategoryAlert :category="category" :onSubmitFunction="toggleDialog" />
+        <template v-slot:delete>
+            <DeleteCategoryAlert :category="category" />
         </template>
     </DialogDropdownMenu>
 </template>

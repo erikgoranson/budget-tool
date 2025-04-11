@@ -3,7 +3,7 @@ import type { Category } from '@/types';
 import { formProps } from './budgetFormHelper';
 import { useBudgetStore } from '@/stores/budget';
 import { useSubcategoryStore } from '@/stores/subcategory';
-import Button from '../ui/button/Button.vue';
+import DeleteAlert from '../DeleteAlert.vue';
 
 const props = defineProps(formProps);
 const budgetStore = useBudgetStore();
@@ -13,20 +13,18 @@ const deleteBudget = () => {
     console.log('deleting budget', props.budgetRow.budgetId);
     budgetStore.deleteBudget(props.budgetRow.budgetId);
     subcategoryStore.deleteSubcategory(props.budgetRow.subcategoryId);
-    props.onSubmitFunction();
 };
 </script>
 
 <template>
-    <div>
-        This action will permanently delete the selected budget and all its related data. This cannot be undone. 
-    </div>
-    <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-x-2">
-        <Button class="bg-red-500" @click="deleteBudget">
-            Delete
-        </Button>
-        <Button variant="outline" @click="onSubmitFunction">
-            Cancel
-        </Button>
-    </div>
+    <DeleteAlert :onSubmitFunction="deleteBudget" record-type="budget subcategory">
+        <template #messageContent>
+            <p>
+                This action will permanently delete the selected budget and all its related data. This cannot be undone.
+            </p>
+            <p>
+                Be advised that this includes the budgeted amounts towards this subcategory for ALL months. If your intent is to zero out the budget for this subcategory on a single month, consider revising that month's budget instead
+            </p>
+        </template>
+    </DeleteAlert>
 </template>

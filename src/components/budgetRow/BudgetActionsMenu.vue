@@ -25,8 +25,8 @@ const dropdownOptions = [
         <template v-slot:update="{ dialogFunction: { toggleDialog } }">
             <UpdateBudgetForm :category="category" :budget-row="budgetRow" :onSubmitFunction="toggleDialog" />
         </template>
-        <template v-slot:delete="{ dialogFunction: { toggleDialog } }">
-            <DeleteBudgetAlert :category="category" :budget-row="budgetRow" :onSubmitFunction="toggleDialog" />
+        <template v-slot:delete>
+            <DeleteBudgetAlert :category="category" :budget-row="budgetRow" />
         </template>
     </DialogDropdownMenu>
 </template>
