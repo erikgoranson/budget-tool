@@ -18,11 +18,12 @@ const dropdownOptions = [
         isAlert: false,
         //TODO: use h() here so we can avoid using the slots
     },
-    {
-        slotName: 'delete',
-        dialogName: 'Delete Category',
-        isAlert: true,
-    },
+    // {
+    //     //TODO: rework this item to avoid math issues and orphaned budgets/subcategories
+    //     slotName: 'delete',
+    //     dialogName: 'Delete Category',
+    //     isAlert: true,
+    // },
 ];
 </script>
 

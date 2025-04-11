@@ -12,11 +12,11 @@ const dropdownOptions = [
         dialogName: 'Edit Budget',
         isAlert: false,
     },
-    {
-        slotName: 'delete',
-        dialogName: 'Delete Budget',
-        isAlert: true,
-    },
+    // { //TODO: rework this process
+    //     slotName: 'delete',
+    //     dialogName: 'Delete Budget',
+    //     isAlert: true,
+    // },
 ];
 </script>
 
