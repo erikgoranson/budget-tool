@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineEmits, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
 
 import {
