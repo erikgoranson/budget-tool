@@ -7,7 +7,7 @@ import { useSidebarStore } from '@/stores/sidebar';
 import { useBudgetStore } from '@/stores/budget';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCarouselStore } from '@/stores/carousel';
-import BudgetMonthCarousel from "./BudgetMonthCarousel.vue";
+import BudgetMonthCarousel from "./budgetRow/BudgetMonthCarousel.vue";
 import CurrencyBadge from '@/components/CurrencyBadge.vue';
 
 const sidebarStore = useSidebarStore();
