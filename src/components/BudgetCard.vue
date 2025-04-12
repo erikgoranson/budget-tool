@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Toggle } from '@/components/ui/toggle';
 
-import BudgetTable from '@/components/BudgetTable.vue';
+import BudgetTable from './budgetRow/BudgetTable.vue';
 import CategoryActionsMenu from './category/CategoryActionsMenu.vue';
 import CreateBudgetForm from './budgetRow/CreateBudgetForm.vue';
 

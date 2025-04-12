@@ -23,10 +23,10 @@ const dropdownOptions = [
 <template>
     <DialogDropdownMenu :options="dropdownOptions">
         <template v-slot:update="{ dialogFunction: { toggleDialog } }">
-            <UpdateBudgetForm :category="category" :budget-row="budgetRow" :onSubmitFunction="toggleDialog" />
+            <UpdateBudgetForm :budget-row="budgetRow" :onSubmitFunction="toggleDialog" />
         </template>
         <template v-slot:delete>
-            <DeleteBudgetAlert :category="category" :budget-row="budgetRow" />
+            <DeleteBudgetAlert :budget-row="budgetRow" />
         </template>
     </DialogDropdownMenu>
 </template>

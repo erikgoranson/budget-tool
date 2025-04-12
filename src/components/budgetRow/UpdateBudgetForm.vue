@@ -19,7 +19,7 @@ import HideVirtualKeyboard from '@/components/HideVirtualKeyboard.vue';
 const props = defineProps(formProps);
 
 const { handleSubmit, errors, resetForm } = useForm({
-  validationSchema: getValidationSchema(props.category),
+  validationSchema: getValidationSchema(props.budgetRow.categoryId),
   initialValues: props.budgetRow as any, 
 });
 

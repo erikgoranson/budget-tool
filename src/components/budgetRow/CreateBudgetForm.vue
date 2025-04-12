@@ -27,7 +27,7 @@ import {
 const props = defineProps(formProps);
 
 const { handleSubmit, errors, resetForm } = useForm({
-  validationSchema: getValidationSchema(props.category),
+  validationSchema: getValidationSchema(props.category?.id),
 });
 
 const onSubmit = handleSubmit((values, actions) => {
