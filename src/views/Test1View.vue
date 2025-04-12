@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BudgetCard from '@/components/BudgetCard.vue';
+import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
 import { storeToRefs } from 'pinia'
 import { useCategoryStore } from '@/stores/category';
 
