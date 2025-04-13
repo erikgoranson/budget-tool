@@ -45,8 +45,8 @@ const budgetRows = computed(() => {
             categoryId: s.categoryId,
             dueDate: s.dueDate,
             amount: budgetMatch?.amount ?? 0,
-            budgetMonth: budgetMatch?.date ?? '',
-            budgetId: budgetMatch?.id ?? '',
+            date: budgetMatch?.date ?? '',
+            id: budgetMatch?.id ?? '',
         };
     });
 

@@ -9,7 +9,7 @@ const props = defineProps(formProps);
 const budgetStore = useBudgetStore();
 
 const deleteBudget = () => {
-    console.log('deleting budget', props.budgetRow.budgetId, props.budgetRow.budgetMonth);
+    console.log('deleting budget', props.budgetRow.id, props.budgetRow.date);
     budgetStore.resetBudget(props.budgetRow);
 };
 </script>
@@ -17,7 +17,7 @@ const deleteBudget = () => {
 <template>
     <DeleteAlert :onSubmitFunction="deleteBudget" record-type="budget">
         <template #messageContent>
-            This action will permanently delete the {{ dateFormatter.format(budgetRow.budgetMonth, 'monthYearDate') }} budget for {{ budgetRow.name }}. This cannot be undone.
+            This action will permanently delete the {{ dateFormatter.format(budgetRow.date, 'monthYearDate') }} budget for {{ budgetRow.name }}. This cannot be undone.
         </template>
     </DeleteAlert>
 </template>

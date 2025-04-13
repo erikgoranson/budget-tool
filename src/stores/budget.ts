@@ -35,9 +35,9 @@ export const useBudgetStore = defineStore('budget', () => {
 
     const resetBudget = (row: BudgetRow) => {
         const budget = <Budget>{
-            id: row.budgetId,
+            id: row.id,
             amount: 0,
-            date: row.budgetMonth,
+            date: row.date,
             subcategoryId: row.subcategoryId,
         };
         updateBudget(budget);

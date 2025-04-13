@@ -50,8 +50,8 @@ export const handleSubmission = (userInput: any, originalRow: BudgetRow) => {
 
         //validate guids and month string
         mergedValues.subcategoryId = getOrAssignGuid(mergedValues.subcategoryId);
-        mergedValues.budgetId = getOrAssignGuid(mergedValues.budgetId);
-        mergedValues.budgetMonth = carouselStore.selectedMonthString;
+        mergedValues.id = getOrAssignGuid(mergedValues.id);
+        mergedValues.date = carouselStore.selectedMonthString;
         // console.log('revised values', JSON.stringify(mergedValues, null, 2));
 
         const mergedSubcategory = <Subcategory>{
@@ -62,9 +62,9 @@ export const handleSubmission = (userInput: any, originalRow: BudgetRow) => {
         };
         
         const mergedBudget = <Budget>{
-            id: mergedValues.budgetId,
+            id: mergedValues.id,
             amount: mergedValues.amount,
-            date: mergedValues.budgetMonth,
+            date: mergedValues.date,
             subcategoryId: mergedValues.subcategoryId,
         };
         
@@ -79,7 +79,7 @@ export const handleSubmission = (userInput: any, originalRow: BudgetRow) => {
             subcategoryStore.createSubcategory(mergedSubcategory);
         };
 
-        const budgetExistsForThisMonth = originalRow.budgetId !== '' && originalRow.budgetId !== undefined;
+        const budgetExistsForThisMonth = originalRow.id !== '' && originalRow.id !== undefined;
         if (budgetExistsForThisMonth){
             console.log('updating', mergedSubcategory.name, 'budget for', carouselStore.selectedMonthString, JSON.stringify(mergedBudget, null, 2));
             budgetStore.updateBudget(mergedBudget);
