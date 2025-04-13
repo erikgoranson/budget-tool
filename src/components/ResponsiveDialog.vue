@@ -79,8 +79,13 @@ const toggleDialog = () => {
     </span>
 
     <DefineContent>
-        <slot :close="{ toggleDialog }">
-            DEFAULT CONTENT FOR {{ title }}
+        <slot :close="{ toggleDialog }">{{ title }}
+            <p>
+                {{ title }}
+            </p>
+            <AlertDialogCancel v-if="isAlert">
+                Cancel
+            </AlertDialogCancel>
         </slot>
     </DefineContent>
 
