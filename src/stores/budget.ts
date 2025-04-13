@@ -1,3 +1,4 @@
+import type { BudgetRow } from '../types/';
 import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Budget } from '../types/';
@@ -22,7 +23,6 @@ export const useBudgetStore = defineStore('budget', () => {
 
     const updateBudget = (budget: Budget) => {
         const index = budgets.value.findIndex(x => x.id == budget.id);
-
         budgets.value.splice(index, 1, budget);
         setData();
     };
@@ -32,5 +32,20 @@ export const useBudgetStore = defineStore('budget', () => {
         console.log('after delete:', JSON.stringify(budgets.value));
         setData();
     };
-    return { budgets, createBudget, deleteBudget, updateBudget };
+
+    const resetBudget = (row: BudgetRow) => {
+        const budget = <Budget>{
+            id: row.budgetId,
+            amount: 0,
+            date: row.budgetMonth,
+            subcategoryId: row.subcategoryId,
+        };
+        updateBudget(budget);
+    };
+
+    const getBudgetsBySubcategoryId = (subcategoryId: string) => {
+        return budgets.value.filter(x => x.subcategoryId == subcategoryId);
+    };
+
+    return { budgets, createBudget, deleteBudget, resetBudget, updateBudget, getBudgetsBySubcategoryId };
 });

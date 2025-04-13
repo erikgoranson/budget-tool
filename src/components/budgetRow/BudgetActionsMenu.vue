@@ -4,6 +4,7 @@ import { formProps } from './budgetFormHelper';
 import DialogDropdownMenu from '../DialogDropdownMenu.vue';
 import UpdateBudgetForm from './UpdateBudgetForm.vue';
 import DeleteBudgetAlert from './DeleteBudgetAlert.vue';
+import DeleteSubcategoryAlert from './DeleteSubcategoryAlert.vue';
 
 const props = defineProps(formProps);
 const dropdownOptions = [
@@ -12,11 +13,16 @@ const dropdownOptions = [
         dialogName: 'Edit Budget',
         isAlert: false,
     },
-    // { //TODO: rework this process
-    //     slotName: 'delete',
-    //     dialogName: 'Delete Budget',
-    //     isAlert: true,
-    // },
+    {
+        slotName: 'deleteBudget',
+        dialogName: 'Delete Budget',
+        isAlert: true,
+    },
+    {
+        slotName: 'deleteSub',
+        dialogName: 'Delete Category',
+        isAlert: true,
+    },
 ];
 </script>
 
@@ -25,8 +31,11 @@ const dropdownOptions = [
         <template v-slot:update="{ dialogFunction: { toggleDialog } }">
             <UpdateBudgetForm :budget-row="budgetRow" :onSubmitFunction="toggleDialog" />
         </template>
-        <template v-slot:delete>
+        <template v-slot:deleteBudget>
             <DeleteBudgetAlert :budget-row="budgetRow" />
+        </template>
+        <template v-slot:deleteSub>
+            <DeleteSubcategoryAlert :budget-row="budgetRow" />
         </template>
     </DialogDropdownMenu>
 </template>
