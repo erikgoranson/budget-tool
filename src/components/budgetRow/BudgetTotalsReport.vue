@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Budget, Category  } from "@/types";
-
 import { ref, toRef, computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
@@ -21,11 +20,11 @@ const { transactions } = storeToRefs(transactionStore);
 const budgetStore = useBudgetStore();
 const { budgets } = storeToRefs(budgetStore);
 const subcategoryStore = useSubcategoryStore();
-const { subcategories } = storeToRefs(subcategoryStore);
 const carouselStore = useCarouselStore();
 
 const budgetTotal = computed(() => {
-    let total = subcategories.value.reduce((total, s) => {
+    const subcategories = subcategoryStore.getSubcategoriesByCategoryId(props.category.id);
+    let total = subcategories.reduce((total, s) => {
         let matches = budgets.value.filter(b => b.subcategoryId == s.id && b.date == carouselStore.selectedMonthString);
         let subtotal =  matches.reduce((subtotal, budget) => {
             return subtotal + budget.amount;
