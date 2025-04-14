@@ -24,11 +24,11 @@ export const formProps = {
 export const getValidationSchema = (categoryId: string) => {
     return toTypedSchema(
         zod.object({
-          budgetId: zod.string().default(''),
+          id: zod.string().default(''),
           name: zod.string().min(1, { message: 'Budget name is required' }),
           dueDate: zod.number().or(zod.string()).optional(),
           amount: zod.number(),
-          budgetMonth: zod.string().default(''),
+          date: zod.string().default(''),
           subcategoryId: zod.string().default(''),
           categoryId: zod.string().default(categoryId),
         })
