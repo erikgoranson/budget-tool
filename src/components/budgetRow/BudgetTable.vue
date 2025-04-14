@@ -42,7 +42,7 @@ const budgetRows = computed(() => {
         return <BudgetRow>{
             subcategoryId: s.id,
             name: s.name,
-            categoryId: s.categoryId,
+            categoryId: props.category.id,
             dueDate: s.dueDate,
             amount: budgetMatch?.amount ?? 0,
             date: budgetMatch?.date ?? '',
