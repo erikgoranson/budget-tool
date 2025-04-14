@@ -4,7 +4,7 @@ import { computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
-import BudgetCard from '@/components/BudgetCard.vue';
+import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -7,14 +6,15 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/vue-table';
-import type { Transaction } from '../types/';
 
 import { h, ref, computed } from 'vue';
-import { valueUpdater } from '../lib/utils'; 
-import currencyFormatter from '../helpers/numberFormat'; 
 import { storeToRefs } from 'pinia';
+
+import { valueUpdater } from '@/lib/utils'; 
+import currencyFormatter from '@/helpers/numberFormat'; 
+import { transactionColumns } from './transactionColumns';
 import { useTransactionStore } from '@/stores/transaction';
-import { useMediaQuery } from '@vueuse/core';
+
 import {
   FlexRender,
   getCoreRowModel,
@@ -24,17 +24,14 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-import { ArrowUpDown,ChevronsUpDown, Check, ChevronDown, FilePenLine, Proportions } from 'lucide-vue-next';
-
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { Checkbox } from '../components/ui/checkbox';
+import { ChevronDown,} from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -42,19 +39,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table';
-import UpdateTransactionMenu from '../components/UpdateTransactionMenu.vue';
+} from '@/components/ui/table';
+
+const transactionStore = useTransactionStore();
+const { transactionRows } = storeToRefs(transactionStore);
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
-
-const isDesktop = useMediaQuery('(min-width: 768px)');
-
-const transactionStore = useTransactionStore();
-const { transactionRows } = storeToRefs(transactionStore);
 
 const selectedTotalText = computed(() => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -68,100 +62,9 @@ const selectedTotalText = computed(() => {
     }
 });
 
-const data = transactionRows;
-
-const columns: ColumnDef<Transaction>[] = [
-    //checkbox column
-    {
-        id: 'select',
-        header: ({ table }) => 
-            h(Checkbox, {
-                'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),'onUpdate:checked': value => table.toggleAllPageRowsSelected(!!value),
-                'ariaLabel': 'Select all',
-            }),
-        cell: ({ row }) => 
-            h(Checkbox, {
-                'checked': row.getIsSelected(),
-                'onUpdate:checked': value => row.toggleSelected(!!value),
-                'ariaLabel': 'Select row',
-            }),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: 'date',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Date', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('date')), //TODO: format to MMddyy
-    },
-    {
-        accessorKey: 'budgetCategoryName',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Category', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('budgetCategoryName')),
-    },
-    /* //temp removing these until fix mobile spacing
-    {
-        accessorKey: 'payee',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Payee', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('payee')),
-    },*/
-    {
-        accessorKey: 'note',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Note', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
-        cell: ({ row }) => h('div', { }, row.getValue('note')),
-    },
-    {
-        accessorKey: 'amount',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Amount', h(ArrowUpDown, { class: 'ml-2 h-4 w-4 text-right' })])
-        },
-        cell: ({ row }) => {
-            const amount = Number.parseFloat(row.getValue('amount'))
-
-            const isIncome = row.original.income;
-            const formattedAmt = currencyFormatter.format(amount);
-
-            const flowStyle = isIncome ? 'text-green-500' : 'text-red-500';
-            //const flowSign = isIncome ? '+' : '-';
-            return h('div', { class: `font-medium font-semibold ${flowStyle}` }, formattedAmt)
-        },
-    },
-    {
-        id: 'actions',
-        header: () => ['', h(FilePenLine, { class: 'ml-2 h-4 w-4' })],
-        enableHiding: false,
-        cell: ({ row }) => {
-            return h(UpdateTransactionMenu, {
-                transaction: row.original,
-            })
-        },
-    },
-]
-
+const columns = transactionColumns;
 const table = useVueTable({
-    data,
+    data: transactionRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -172,14 +75,13 @@ const table = useVueTable({
     onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
     onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
     state: {
-        //pageSize: 50, //???
         get sorting() { return sorting.value },
         get columnFilters() { return columnFilters.value },
         get columnVisibility() { return columnVisibility.value },
         get rowSelection() { return rowSelection.value },
         get globalFilter() { return filter.value },
     },
-})
+});
 </script>
 
 <template>

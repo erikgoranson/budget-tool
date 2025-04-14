@@ -1,31 +1,18 @@
 <script setup lang="ts">
-import type { Transaction } from '../types/';
+import type { Transaction, TransactionRow } from '@/types';
 import { cn } from '@/lib/utils';
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
 import { computed, h, ref, onMounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
 import { Check, ChevronsUpDown, Calendar as CalendarIcon, Plus } from 'lucide-vue-next';
-import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, useField } from 'vee-validate';
-import * as zod from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from '@/stores/subcategory';
-import { useCarouselStore } from '@/stores/carousel';
 import dateFormatter from '@/helpers/dateFormatter';
+import { handleSubmission, formProps, getTransactionRowSchema } from './transactionFormHelper';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import {
   FormControl,
   FormDescription,
@@ -42,111 +29,63 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 
+const props = defineProps(formProps);
+
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 const subcategoryStore = useSubcategoryStore();
 const { subcategories } = storeToRefs(subcategoryStore);
 const transactionStore = useTransactionStore();
-const carouselStore = useCarouselStore();
 
-const [DefineAddTransactionForm, UseAddTransactionForm] = createReusableTemplate();
-const [DefineTriggerTemplate, ReuseTriggerTemplate] = createReusableTemplate()
-const isDesktop = useMediaQuery('(min-width: 768px)')
-
-const isOpen = ref(false);
 const isComboBoxOpen = ref(false);
 
-const calendarPlaceholder = ref();
-const popupTitle = 'Add Transaction';
+const transactionDataFound = computed(() => Object.keys(props.transaction).length !== 0);
 
 const dateValue = computed({
-  get: () => values.date ? parseDate(values.date) : undefined,
-  set: val => val,
-})
+  get: () => {
+    const lastTouchedDate = (transactionStore.lastTouchedDate !== '') ? parseDate(String(transactionStore?.lastTouchedDate)) : undefined;
+    const inputDate = (values.date) ? parseDate(values.date) : today(getLocalTimeZone());
 
-const validationSchema = toTypedSchema(
-  zod.object({
-    date: zod.string().refine(v => v, { message: 'A date is required.' }),
-    amount: zod.number(),
-    category: zod.object({
-      subcategoryId: zod.string(),
-      categoryId: zod.string(),
-      formatedName: zod.string(),
-    }),
-    income: zod.boolean().optional(),
-    note: zod.string().optional(),
-  })
-);
-
-const { handleSubmit, setFieldValue, values, errors } = useForm({
-  validationSchema,
-  initialValues: {
-    date: today(getLocalTimeZone()).toString(),
-    category: {
-      subcategoryId: transactionStore.uncategorizedGuid,
-      categoryId: transactionStore.uncategorizedGuid,
-      formatedName: 'Uncategorized'
-    }, 
-    income: false,
+    if (transactionDataFound.value)
+    {
+      return inputDate;
+    }
+    else 
+    {
+      return lastTouchedDate ?? inputDate;
+    }
+  },
+  set: val => {
+    const value = val ? val.toString() :  '';
+    transactionStore.setLastTouchedDate(value);
+    return val;
   },
 });
 
-const onSubmit = handleSubmit(values => {
-  //console.log(JSON.stringify(values, null, 2))
-  isOpen.value = !isOpen.value;
-  
-  const newTransaction: Transaction = {
-    id: uuidv4(),
-    date: values.date,
-    income: values.income ? values.income : false,
-    categoryId: values.category.categoryId, 
-    hasCleared: false,
-    amount: values.amount,
-    note: values.note,
-    subcategoryId: values.category.subcategoryId, 
-  };
-  
-  if(values.income){
-    newTransaction.categoryId = transactionStore.incomeGuid;
-  };
-  
-  console.log('new transaction:', newTransaction);
-  transactionStore.createTransaction(newTransaction);
+const initialValues = computed(() => {
+  const defaultDate = { date: today(getLocalTimeZone()).toString() } as TransactionRow;
+  return (transactionDataFound.value) ? props.transaction : defaultDate;
 });
 
-const cancelForm = () => {
-  isOpen.value = !isOpen.value;
-}
+const { handleSubmit, setFieldValue, values, errors } = useForm({
+  validationSchema: getTransactionRowSchema(),
+  initialValues: initialValues.value,
+});
+
+const onSubmit = handleSubmit(values => {
+  handleSubmission(values, props.transaction);
+  //actions.resetForm();
+  props?.onSubmitFunction();
+});
 </script>
 
 <template>
-
-  <DefineTriggerTemplate>
-    <div class="flex justify-center items-center">
-      <Button class="bg-orange-200 flex justify-center items-center" variant="secondary">
-        <Plus class="h-4 w-4 mr-1 px-0"/>
-        Transaction
-      </Button>
-    </div>
-  </DefineTriggerTemplate>
-
-  <DefineAddTransactionForm>
     <form class="grid items-start gap-1 px-4" @submit.prevent="onSubmit">
       
       <FormField :keepValue=true name="date">
@@ -156,7 +95,7 @@ const cancelForm = () => {
             <PopoverTrigger as-child>
               <FormControl>
                 <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !dateValue && 'text-muted-foreground',)">
-                  <span>{{ dateValue ? dateFormatter.format(dateValue, 'longDate') : "Pick a date" }}</span>
+                  <span>{{ values.date ? dateFormatter.format(dateValue, 'longDate') : "Pick a date" }}</span>
                   <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                 </Button>
                 <input hidden>
@@ -164,7 +103,6 @@ const cancelForm = () => {
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
               <Calendar 
-                v-model:placeholder="calendarPlaceholder"
                 v-model="dateValue"
                 calendar-label="Transaction date"
                 initial-focus
@@ -191,12 +129,13 @@ const cancelForm = () => {
           <Popover v-model:open="isComboBoxOpen">
             <PopoverTrigger as-child>
               <FormControl>
-                <Button :disabled="values.income" variant="outline" role="combobox" :class="cn('justify-between', !values.category?.categoryId && 'text-muted-foreground')">
+                <Button :disabled="values.income" variant="outline" role="combobox" :class="cn('justify-between', !values.categoryId && 'text-muted-foreground')">
                   <template v-if="values.income">
                     Income for {{ dateFormatter.format(values.date as string, 'monthYearDate') }}
+                    
                   </template>
                   <template v-else>
-                    {{ values.category?.formatedName ?? 'Select category...' }}
+                    {{ values.budgetCategoryName ?? 'Select category...' }}
                     <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </template>
                 </Button>
@@ -215,14 +154,12 @@ const cancelForm = () => {
                         :key="subcategory.id"
                         :value="subcategory.name"
                         @select="() => {
-                          setFieldValue('category', {
-                            subcategoryId: subcategory.id,
-                            categoryId: category.id,
-                            formatedName: `${category.name} : ${subcategory.name}`
-                          });
+                          setFieldValue('subcategoryId', subcategory.id);
+                          setFieldValue('categoryId', category.id);
+                          setFieldValue('budgetCategoryName', `${category.name} : ${subcategory.name}`); //does this work? 
                           isComboBoxOpen = false;
                         }">
-                          <Check :class="cn('mr-2 h-4 w-4', subcategory.id === values.category?.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
+                          <Check :class="cn('mr-2 h-4 w-4', subcategory.id === values.subcategoryId ? 'opacity-100' : 'opacity-0')"/>
                           {{ subcategory.name }}
                       </CommandItem>
                     </span>
@@ -232,11 +169,6 @@ const cancelForm = () => {
                       key="none"
                       value="Uncategorized"
                       @select="() => {
-                        setFieldValue('category', {
-                          subcategoryId: transactionStore.uncategorizedGuid,
-                          categoryId: transactionStore.uncategorizedGuid,
-                          formatedName: 'Uncategorized'
-                        });
                         isComboBoxOpen = false;
                         }"></CommandItem>
                   </CommandGroup>
@@ -244,7 +176,7 @@ const cancelForm = () => {
               </Command>
             </PopoverContent>
           </Popover>
-          <FormDescription></FormDescription>
+          <FormDescription><p></p></FormDescription>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -292,34 +224,5 @@ const cancelForm = () => {
       </FormField>
 
       <Button type="submit">Add</Button>
-      <Button variant="outline" @click="cancelForm">Cancel</Button>
     </form>
-  </DefineAddTransactionForm>
-  
-  <Dialog v-if="isDesktop" v-model:open="isOpen">
-    <DialogTrigger as-child >
-      <ReuseTriggerTemplate />
-    </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
-      <DialogHeader>
-        <DialogTitle class="flex items-center justify-center">{{ popupTitle }}</DialogTitle>
-        <DialogDescription />
-      </DialogHeader>
-      <UseAddTransactionForm />
-    </DialogContent>
-  </Dialog>
-  
-  <Drawer v-else v-model:open="isOpen">
-    <DrawerTrigger as-child>
-      <ReuseTriggerTemplate />
-    </DrawerTrigger>
-    <DrawerContent>
-      <DrawerHeader class="flex items-center justify-center">
-        <DrawerTitle>{{ popupTitle }}</DrawerTitle>
-        <DrawerDescription />
-      </DrawerHeader>
-      <UseAddTransactionForm />
-      <DrawerFooter class="pt-2"></DrawerFooter>
-    </DrawerContent>
-  </Drawer>
 </template>

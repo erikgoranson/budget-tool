@@ -1,9 +1,7 @@
-export type BudgetRow = {
-    budgetId: string,
+import type { Budget } from "./Budget";
+
+export interface BudgetRow extends Budget {
     name: string,
     dueDate: number | null,
-    amount: number,
-    budgetMonth: string,
-    subcategoryId: string,
     categoryId: string,
 };

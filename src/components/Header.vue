@@ -7,7 +7,7 @@ import { useSidebarStore } from '@/stores/sidebar';
 import { useBudgetStore } from '@/stores/budget';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCarouselStore } from '@/stores/carousel';
-import BudgetMonthCarousel from "./BudgetMonthCarousel.vue";
+import BudgetMonthCarousel from "./budgetRow/BudgetMonthCarousel.vue";
 import CurrencyBadge from '@/components/CurrencyBadge.vue';
 
 const sidebarStore = useSidebarStore();
@@ -26,7 +26,7 @@ const previousMonthsIncome = computed(() => {
 });
 
 const totalIncomeForMonth = computed(() => {
-    const currentMonthIncome = transactions.value.filter(t => t.date > carouselStore.selectedMonthString && t.income && t.date < carouselStore.selectedMonth.add({months:1}).toString());
+    const currentMonthIncome = transactions.value.filter(t => t.date >= carouselStore.selectedMonthString && t.income && t.date < carouselStore.selectedMonth.add({months:1}).toString());
     return currentMonthIncome.reduce((total, i) => total + i.amount, 0);
 });
 

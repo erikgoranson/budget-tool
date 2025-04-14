@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { Category, Transaction } from '../types/';
-import AddCategoryDialog from '@/components/AddCategoryDialog.vue';
-import AddTransactionDialog from '@/components/AddTransactionDialog.vue';
+import CreateCategoryDialog from './category/CreateCategoryDialog.vue';
+import CreateTransactionDialog from './transaction/CreateTransactionDialog.vue';
 </script>
 
 <template>
@@ -10,8 +9,8 @@ import AddTransactionDialog from '@/components/AddTransactionDialog.vue';
         </div>
         <div class="flex-1 items-center justify-center">
             <div class="flex ml-auto items-center justify-center flex space-x-2" >
-                <AddTransactionDialog />
-                <AddCategoryDialog />
+                <CreateCategoryDialog />
+                <CreateTransactionDialog />
             </div>
         </div>
     </footer>

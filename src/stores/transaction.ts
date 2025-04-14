@@ -34,6 +34,11 @@ export const useTransactionStore = defineStore('transaction', () => {
             return transformed;
         })
     });
+
+    const lastTouchedDate = ref<String>('');
+    const setLastTouchedDate = (date: string) => {
+        lastTouchedDate.value = date;
+    };
     
     const createTransaction = (transaction: Transaction) => {
         transactions.value.unshift(transaction);
@@ -66,5 +71,5 @@ export const useTransactionStore = defineStore('transaction', () => {
         return `${categoryName} : ${subcategoryName}`;
     };
 
-    return { transactions, transactionRows, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid };
+    return { transactions, transactionRows, lastTouchedDate, setLastTouchedDate, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid };
 });
