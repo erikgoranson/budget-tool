@@ -3,6 +3,7 @@ import type { Category } from '@/types';
 import { formProps } from './budgetFormHelper';
 import DialogDropdownMenu from '../DialogDropdownMenu.vue';
 import UpdateBudgetForm from './UpdateBudgetForm.vue';
+import GoalForm from '../goal/GoalForm.vue';
 import DeleteBudgetAlert from './DeleteBudgetAlert.vue';
 import DeleteSubcategoryAlert from './DeleteSubcategoryAlert.vue';
 
@@ -23,6 +24,11 @@ const dropdownOptions = [
         dialogName: 'Delete Category',
         isAlert: true,
     },
+    {
+        slotName: 'createGoal',
+        dialogName: 'Add Goal',
+        isAlert: false,
+    },
 ];
 </script>
 
@@ -36,6 +42,9 @@ const dropdownOptions = [
         </template>
         <template v-slot:deleteSub>
             <DeleteSubcategoryAlert :budget-row="budgetRow" />
+        </template>
+        <template v-slot:createGoal="{ dialogFunction: { toggleDialog } }">
+            <GoalForm :input="budgetRow" :onSubmitFunction="toggleDialog" />
         </template>
     </DialogDropdownMenu>
 </template>
