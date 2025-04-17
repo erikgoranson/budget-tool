@@ -20,6 +20,11 @@ const navOptions = ref([
         to: '/transactions',
         displayName: 'Transactions'
     },
+    {
+        pathName: 'goals',
+        to: '/goals',
+        displayName: 'Goals'
+    },
 ]);
 
 const activeClass = ref(
