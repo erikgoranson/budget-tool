@@ -1,7 +1,19 @@
 <script setup lang="ts">
 import type { Goal } from '@/types';
+import { GoalOption } from '@/types';
+import { ref, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { MoreHorizontal } from 'lucide-vue-next';
 import { useSubcategoryStore } from '@/stores/subcategory';
+import { useTransactionStore } from '@/stores/transaction';
+import currencyFormatter from '@/helpers/numberFormat';
+import dateFormatter from '@/helpers/dateFormatter';
+import ProgressBar from '../ProgressBar.vue';
+import Button from '../ui/button/Button.vue';
+
 const subcategoryStore = useSubcategoryStore();
+const transactionStore = useTransactionStore();
+const { transactions } = storeToRefs(transactionStore);
 
 const props = defineProps({
     goal : {
@@ -9,43 +21,56 @@ const props = defineProps({
         required: true
     }
 });
+
+const totalAppliedAmount = computed(() => {
+    return transactions.value
+        .filter(transaction => transaction.subcategoryId == props.goal.subcategoryId && !transaction.income)
+        .reduce((t, {amount}) => t + amount, 0);
+});
+
+const goalVerb = computed(() => props.goal.goalOption == GoalOption.Savings ? 'Saved' : 'Paid Off');
+
+const totalRemainingAmount= computed(() => props.goal.amount - totalAppliedAmount.value);
+
+const goalAchieved = computed(() => totalAppliedAmount.value > props.goal.amount);
 </script>
 
 <template>
-    <div class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-red-300" >
-        <div class="flex justify-between px-4 py-4">
+    <div class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300" >
+        
+        <div class="flex justify-between px-2 py-4 bg-indigo-400">
             <div class="flex items-center">
                 <div class="flex justify-center content-center items-center text-center align-middle h-4 mr-2 ">
-                    {{ subcategoryStore.getSubcategoryNameById(goal.subcategoryId) }} 
+                   
                 </div>
-                <div class="">
-                    
+                <div >
+                    <div class="font-semibold truncate">{{ subcategoryStore.getSubcategoryNameById(goal.subcategoryId) }} </div>
+                    <div>{{ goal.goalOption }}</div>
                 </div>
             </div>
-            <div>{{ goal.goalOption }}</div>
+            <div><Button variant="ghost" class="h-8 w-8 p-0">
+                <span class="sr-only">Open menu</span>
+                <MoreHorizontal class="h-4 w-4" />
+            </Button></div>
         </div>
 
-        <div class="pb-2 flex flex-col justify-center items-center">
+        <div class="my-2 px-4">  
             <div>
-                progress bar
+                Due: {{ dateFormatter.format(goal.date, 'longDate') }}
             </div>
-            <div>
-                Goal: {{ goal.amount }}
-            </div>
-            <div>
-                target date: {{ goal.date }}
-            </div>
-            <div>
-                total saved: {VALUE}
-            </div>
-            <div>
-                remaining: { value }
-            </div>
-            
-        </div>
 
-        <div class="px-3 pt-0 pb-2 mb-2 items-end text-end">
-            ...
+            <ProgressBar :percentage="totalAppliedAmount / goal.amount">
+                <template #title> 
+                    <div class="mb-2">
+                        {{ currencyFormatter.format(totalAppliedAmount) }} / {{ currencyFormatter.format(goal.amount) }}
+                    </div>
+                </template>
+                <template #progressLabel>{{ Math.round(totalAppliedAmount / goal.amount * 100) + '%' }} {{ goalVerb }}</template>
+            </ProgressBar>
+        </div>
+    
+        <div v-if="goalAchieved" class="px-3 pt-1 pb-1 mb-2 items-center text-center">
+            <Button class="w-full">Goal Complete!</Button>
         </div>
     </div> 
 </template>
