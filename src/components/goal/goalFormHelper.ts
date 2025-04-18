@@ -1,9 +1,10 @@
 import type { Goal, BudgetRow } from '@/types';
 import { GoalOption } from '@/types';
-import { useGoalStore } from '@/stores/goal';
-import { v4 as uuidv4 } from 'uuid';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
+import { v4 as uuidv4 } from 'uuid';
+import { getLocalTimeZone, today } from '@internationalized/date';
+import { useGoalStore } from '@/stores/goal';
 import { compareObjects, baseProps } from '@/helpers/baseFormHelper';
 
 export const formProps = {
@@ -21,7 +22,8 @@ export const validationSchema = toTypedSchema(
   zod.object({
     id: zod.string().default(uuidv4()),
     amount: zod.number(),
-    date: zod.string(),
+    createdDate: zod.string().default(today(getLocalTimeZone()).toString()),
+    targetDate: zod.string(),
     subcategoryId: zod.string({ required_error: 'You must select an existing budget category to which this goal will be assigned' }),
     goalOption: zod.enum(goalOptionKeys).default(GoalOption.Savings),
     isComplete: zod.boolean().default(false),
@@ -50,10 +52,11 @@ export const handleSubmission = (userInput: any, original: Goal | BudgetRow) => 
     const newGoal = <Goal>{
       id: userInput.id,
       amount: userInput.amount,
-      date: userInput.date,
+      targetDate: userInput.targetDate,
+      createdDate: userInput.createdDate,
       subcategoryId: userInput.subcategoryId,
       goalOption: userInput.goalOption,
-      isComplete: userInput.isComplete
+      isComplete: userInput.isComplete,
     };
     console.log('new goal is', JSON.stringify(newGoal, null, 2));
     goalStore.createGoal(newGoal);

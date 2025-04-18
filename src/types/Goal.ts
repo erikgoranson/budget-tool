@@ -1,7 +1,12 @@
-import type { Budget } from "./Budget";
 import { GoalOption } from "./GoalOption";
 
-export interface Goal extends Budget {
+export type Goal = {
+    id: string,
+    amount: number,
+    createdDate: string,
+    targetDate: string,
+    subcategoryId: string,
     goalOption: GoalOption,
-    isComplete: boolean
+    isComplete: boolean,
+    currentAmount: number,
 };

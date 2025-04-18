@@ -40,7 +40,7 @@ const subcategoryStore = useSubcategoryStore();
 const { subcategories } = storeToRefs(subcategoryStore);
 
 const dateValue = computed({
-  get: () => values.date ? parseDate(values.date) : today(getLocalTimeZone()),
+  get: () => values.targetDate ? parseDate(values.targetDate) : today(getLocalTimeZone()),
   set: val => val,
 });
 
@@ -94,7 +94,7 @@ const onSubmit = handleSubmit(values => {
         </FormItem>
       </FormField>
 
-      <FormField :keepValue=true name="date">
+      <FormField :keepValue=true name="targetDate">
         <FormItem class="flex flex-col">
           <FormLabel>Goal Date</FormLabel>
           <FormDescription>What date do you aim to complete this goal by?</FormDescription>
@@ -102,7 +102,7 @@ const onSubmit = handleSubmit(values => {
             <PopoverTrigger as-child>
               <FormControl>
                 <Button variant="outline" :class="cn(' ps-3 text-start font-normal', !dateValue && 'text-muted-foreground',)">
-                  <span>{{ values.date ? dateFormatter.format(dateValue, 'longDate') : "Pick a date" }}</span>
+                  <span>{{ values.targetDate ? dateFormatter.format(dateValue, 'longDate') : "Pick a date" }}</span>
                   <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                 </Button>
                 <input hidden>
@@ -116,10 +116,10 @@ const onSubmit = handleSubmit(values => {
                 :min-value="new CalendarDate(1900, 1, 1)"
                 @update:model-value="(v) => {
                   if (v) {
-                    setFieldValue('date', v.toString())
+                    setFieldValue('targetDate', v.toString())
                   }
                   else {
-                    setFieldValue('date', undefined) 
+                    setFieldValue('targetDate', undefined) 
                   }
                   }"/>
             </PopoverContent>

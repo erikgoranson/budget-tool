@@ -29,11 +29,7 @@ const totalGoalAmount = computed(() => {
 });
 
 const totalGoalAppliedAmount = computed(() => {
-    const goalSubcategoryIds = displayedGoals.value.map(x => x.subcategoryId);
-
-    const goalTransactions = transactions.value.filter(transaction => goalSubcategoryIds.includes(transaction.subcategoryId) && !transaction.income);
-
-    return goalTransactions.reduce((t, {amount}) => t + amount, 0);
+    return displayedGoals.value.reduce((t, {currentAmount}) => t + currentAmount, 0);
 });
 
 const allGoalsData = computed(() => [

@@ -37,5 +37,11 @@ export const useGoalStore = defineStore(storeKey, () => {
         updateGoal(goal);
     };
 
-    return { goals, createGoal, updateGoal, deleteGoal, markGoalComplete };
+    const updateGoalTotal = (goal: Goal, total: number) => {
+        const index = goals.value.findIndex(x => x.id == goal.id);
+        goal.currentAmount = total;
+        goals.value.splice(index, 1, goal);
+    };
+
+    return { goals, createGoal, updateGoal, deleteGoal, markGoalComplete, updateGoalTotal };
 });

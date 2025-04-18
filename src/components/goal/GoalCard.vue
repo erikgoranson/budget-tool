@@ -27,9 +27,12 @@ const props = defineProps({
 });
 
 const totalAppliedAmount = computed(() => {
-    return transactions.value
-        .filter(transaction => transaction.subcategoryId == props.goal.subcategoryId && !transaction.income)
+    const total =  transactions.value
+        .filter(transaction => transaction.subcategoryId == props.goal.subcategoryId && !transaction.income && transaction.date >= props.goal.createdDate)
         .reduce((t, {amount}) => t + amount, 0);
+        
+    goalStore.updateGoalTotal(props.goal, total);
+    return total;
 });
 
 const goalVerb = computed(() => props.goal.goalOption == GoalOption.Savings ? 'Saved' : 'Paid Off');
@@ -62,7 +65,7 @@ const completeGoal = () => {
 
         <div class="my-2 px-4">  
             <div>
-                Due: {{ dateFormatter.format(goal.date, 'longDate') }}
+                Due: {{ dateFormatter.format(goal.targetDate, 'longDate') }}
             </div>
 
             <ProgressBar :percentage="totalAppliedAmount / goal.amount">
