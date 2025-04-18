@@ -3,13 +3,13 @@ import type { Goal } from '@/types';
 import { GoalOption } from '@/types';
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { MoreHorizontal } from 'lucide-vue-next';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import { useTransactionStore } from '@/stores/transaction';
 import currencyFormatter from '@/helpers/numberFormat';
 import dateFormatter from '@/helpers/dateFormatter';
 import ProgressBar from '../ProgressBar.vue';
 import Button from '../ui/button/Button.vue';
+import GoalActionsMenu from './GoalActionsMenu.vue';
 
 const subcategoryStore = useSubcategoryStore();
 const transactionStore = useTransactionStore();
@@ -40,18 +40,15 @@ const goalAchieved = computed(() => totalAppliedAmount.value > props.goal.amount
         
         <div class="flex justify-between px-2 py-4 bg-indigo-400">
             <div class="flex items-center">
-                <div class="flex justify-center content-center items-center text-center align-middle h-4 mr-2 ">
-                   
-                </div>
+                <div class="flex justify-center content-center items-center text-center align-middle h-4 mr-2 "></div>
                 <div >
                     <div class="font-semibold truncate">{{ subcategoryStore.getSubcategoryNameById(goal.subcategoryId) }} </div>
                     <div>{{ goal.goalOption }}</div>
                 </div>
             </div>
-            <div><Button variant="ghost" class="h-8 w-8 p-0">
-                <span class="sr-only">Open menu</span>
-                <MoreHorizontal class="h-4 w-4" />
-            </Button></div>
+            <div>
+                <GoalActionsMenu :input="goal"/>
+            </div>
         </div>
 
         <div class="my-2 px-4">  
@@ -65,7 +62,9 @@ const goalAchieved = computed(() => totalAppliedAmount.value > props.goal.amount
                         {{ currencyFormatter.format(totalAppliedAmount) }} / {{ currencyFormatter.format(goal.amount) }}
                     </div>
                 </template>
-                <template #progressLabel>{{ Math.round(totalAppliedAmount / goal.amount * 100) + '%' }} {{ goalVerb }}</template>
+                <template #progressLabel>
+                    {{ Math.round(totalAppliedAmount / goal.amount * 100) + '%' }} {{ goalVerb }}
+                </template>
             </ProgressBar>
         </div>
     

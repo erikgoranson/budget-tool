@@ -162,6 +162,6 @@ const onSubmit = handleSubmit(values => {
         </FormItem>
       </FormField>
       
-      <Button type="submit">Create Goal</Button>
+      <Button type="submit">Submit</Button>
     </form>
 </template>

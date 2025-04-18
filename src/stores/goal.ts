@@ -25,5 +25,12 @@ export const useGoalStore = defineStore(storeKey, () => {
         setData();
     };
 
-    return { goals, createGoal, updateGoal };
+    const deleteGoal = (goalId: string) => {
+        console.log('deleting goal', goalId);
+        goals.value = goals.value.filter(x => x.id !== goalId);
+        console.log('after delete:', JSON.stringify(goals.value));
+        setData();
+    };
+
+    return { goals, createGoal, updateGoal, deleteGoal };
 });
