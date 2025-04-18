@@ -13,6 +13,10 @@ const validatedPercentage = computed(() => {
     {
         return '0%';
     }
+    else if (props.percentage > 1)
+    {
+        return '100%';
+    }
     else 
     {
         return props.percentage * 100 + '%';
@@ -21,16 +25,18 @@ const validatedPercentage = computed(() => {
 </script>
 
 <template>
-    <div>
-        <slot name="title" />
-    </div>
-    <div>
-        <slot name="label" />
-    </div>
-    <div class="relative mb-5 h-6 rounded-full bg-gray-200">
-        <div class="h-6 rounded-full bg-indigo-500" :style="{ width: validatedPercentage }"></div>
-        <span class="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-900">
-            <slot name="progressLabel" />
-        </span>
+    <div class="my-4">
+        <div>
+            <slot name="title" />
+        </div>
+        <div>
+            <slot name="label" />
+        </div>
+        <div class="relative h-6 rounded-full bg-gray-200">
+            <div class="h-6 rounded-full bg-green-400" :style="{ width: validatedPercentage }"></div>
+            <span class="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-900">
+                <slot name="progressLabel" />
+            </span>
+        </div>
     </div>
 </template>
