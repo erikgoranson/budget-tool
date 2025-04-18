@@ -68,7 +68,7 @@ const allGoalsData = computed(() => [
                 <template #progressLabel>{{ Math.round(item.progress * 100) + '%' }}</template>
             </ProgressBar>
         </div>
-        <div v-else>No Goals Found</div>
+        <div class="flex items-center justify-center py-5" v-else>No Goals Found</div>
     </div>
 
     <div class="grid " :class="cardCols" >
