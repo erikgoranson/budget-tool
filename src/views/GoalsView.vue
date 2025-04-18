@@ -8,8 +8,10 @@ import currencyFormatter from '@/helpers/numberFormat';
 import { useGoalStore } from '@/stores/goal';
 import { useTransactionStore } from '@/stores/transaction';
 
-import GoalCard from '@/components/goal/GoalCard.vue';
 import ProgressBar from '@/components/ProgressBar.vue';
+import GoalCard from '@/components/goal/GoalCard.vue';
+import CreateGoalDialog from '@/components/goal/CreateGoalDialog.vue';
+
 
 const goalStore = useGoalStore();
 const { goals } = storeToRefs(goalStore);
@@ -54,11 +56,17 @@ const allGoalsData = computed(() => [
 </script>
 
 <template>
-    <div v-if="displayedGoals.length > 0" class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300 " >
-        <div class="py-4 flex flex-col justify-center items-center bg-indigo-400">
+    <div class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300 ">
+        <div class="flex items-center justify-center bg-indigo-400 py-2">
+            <div class="flex-1"></div>
             <div class="font-semibold text-2xl truncate">All Goals</div>
+            <div class="flex-1">
+                <div class="w-20 flex items-center justify-center ml-auto">
+                    <CreateGoalDialog />
+                </div>
+            </div>
         </div>
-        <div class="px-4 " v-for="item in allGoalsData">
+        <div class="px-4" v-if="displayedGoals.length > 0" v-for="item in allGoalsData">
             <ProgressBar :percentage="item.progress">
                 <template #title>
                     <div class="mb-2">
@@ -68,8 +76,8 @@ const allGoalsData = computed(() => [
                 <template #progressLabel>{{ Math.round(item.progress * 100) + '%' }}</template>
             </ProgressBar>
         </div>
+        <div v-else>No Goals Found</div>
     </div>
-    <div v-else>No Goals Found</div>
 
     <div class="grid " :class="cardCols" >
         <GoalCard v-for="goal in displayedGoals" :goal="goal" />
