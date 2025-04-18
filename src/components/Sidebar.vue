@@ -13,12 +13,17 @@ const navOptions = ref([
     {
         pathName: 'home',
         to: '/',
-        displayName: 'Home'
+        displayName: 'Budgets'
     },
     {
         pathName: 'transactions',
         to: '/transactions',
         displayName: 'Transactions'
+    },
+    {
+        pathName: 'goals',
+        to: '/goals',
+        displayName: 'Goals'
     },
 ]);
 
