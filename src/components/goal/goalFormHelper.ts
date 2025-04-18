@@ -23,7 +23,8 @@ export const validationSchema = toTypedSchema(
     amount: zod.number(),
     date: zod.string(),
     subcategoryId: zod.string({ required_error: 'You must select an existing budget category to which this goal will be assigned' }),
-    goalOption: zod.enum(goalOptionKeys).default(GoalOption.Savings)
+    goalOption: zod.enum(goalOptionKeys).default(GoalOption.Savings),
+    isComplete: zod.boolean().default(false),
   })
 );
 
@@ -52,6 +53,7 @@ export const handleSubmission = (userInput: any, original: Goal | BudgetRow) => 
       date: userInput.date,
       subcategoryId: userInput.subcategoryId,
       goalOption: userInput.goalOption,
+      isComplete: userInput.isComplete
     };
     console.log('new goal is', JSON.stringify(newGoal, null, 2));
     goalStore.createGoal(newGoal);

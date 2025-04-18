@@ -3,4 +3,5 @@ import { GoalOption } from "./GoalOption";
 
 export interface Goal extends Budget {
     goalOption: GoalOption,
+    isComplete: boolean
 };

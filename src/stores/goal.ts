@@ -32,5 +32,10 @@ export const useGoalStore = defineStore(storeKey, () => {
         setData();
     };
 
-    return { goals, createGoal, updateGoal, deleteGoal };
+    const markGoalComplete  = (goal: Goal) => {
+        goal.isComplete = true;
+        updateGoal(goal);
+    };
+
+    return { goals, createGoal, updateGoal, deleteGoal, markGoalComplete };
 });

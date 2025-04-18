@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { Goal } from '@/types';
 import { GoalOption } from '@/types';
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick  } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useConfettiStore } from '@/stores/confetti';
+import { useGoalStore } from '@/stores/goal';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import { useTransactionStore } from '@/stores/transaction';
 import currencyFormatter from '@/helpers/numberFormat';
 import dateFormatter from '@/helpers/dateFormatter';
-import ProgressBar from '../ProgressBar.vue';
 import Button from '../ui/button/Button.vue';
+import ProgressBar from '../ProgressBar.vue';
 import GoalActionsMenu from './GoalActionsMenu.vue';
 
+const confettiStore = useConfettiStore();
+const goalStore = useGoalStore();
 const subcategoryStore = useSubcategoryStore();
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
@@ -33,6 +37,11 @@ const goalVerb = computed(() => props.goal.goalOption == GoalOption.Savings ? 'S
 const totalRemainingAmount= computed(() => props.goal.amount - totalAppliedAmount.value);
 
 const goalAchieved = computed(() => totalAppliedAmount.value > props.goal.amount);
+
+const completeGoal = () => {
+    goalStore.markGoalComplete(props.goal);
+    confettiStore.throwConfetti();
+};
 </script>
 
 <template>
@@ -69,7 +78,7 @@ const goalAchieved = computed(() => totalAppliedAmount.value > props.goal.amount
         </div>
     
         <div v-if="goalAchieved" class="px-3 pt-1 pb-1 mb-2 items-center text-center">
-            <Button class="w-full">Goal Complete!</Button>
+            <Button @click="completeGoal" class="w-full">Goal Complete!</Button>
         </div>
     </div> 
 </template>

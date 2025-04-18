@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { GoalOption } from '@/types';
-import { ref, computed } from 'vue';
+import { ref, computed  } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia'
 import { useMediaQuery, createReusableTemplate } from '@vueuse/core';
 import currencyFormatter from '@/helpers/numberFormat';
+import { useConfettiStore } from '@/stores/confetti';
 import { useGoalStore } from '@/stores/goal';
 import { useTransactionStore } from '@/stores/transaction';
-
+import ConfettiExplosion from "vue-confetti-explosion";
 import ProgressBar from '@/components/ProgressBar.vue';
 import GoalCard from '@/components/goal/GoalCard.vue';
 import CreateGoalDialog from '@/components/goal/CreateGoalDialog.vue';
 
-
+const confettiStore = useConfettiStore();
 const goalStore = useGoalStore();
 const { goals } = storeToRefs(goalStore);
 const transactionStore = useTransactionStore();
@@ -25,9 +26,9 @@ const goalVerb = computed(() => option == GoalOption.Savings ? 'Saved' : 'Paid o
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const cardCols = computed(() => isDesktop.value ? 'grid-cols-5' : 'grid-cols-2');
 
-const displayedGoals = computed(() => goals.value.filter(g => g.isSuccessful == false || g.isSuccessful == undefined));
+const displayedGoals = computed(() => goals.value.filter(g => g.isComplete == false || g.isComplete == undefined));
 
-const totalSuccessfulGoals = computed(() => displayedGoals.value.filter(g => g.isSuccessful));
+const totalSuccessfulGoals = computed(() => goals.value.filter(g => g.isComplete));
 
 const totalGoalAmount = computed(() => {
     return displayedGoals.value.reduce((b, {amount}) => b + amount, 0);
@@ -44,8 +45,8 @@ const totalGoalAppliedAmount = computed(() => {
 const allGoalsData = computed(() => [
     {
         title: 'Completed',
-        progressText: `${totalSuccessfulGoals.value.length} / ${displayedGoals.value.length}`,
-        progress: Number(totalSuccessfulGoals.value.length / displayedGoals.value.length),
+        progressText: `${totalSuccessfulGoals.value.length} / ${goals.value.length}`,
+        progress: Number(totalSuccessfulGoals.value.length / goals.value.length),
     },
     {
         title: goalVerb,
@@ -56,6 +57,7 @@ const allGoalsData = computed(() => [
 </script>
 
 <template>
+    <ConfettiExplosion v-if="confettiStore.isActive" />
     <div class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300 ">
         <div class="flex items-center justify-center bg-indigo-400 py-2">
             <div class="flex-1"></div>
