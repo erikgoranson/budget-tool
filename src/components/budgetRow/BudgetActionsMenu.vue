@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Category } from '@/types';
+import type { Category, DialogDropdownItem } from '@/types';
 import { formProps } from './budgetFormHelper';
 import DialogDropdownMenu from '../DialogDropdownMenu.vue';
 import UpdateBudgetForm from './UpdateBudgetForm.vue';
@@ -8,7 +8,7 @@ import DeleteBudgetAlert from './DeleteBudgetAlert.vue';
 import DeleteSubcategoryAlert from './DeleteSubcategoryAlert.vue';
 
 const props = defineProps(formProps);
-const dropdownOptions = [
+const dropdownOptions: DialogDropdownItem[] = [
     {
         slotName: 'update',
         dialogName: 'Edit Budget',
