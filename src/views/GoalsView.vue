@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { GoalOption } from '@/types';
 import { ref, computed  } from 'vue';
-import { RouterLink, RouterView, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia'
 import { useMediaQuery, createReusableTemplate } from '@vueuse/core';
 import currencyFormatter from '@/helpers/numberFormat';
@@ -18,10 +16,6 @@ const goalStore = useGoalStore();
 const { goals } = storeToRefs(goalStore);
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
-
-const route = useRoute();
-const option = route.meta.goalOption ?? GoalOption.Savings;
-const goalVerb = computed(() => option == GoalOption.Savings ? 'Saved' : 'Paid off');
 
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const cardCols = computed(() => isDesktop.value ? 'grid-cols-5' : 'grid-cols-2');
@@ -49,7 +43,7 @@ const allGoalsData = computed(() => [
         progress: Number(totalSuccessfulGoals.value.length / goals.value.length),
     },
     {
-        title: goalVerb,
+        title: 'Applied',
         progressText: `${currencyFormatter.format(totalGoalAppliedAmount.value)} / ${currencyFormatter.format(totalGoalAmount.value)}`,
         progress: Number(totalGoalAppliedAmount.value / totalGoalAmount.value),
     },
