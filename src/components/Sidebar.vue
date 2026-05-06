@@ -1,30 +1,34 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { PiggyBank, Link } from 'lucide-vue-next';
+import { CircleDollarSign, Download, Link, PiggyBank, Wallet, GoalIcon, } from 'lucide-vue-next';
+import { Icon, Camera } from 'lucide-vue-next';
 import { useRoute } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
 import SaveDataButton from '@/components/SaveDataButton.vue';
-import { Download } from 'lucide-vue-next';
+
 
 const sidebarStore = useSidebarStore();
 const route = useRoute();
 
 const navOptions = ref([
-    {
+    { 
         pathName: 'home',
         to: '/',
-        displayName: 'Budgets'
+        displayName: 'Budgets',
+        icon: Wallet
     },
     {
         pathName: 'transactions',
         to: '/transactions',
-        displayName: 'Transactions'
+        displayName: 'Transactions',
+        icon: CircleDollarSign
     },
     {
         pathName: 'goals',
         to: '/goals',
-        displayName: 'Goals'
-    },
+        displayName: 'Goals',
+        icon: GoalIcon
+    }
 ]);
 
 const activeClass = ref(
@@ -57,16 +61,28 @@ const inactiveClass = ref(
             </div>
             
             <nav class="mt-10">
-                <router-link v-for="option in navOptions" class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4" :class="[route.name === option.pathName ? activeClass : inactiveClass]" :to=option.to @click="sidebarStore.isOpen = false">
-                    <Link class="h-4 w-4" />
-                    <span class="mx-4">{{ option.displayName }}</span>
+                <router-link v-for="option in navOptions" class="sidebarBase" :class="[route.name === option.pathName ? activeClass : inactiveClass]" :to=option.to @click="sidebarStore.isOpen = false">
+                    <component :is="option.icon ?? Link" class="icon"/>
+
+                    <span class="mx-4">
+                        {{ option.displayName }}
+                    </span>
                 </router-link>
 
-                <div class="flex items-center px-6 py-2 mt-4 duration-200 border-l-4 border-gray-900 text-black hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100">
-                    <Download class="h-4 w-4" />
+                <div class="sidebarBase" :class="inactiveClass">
+                    <Download class="icon" />
                     <span class="mx-4"><SaveDataButton /></span>
                 </div>
             </nav>
         </div>
     </div>
 </template>
+
+<style scoped>
+.icon {
+    @apply h-6 w-6;
+}
+.sidebarBase {
+    @apply flex items-center px-6 py-2 mt-4 duration-200 border-l-4;
+}
+</style>
