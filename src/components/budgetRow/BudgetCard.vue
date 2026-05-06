@@ -42,7 +42,7 @@ const toggleBudgetdata = () => {
                     <div class="font-semibold text-2xl">
                         {{ props.budgetCategory.name }}
                     </div>
-                    <div class="text-sm">
+                    <div>
                         {{ props.budgetCategory.description }}
                     </div>
                 </div>

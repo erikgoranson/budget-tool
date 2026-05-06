@@ -140,7 +140,7 @@ const table = useVueTable({
     </div>
 
     <div class="flex items-center justify-end space-x-2 py-4">
-        <div class="flex-1 text-sm text-muted-foreground">
+        <div class="flex-1 text-muted-foreground">
             <div>{{ table.getFilteredSelectedRowModel().rows.length }} of {{ table.getFilteredRowModel().rows.length }} row(s) selected.</div>
             <div>{{ selectedTotalText }}</div>
         </div>

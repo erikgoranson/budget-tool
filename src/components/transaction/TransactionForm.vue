@@ -143,8 +143,6 @@ const onSubmit = handleSubmit(values => {
             </PopoverTrigger>
             <PopoverContent class="flex w-[350px] p-0">
               <Command>
-                <CommandInput placeholder="Search categories..." />
-                <CommandEmpty>Nothing found.</CommandEmpty>
                 <CommandList>
                   <CommandGroup>
                     <span v-for="category in categories">
@@ -181,7 +179,7 @@ const onSubmit = handleSubmit(values => {
         </FormItem>
       </FormField>
 
-      <div class="text-sm font-medium">Income / Expense</div>
+      <div class="font-medium">Income / Expense</div>
       <div class="space-y-4">
         <FormField v-slot="{ value, handleChange }" name="income">
           <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">

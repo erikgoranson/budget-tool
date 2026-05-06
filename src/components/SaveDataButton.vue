@@ -9,8 +9,9 @@ const content = computed(() => {
     const category = localStorageHelper.default.getData('category');
     const subcategories = localStorageHelper.default.getData('subcategory');
     const transactions = localStorageHelper.default.getData('transactions');
+    const goals = localStorageHelper.default.getData('goal');
 
-    const obj = { budgets, category, subcategories, transactions };
+    const obj = { budgets, category, subcategories, transactions, goals };
     return JSON.stringify(obj);
 })
 

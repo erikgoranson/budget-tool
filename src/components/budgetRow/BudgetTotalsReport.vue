@@ -52,7 +52,7 @@ const remainingTotal = computed(() => {
 </script>
 
 <template>
-    <div class="font-semibold text-sm w-sm">
+    <div class="font-semibold w-sm">
         <div>Budgeted {{ currencyFormatter.format(budgetTotal) }}</div>
         <div>Expensed {{ currencyFormatter.format(expensedTotal) }}</div>
         <div>Remaining {{ currencyFormatter.format(remainingTotal) }}</div>

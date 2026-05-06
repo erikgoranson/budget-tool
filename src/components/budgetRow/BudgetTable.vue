@@ -121,6 +121,6 @@ Button {
 
 td {
   text-transform: capitalize;
-  @apply px-3 py-2.5 text-sm text-right border-b border-r border-gray-200;
+  @apply px-3 py-2.5 text-right border-b border-r border-gray-200;
 }
 </style>
