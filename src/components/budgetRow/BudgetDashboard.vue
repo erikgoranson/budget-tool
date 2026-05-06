@@ -59,7 +59,7 @@ const totalFutureBudget = computed(() => (totalIncome.value > 0) ? totalBudgetIn
                 <div > 
                     <div class="flex flex-col" id="dashboard thingy">
                         <div class="flex flex-col justify-center items-center">
-                            <div class="text-sm flex flex-col items-end justify-end">
+                            <div class="flex flex-col items-end justify-end">
                                 <CurrencyBadge :currencyValue="totalIncome" label="Total Income: "/>
                                 <CurrencyBadge :currencyValue="totalBudgetForCurrentMonth" :label="`Budgeted for ${carouselStore.selectedMonthName}`"/>
                                 <CurrencyBadge v-if="totalFutureBudget > 0" :currencyValue="totalFutureBudget" label="Budgeted in future"/>

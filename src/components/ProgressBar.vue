@@ -34,7 +34,7 @@ const validatedPercentage = computed(() => {
         </div>
         <div class="relative h-6 rounded-full bg-gray-200">
             <div class="h-6 rounded-full bg-green-400" :style="{ width: validatedPercentage }"></div>
-            <span class="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-900">
+            <span class="absolute inset-0 flex items-center justify-center font-medium text-gray-900">
                 <slot name="progressLabel" />
             </span>
         </div>

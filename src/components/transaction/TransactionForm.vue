@@ -181,7 +181,7 @@ const onSubmit = handleSubmit(values => {
         </FormItem>
       </FormField>
 
-      <div class="text-sm font-medium">Income / Expense</div>
+      <div class="font-medium">Income / Expense</div>
       <div class="space-y-4">
         <FormField v-slot="{ value, handleChange }" name="income">
           <FormItem class="flex flex-row items-center justify-between rounded-lg border p-4">

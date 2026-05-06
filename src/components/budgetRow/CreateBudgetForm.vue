@@ -100,7 +100,7 @@ const onSubmit = handleSubmit((values, actions) => {
   }
   td {
     text-transform: capitalize;
-    @apply px-2 py-1 text-sm text-right border-b border-r border-gray-200;
+    @apply px-2 py-1 text-right border-b border-r border-gray-200;
   }
   table {
     @apply w-full text-left border-collapse;
