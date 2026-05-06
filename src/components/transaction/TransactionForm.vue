@@ -143,8 +143,6 @@ const onSubmit = handleSubmit(values => {
             </PopoverTrigger>
             <PopoverContent class="flex w-[350px] p-0">
               <Command>
-                <CommandInput placeholder="Search categories..." />
-                <CommandEmpty>Nothing found.</CommandEmpty>
                 <CommandList>
                   <CommandGroup>
                     <span v-for="category in categories">
