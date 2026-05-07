@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import * as localStorageHelper from '@/helpers/localStorage';
 import { saveAs } from 'file-saver';
+import { Download } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 
 const content = computed(() => {
@@ -41,5 +42,5 @@ const saveData = () => {
 </script>
 
 <template>
-    <button @click="saveData">Export Data</button>
+    <Button @click="saveData"><Download class="icon" />Download</Button>
 </template>

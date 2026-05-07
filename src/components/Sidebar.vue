@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { Download, Link, PiggyBank } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
-import SaveDataButton from '@/components/SaveDataButton.vue';
 
 const sidebarStore = useSidebarStore();
 const route = useRoute();
@@ -47,11 +46,6 @@ const inactiveClass = ref(
                         {{ option.meta.displayName }}
                     </span>
                 </router-link>
-
-                <div class="sidebarBase" :class="inactiveClass">
-                    <Download class="icon" />
-                    <span class="mx-4"><SaveDataButton /></span>
-                </div>
             </nav>
 
         </div>
@@ -65,6 +59,4 @@ const inactiveClass = ref(
 .sidebarBase {
     @apply flex items-center px-6 py-2 mt-4 duration-200 border-l-4;
 }
-
-
 </style>
