@@ -14,9 +14,8 @@ const description = '';
             <CreateTransactionForm :onSubmitFunction="toggleDialog" />
         </template>
         <template #toggleButton>
-            <Button class="bg-orange-200 flex justify-center items-center" variant="secondary">
-                <Plus class="h-4 w-4 mr-1 px-0"/>
-                Transaction
+            <Button class="[&_svg]:size-6 rounded-full h-12 w-12" >
+                <Plus />
             </Button>
         </template>
     </ResponsiveDialog>
