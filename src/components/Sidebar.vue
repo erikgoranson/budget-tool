@@ -1,35 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CircleDollarSign, Download, Link, PiggyBank, Wallet, GoalIcon, } from 'lucide-vue-next';
-import { Icon, Camera } from 'lucide-vue-next';
-import { useRoute } from 'vue-router';
+import { Download, Link, PiggyBank } from 'lucide-vue-next';
+import { useRoute, useRouter } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
 import SaveDataButton from '@/components/SaveDataButton.vue';
 
-
 const sidebarStore = useSidebarStore();
 const route = useRoute();
+const router = useRouter();
 
-const navOptions = ref([
-    { 
-        pathName: 'home',
-        to: '/',
-        displayName: 'Budgets',
-        icon: Wallet
-    },
-    {
-        pathName: 'transactions',
-        to: '/transactions',
-        displayName: 'Transactions',
-        icon: CircleDollarSign
-    },
-    {
-        pathName: 'goals',
-        to: '/goals',
-        displayName: 'Goals',
-        icon: GoalIcon
-    }
-]);
+const sidebarRoutes = router.getRoutes().filter(route => route.meta.sidebarVisible == true);
 
 const activeClass = ref(
   'bg-gray-600 bg-opacity-25 text-gray-100 border-gray-100',
@@ -38,7 +18,6 @@ const activeClass = ref(
 const inactiveClass = ref(
   'border-gray-900 text-black hover:bg-gray-600 hover:bg-opacity-25 hover:text-gray-100',
 );
-
 </script>
 
 <template>
@@ -59,13 +38,13 @@ const inactiveClass = ref(
                     <span class="mx-2 text-2xl font-semibold text-black">Budget Tool</span>
                 </div>
             </div>
-            
+
             <nav class="mt-10">
-                <router-link v-for="option in navOptions" class="sidebarBase" :class="[route.name === option.pathName ? activeClass : inactiveClass]" :to=option.to @click="sidebarStore.isOpen = false">
-                    <component :is="option.icon ?? Link" class="icon"/>
+                <router-link v-for="option in sidebarRoutes" class="sidebarBase" :class="[route.name === option.name ? activeClass : inactiveClass]" :to=option.path @click="sidebarStore.isOpen = false">
+                    <component :is="option.meta.icon ?? Link" class="icon"/>
 
                     <span class="mx-4">
-                        {{ option.displayName }}
+                        {{ option.meta.displayName }}
                     </span>
                 </router-link>
 
@@ -74,6 +53,7 @@ const inactiveClass = ref(
                     <span class="mx-4"><SaveDataButton /></span>
                 </div>
             </nav>
+
         </div>
     </div>
 </template>
@@ -85,4 +65,6 @@ const inactiveClass = ref(
 .sidebarBase {
     @apply flex items-center px-6 py-2 mt-4 duration-200 border-l-4;
 }
+
+
 </style>
