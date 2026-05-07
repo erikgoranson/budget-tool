@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue';
-import { CircleDollarSign, Download, Link, PiggyBank, Wallet, GoalIcon, } from 'lucide-vue-next';
+import { CircleDollarSign, Cog, Download, Link, PiggyBank, Wallet, GoalIcon, } from 'lucide-vue-next';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,6 +62,17 @@ const router = createRouter({
         layout: 'default',
         displayName: 'Goals',
         icon: GoalIcon,
+        sidebarVisible: true,
+      },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue'),
+      meta: {
+        layout: 'default',
+        displayName: 'Settings',
+        icon: Cog,
         sidebarVisible: true,
       },
     },
