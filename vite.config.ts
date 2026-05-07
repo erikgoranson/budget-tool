@@ -44,7 +44,8 @@ export default defineConfig({
         name: 'Budget Tool',
         short_name: 'BudgetTool',
         description: 'A budget tool',
-        theme_color: '#ffffff',
+        theme_color: '#000000',
+        display: "standalone",
         icons: [
           {
             src: 'pwa-192x192.png',
