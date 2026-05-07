@@ -14,7 +14,7 @@ const description = 'Define a new category to be added to your budget, i.e., "Mo
             <CreateUpdateCategoryForm :onSubmitFunction="toggleDialog" />
         </template>
         <template #toggleButton>
-            <div class="text-center font-medium px-4 py-4 bg-blue-100 mt-6 overflow-hidden bg-white rounded-md shadow-lg">
+            <div class="text-center font-medium px-4 py-4 bg-blue-100 mt-6 overflow-hidden bg-white rounded-md shadow-lg cursor-pointer">
                 Add Category
             </div>
         </template>
