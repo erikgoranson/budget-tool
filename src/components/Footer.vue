@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CreateCategoryDialog from './category/CreateCategoryDialog.vue';
 import CreateTransactionDialog from './transaction/CreateTransactionDialog.vue';
 </script>
 
@@ -9,7 +8,6 @@ import CreateTransactionDialog from './transaction/CreateTransactionDialog.vue';
         </div>
         <div class="flex-1 items-center justify-center">
             <div class="flex ml-auto items-center justify-center flex space-x-2" >
-                <CreateCategoryDialog />
                 <CreateTransactionDialog />
             </div>
         </div>
