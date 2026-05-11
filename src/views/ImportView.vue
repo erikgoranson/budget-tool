@@ -156,10 +156,10 @@ const MergeData = () => {
         </CardContent>
         <CardFooter class="mb-5 flex justify-between">
           <Button @click="MergeData">
-            Merge Data
+            Merge
           </Button>
           <Button @click="OverwriteData">
-            Overwrite Existing
+            Overwrite
           </Button>
           <Button @click="reset" variant="destructive">
             Cancel</Button> 
