@@ -2,42 +2,19 @@
 import type { BudgetImport } from '@/types';
 import { ref, computed } from 'vue';
 import { useFileDialog } from '@vueuse/core';
-
-import * as localStorageHelper from '@/helpers/localStorage';
-import { useTransactionStore } from '@/stores/transaction';
-import { useCategoryStore } from '@/stores/category';
-import { useGoalStore } from '@/stores/goal';
-import { useSubcategoryStore } from '@/stores/subcategory';
-import { useBudgetStore } from '@/stores/budget';
+import { useBudgetDataStore } from '@/stores/budgetData';
 
 import { HardDriveUpload } from 'lucide-vue-next';
 
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-  ItemActions,
-} from '@/components/ui/item';
+import { Item, ItemContent, ItemTitle, ItemActions, } from '@/components/ui/item';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 
 import BudgetSummary from '@/components/import/BudgetSummary.vue';
 import BudgetTree from '@/components/import/BudgetTree.vue';
 
-const transactionStore = useTransactionStore();
-const categoryStore = useCategoryStore();
-const subcategoryStore = useSubcategoryStore();
-const budgetStore = useBudgetStore();
-const goalStore = useGoalStore();
+const dataStore = useBudgetDataStore();
 
 const parsedData = ref<BudgetImport | null>(null);
 const fileName = ref<string | null>(null);
@@ -86,39 +63,16 @@ onChange((selectedFiles) => {
   reader.readAsText(file)
 });
 
-const currentData = computed(() => {
-  const transactions = transactionStore.transactions;
-  const category = categoryStore.categories;
-  const subcategories = subcategoryStore.subcategories;
-  const budgets = budgetStore.budgets;
-  const goals = goalStore.goals;
-
-  const json = JSON.stringify({ budgets, category, subcategories, transactions, goals });
-  return JSON.parse(json) as BudgetImport;
-});
-
-const PutParsedData = () => {
-  parsedData.value?.category?.forEach(category => categoryStore.putCategory(category));
-  parsedData.value?.subcategories?.forEach(subcategory => subcategoryStore.putSubcategory(subcategory));
-  parsedData.value?.budgets?.forEach(budget => budgetStore.putBudget(budget));
-  parsedData.value?.goals?.forEach(goal => goalStore.putGoal(goal));
-  parsedData.value?.transactions?.forEach(transaction => transactionStore.putTransaction(transaction));
-};
+const currentData = computed(() => dataStore.getAllBudgetData());
 
 const OverwriteData = () => {
-  localStorageHelper.default.clearData();
-  categoryStore.categories = [];
-  subcategoryStore.subcategories = [];
-  budgetStore.budgets = [];
-  goalStore.goals = [];
-  transactionStore.transactions = [];
-
-  PutParsedData();
+  dataStore.truncateBudgetData();
+  dataStore.putBudgetData(parsedData.value as BudgetImport);
   fileImported.value = true;
 };
 
 const MergeData = () => {
-  PutParsedData();
+  dataStore.putBudgetData(parsedData.value as BudgetImport);
   fileImported.value = true;
 };
 </script>
