@@ -8,7 +8,6 @@ import {
   ItemActions,
 } from '@/components/ui/item';
 import { ChevronRightIcon } from 'lucide-vue-next';
-
 </script>
 
 <template>
@@ -22,6 +21,20 @@ import { ChevronRightIcon } from 'lucide-vue-next';
             </ItemContent>
             <ItemActions>
                 <SaveDataButton/>
+            </ItemActions>
+        </Item>
+
+        <Item variant="outline" class="item">
+            <ItemContent>
+                <ItemTitle>Import Budget Data</ItemTitle>
+                <ItemDescription>
+                    Import data using a previously downloaded .json file
+                </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+                <router-link to="/import">
+                    <ChevronRightIcon class="size-6" />
+                </router-link>
             </ItemActions>
         </Item>
     </div>

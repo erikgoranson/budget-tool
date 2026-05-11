@@ -76,6 +76,16 @@ const router = createRouter({
         sidebarVisible: true,
       },
     },
+    {
+      path: '/import',
+      name: 'dataimport',
+      component: () => import('../views/ImportView.vue'),
+      meta: {
+        layout: 'default',
+        displayName: 'Import Data',
+        sidebarVisible: false,
+      },
+    },
   ]
 })
 
