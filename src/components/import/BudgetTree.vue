@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import type { BudgetData, Budget, Category, Goal, Subcategory, Transaction } from '@/types';
 import dateFormatter from '@/helpers/dateFormatter';
+import currencyFormatter from '@/helpers/numberFormat';
 import { ref, computed } from 'vue';
 
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, } from '@/components/ui/card';
+import TreeItem from '../TreeItem.vue';
 
 const props = defineProps({
-    data : {
-        type: Object as () => BudgetData,
-        required: true
-    }
+  data : {
+    type: Object as () => BudgetData,
+    required: true
+  }
 });
 
 const tree = computed(() => {
@@ -21,9 +19,7 @@ const tree = computed(() => {
 });
 
 const buildBudgetTree = (data: BudgetData) => {
-
-  const outputThingy = data.category.map(cat => {
-
+  const category = data.category.map(cat => {
     const subcategory = data?.subcategory?.filter(x => x.categoryId == cat.id).map(subcat => {
       const budgets = data?.budget?.filter(b => b.subcategoryId == subcat.id) as Budget[];
       const goals = data?.goal?.filter(g => g.subcategoryId == subcat.id) as Goal[];
@@ -47,24 +43,18 @@ const buildBudgetTree = (data: BudgetData) => {
   });
 
   return { 
-    category: outputThingy,
+    category: category,
     transaction: data.transaction,
   };
-
-  //return finalObj;
 };
 
 const getCategoryLabel = (tran: Transaction) => {
   if (tran.income){
-      return `Income for ${dateFormatter.format(tran.date, 'monthName')}`;
+    return `Income for ${dateFormatter.format(tran.date, 'monthName')}`;
   };
 
-  //const categoryName = categoryStore.getCategoryName(tran.categoryId);
-  //const categoryName = props.data['category'].find(x => x['id]'] == tran.categoryId);
-  const categoryName = props.data.category.find(x => x.id == tran.categoryId);
-
-  //const subcategoryName = props.data['subcategory'].find(x => x['id]'] == tran.subcategoryId);
-  const subcategoryName = props.data.subcategory.find(x => x.id == tran.subcategoryId);
+  const categoryName = props.data.category.find(x => x.id == tran.categoryId)?.name;
+  const subcategoryName = props.data.subcategory.find(x => x.id == tran.subcategoryId)?.name;
 
   if (categoryName === undefined || subcategoryName === undefined){
     return 'Uncategorized';
@@ -73,37 +63,44 @@ const getCategoryLabel = (tran: Transaction) => {
     return `${categoryName} : ${subcategoryName}`;
   }
 };
-
 </script>
 
 <template>
-    <Card class="border-gray-400 bg-gray-100">
-        <CardContent class="p-6">
+  <Card class="border-gray-400 bg-gray-100">
+    <CardContent class="p-6">
+      
+      <TreeItem v-for="category in tree.category">
+        Category: {{ category.name }}
+        <template #content>
+          <TreeItem v-for="subcategory in category.subcategory">
+            Budget: {{ subcategory.name }}
+            <template #content v-if="subcategory.budget?.length > 0 || subcategory.goal?.length > 0">
+              <TreeItem v-for="budget in subcategory.budget">
+                {{ currencyFormatter.format(budget.amount) }} for {{ dateFormatter.format(budget.date, 'monthName') }} {{ dateFormatter.format(budget.date, 'yearNumeric') }} 
+              </TreeItem>
 
-<ul v-for="category in tree.category">
-            Category: {{ category.name }}
-            <ul class="list-disc pl-5" v-for="subcategory in category.subcategory">
-            <li>
-                Budget: {{ subcategory.name }}
-                <ul class="list-disc pl-5"  v-for="budget in subcategory.budget">
-                <li>${{ budget.amount }} budgeted for {{ budget.date }}</li>
-                </ul>
-                <ul class="list-disc pl-5"  v-for="goal in subcategory.goal">
-                <li>{{ goal.goalOption }} goal ({{ goal.amount }} by {{ goal.targetDate }})</li>
-                </ul>
-            </li>
-            </ul>
-        </ul>
+              <TreeItem v-for="goal in subcategory.goal">
+                {{ goal.goalOption }} goal ({{ currencyFormatter.format(goal.amount) }} by {{ dateFormatter.format(goal.targetDate, 'longDate') }}) 
+              </TreeItem>
+            </template>
+          </TreeItem>
+        </template>
+      </TreeItem>
 
-        <p v-if="tree.transaction?.length > 0">Transactions:</p>
-        <ul v-for="tran in tree.transaction" class="list-disc pl-5" >
-            <li>
-            {{ tran.income ? '+' : '-' }}${{ tran.amount }} on {{ tran.date }} : {{ getCategoryLabel(tran) }}
-            
-            {{ tran.note != null ? `(${tran.note})` : ''}}
-            </li>
-        </ul>
+      <TreeItem>
+        Transactions: ({{tree.transaction.length}})
+        <template #content>
+          <TreeItem v-for="tran in tree.transaction">
+            {{ dateFormatter.format(tran.date, 'murica') }} &nbsp; {{ tran.income ? '+' : '' }}{{currencyFormatter.format(tran.amount)}}
+            <template #content>
+              <TreeItem>
+                {{ getCategoryLabel(tran) }} {{ tran.note != null ? ` - (${tran.note})` : ''}}
+              </TreeItem>
+            </template>
+          </TreeItem>
+        </template>
+      </TreeItem>
 
-        </CardContent>
-    </Card>
+    </CardContent>
+  </Card>
 </template>
