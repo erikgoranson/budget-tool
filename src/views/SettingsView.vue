@@ -14,9 +14,9 @@ import { ChevronRightIcon } from 'lucide-vue-next';
     <div class="flex flex-col gap-6">
         <Item variant="outline" class="item">
             <ItemContent>
-                <ItemTitle>Export All Data</ItemTitle>
+                <ItemTitle>Export Budget Data</ItemTitle>
                 <ItemDescription>
-                    Download all user data to a .json file.
+                    Download data to a .json file.
                 </ItemDescription>
             </ItemContent>
             <ItemActions>
