@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BudgetImport, Budget, Category, Goal, Subcategory, Transaction } from '@/types';
+import type { BudgetData, Budget, Category, Goal, Subcategory, Transaction } from '@/types';
 import dateFormatter from '@/helpers/dateFormatter';
 import { ref, computed } from 'vue';
 
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 
 const props = defineProps({
     data : {
-        type: Object as () => BudgetImport,
+        type: Object as () => BudgetData,
         required: true
     }
 });
@@ -20,13 +20,13 @@ const tree = computed(() => {
   return buildBudgetTree(props.data);
 });
 
-const buildBudgetTree = (data: BudgetImport) => {
+const buildBudgetTree = (data: BudgetData) => {
 
   const outputThingy = data.category.map(cat => {
 
-    const subcategory = data?.subcategories.filter(x => x.categoryId == cat.id).map(subcat => {
-      const budgets = data?.budgets?.filter(b => b.subcategoryId == subcat.id) as Budget[];
-      const goals = data?.goals?.filter(g => g.subcategoryId == subcat.id) as Goal[];
+    const subcategory = data?.subcategory.filter(x => x.categoryId == cat.id).map(subcat => {
+      const budgets = data?.budget?.filter(b => b.subcategoryId == subcat.id) as Budget[];
+      const goals = data?.goal?.filter(g => g.subcategoryId == subcat.id) as Goal[];
       
       return {
         id: subcat.id,
@@ -48,7 +48,7 @@ const buildBudgetTree = (data: BudgetImport) => {
 
   return { 
     category: outputThingy,
-    transaction: data.transactions,
+    transaction: data.transaction,
   };
 
   //return finalObj;
@@ -64,7 +64,7 @@ const getCategoryLabel = (tran: Transaction) => {
   const categoryName = props.data.category.find(x => x.id == tran.categoryId);
 
   //const subcategoryName = props.data['subcategory'].find(x => x['id]'] == tran.subcategoryId);
-  const subcategoryName = props.data.subcategories.find(x => x.id == tran.subcategoryId);
+  const subcategoryName = props.data.subcategory.find(x => x.id == tran.subcategoryId);
 
   if (categoryName === undefined || subcategoryName === undefined){
     return 'Uncategorized';

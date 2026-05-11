@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BudgetImport } from '@/types';
+import type { BudgetData } from '@/types';
 import { ref, computed } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 import { useBudgetDataStore } from '@/stores/budgetData';
@@ -16,13 +16,13 @@ import BudgetTree from '@/components/import/BudgetTree.vue';
 
 const dataStore = useBudgetDataStore();
 
-const parsedData = ref<BudgetImport | null>(null);
+const parsedData = ref<BudgetData | null>(null);
 const fileName = ref<string | null>(null);
 const fileImported = ref(false); 
 const fileErrorMessage = ref<string | null>(null);
 
 const isFileValid = computed(() => {
-  var anyRecords = parsedData.value?.category?.length || parsedData.value?.budgets?.length || parsedData.value?.subcategories?.length || parsedData.value?.transactions?.length || parsedData.value?.goals?.length || 0;
+  var anyRecords = parsedData.value?.category?.length || parsedData.value?.budget?.length || parsedData.value?.subcategory?.length || parsedData.value?.transaction?.length || parsedData.value?.goal?.length || 0;
   return anyRecords > 0;
 });
 
@@ -47,7 +47,7 @@ onChange((selectedFiles) => {
     try {
       fileName.value = file.name;
       const rawText = reader.result as string;
-      parsedData.value = JSON.parse(rawText) as BudgetImport;
+      parsedData.value = JSON.parse(rawText) as BudgetData;
     } catch (error) {
       fileErrorMessage.value = 'Invalid file format';
       parsedData.value = null;
@@ -67,12 +67,12 @@ const currentData = computed(() => dataStore.getAllBudgetData());
 
 const OverwriteData = () => {
   dataStore.truncateBudgetData();
-  dataStore.putBudgetData(parsedData.value as BudgetImport);
+  dataStore.putBudgetData(parsedData.value as BudgetData);
   fileImported.value = true;
 };
 
 const MergeData = () => {
-  dataStore.putBudgetData(parsedData.value as BudgetImport);
+  dataStore.putBudgetData(parsedData.value as BudgetData);
   fileImported.value = true;
 };
 </script>
@@ -103,10 +103,10 @@ const MergeData = () => {
         </CardHeader>
         <CardContent class="grid gap-4">
           <Label>Budget Details:</Label>
-          <BudgetSummary :data="(parsedData as BudgetImport)" />
+          <BudgetSummary :data="(parsedData as BudgetData)" />
           
           <Label>Budget Breakdown:</Label>
-          <BudgetTree :data="(parsedData as BudgetImport)" />
+          <BudgetTree :data="(parsedData as BudgetData)" />
         </CardContent>
         <CardFooter class="mb-5 flex justify-between">
           <Button @click="MergeData">
@@ -153,10 +153,10 @@ const MergeData = () => {
         <CardContent class="grid gap-4">
           <p>Successfully processed file '<span class="font-semibold">{{ fileName }}</span>'.</p>
           <Label>New budget details:</Label>
-          <BudgetSummary :data="(currentData as BudgetImport)" />
+          <BudgetSummary :data="(currentData as BudgetData)" />
 
           <Label>New budget Breakdown:</Label>
-          <BudgetTree :data="(currentData as BudgetImport)" />
+          <BudgetTree :data="(currentData as BudgetData)" />
         </CardContent>
         <CardFooter class="mb-5 flex justify-between">
           <Button @click="restart" variant="destructive">Start Over</Button>

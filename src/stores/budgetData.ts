@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { BudgetImport } from '@/types';
+import type { BudgetData } from '@/types';
 import localStorageHelper from '@/helpers/localStorage';
 
 import { useCategoryStore } from './category';
@@ -16,21 +16,21 @@ export const useBudgetDataStore = defineStore('budgetdata', () => {
     const goalStore = useGoalStore();
 
     const getAllBudgetData =() => {
-        const transactions = transactionStore.transactions;
+        const transaction = transactionStore.transactions;
         const category = categoryStore.categories;
-        const subcategories = subcategoryStore.subcategories;
-        const budgets = budgetStore.budgets;
-        const goals = goalStore.goals;
+        const subcategory = subcategoryStore.subcategories;
+        const budget = budgetStore.budgets;
+        const goal = goalStore.goals;
 
-        return { budgets, category, subcategories, transactions, goals } as BudgetImport;
+        return { budget, category, subcategory, transaction, goal } as BudgetData;
     };
 
-    const putBudgetData = (data: BudgetImport) => {
+    const putBudgetData = (data: BudgetData) => {
         data?.category?.forEach(category => categoryStore.putCategory(category));
-        data?.subcategories?.forEach(subcategory => subcategoryStore.putSubcategory(subcategory));
-        data?.budgets?.forEach(budget => budgetStore.putBudget(budget));
-        data?.goals?.forEach(goal => goalStore.putGoal(goal));
-        data?.transactions?.forEach(transaction => transactionStore.putTransaction(transaction));
+        data?.subcategory?.forEach(subcategory => subcategoryStore.putSubcategory(subcategory));
+        data?.budget?.forEach(budget => budgetStore.putBudget(budget));
+        data?.goal?.forEach(goal => goalStore.putGoal(goal));
+        data?.transaction?.forEach(transaction => transactionStore.putTransaction(transaction));
     };
 
     const truncateBudgetData = () => {

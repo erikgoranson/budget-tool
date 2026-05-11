@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BudgetImport } from '@/types';
+import type { BudgetData } from '@/types';
 import { ref, computed } from 'vue';
 
 import {
@@ -10,19 +10,19 @@ import { Label } from '@/components/ui/label';
 
 const props = defineProps({
     data : {
-        type: Object as () => BudgetImport,
+        type: Object as () => BudgetData,
         required: false,
         default: null,
     }
 });
 
 const incomeTotal = computed(() => {
-    const income = props.data?.transactions?.filter(x => x.income).map(t => t.amount);
+    const income = props.data?.transaction?.filter(x => x.income).map(t => t.amount);
     return income?.reduce((a, b) => a + b, 0);
 });
 
 const expenseTotal = computed(() => {
-    const income = props.data?.transactions?.filter(x => !x.income)?.map(t => t.amount);
+    const income = props.data?.transaction?.filter(x => !x.income)?.map(t => t.amount);
     return income?.reduce((a, b) => a + b, 0);
 });
 </script>
@@ -34,13 +34,13 @@ const expenseTotal = computed(() => {
                 <ul>
                     <li>{{ data?.category?.length ?? 0}} category record(s)</li>
                         <ul class="list-disc pl-5">
-                            <li>{{ data?.subcategories?.length ?? 0}} budget record(s)</li>
+                            <li>{{ data?.subcategory?.length ?? 0}} budget record(s)</li>
                             <ul class="list-disc pl-5">
-                                <li>{{ data?.budgets?.length ?? 0}} budgeted months</li>
-                                <li>{{ data?.goals?.length ?? 0}} goal(s)</li>
+                                <li>{{ data?.budget?.length ?? 0}} budgeted months</li>
+                                <li>{{ data?.goal?.length ?? 0}} goal(s)</li>
                             </ul>
                         </ul>
-                    <li>{{ data?.transactions?.length ?? 0}} transaction record(s)</li>
+                    <li>{{ data?.transaction?.length ?? 0}} transaction record(s)</li>
                 </ul>
             </div>
             

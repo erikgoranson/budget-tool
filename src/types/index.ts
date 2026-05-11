@@ -1,5 +1,5 @@
 import type { Budget } from "./Budget";
-import type { BudgetImport } from './BudgetImport';
+import type { BudgetData } from './BudgetData';
 import type { BudgetRow } from "./BudgetRow";
 import type { Category } from "./Category";
 import type { DialogDropdownItem } from "./DialogDropdownItem";
@@ -11,7 +11,7 @@ import type { Subcategory } from "./Subcategory";
 
 export type {
     Budget,
-    BudgetImport,
+    BudgetData,
     BudgetRow,
     Category,
     DialogDropdownItem,
