@@ -41,7 +41,8 @@ const goalStore = useGoalStore();
 
 const parsedData = ref<BudgetImport | null>(null);
 const fileName = ref<string | null>(null);
-const fileLoaded = ref(false);
+const fileImported = ref(false);
+
 
 const isFileValid = computed(() => {
   var anyRecords = parsedData.value?.category?.length || parsedData.value?.budgets?.length || parsedData.value?.subcategories?.length || parsedData.value?.transactions?.length || parsedData.value?.goals?.length || 0;
@@ -50,7 +51,7 @@ const isFileValid = computed(() => {
 
 const restart = () => {
   reset();
-  fileLoaded.value = false;
+  fileImported.value = false;
 };
 
 const { files, open, onChange, reset } = useFileDialog({
@@ -112,12 +113,12 @@ const OverwriteData = () => {
   transactionStore.transactions = [];
 
   PutParsedData();
-  fileLoaded.value = true;
+  fileImported.value = true;
 };
 
 const MergeData = () => {
   PutParsedData();
-  fileLoaded.value = true;
+  fileImported.value = true;
 };
 </script>
 
@@ -138,25 +139,79 @@ const MergeData = () => {
         </Item>
     </div>
 
-    <div v-else-if="isFileValid && !fileLoaded">
-      file summary (good)
-      <Button @click="MergeData">
-        Merge Data
-      </Button>
-      <Button @click="OverwriteData">
-        Overwrite Existing
-      </Button>
-      <Button @click="reset" variant="destructive">
-        Cancel</Button> 
+    <div v-else-if="isFileValid && !fileImported">
+      <Card class="summaryCard">
+        <CardHeader>
+          <CardTitle>
+            File Summary: <span class="font-semibold">{{ fileName }}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-4">
+          <Label>Budget Details:</Label>
+          <BudgetSummary :data="(parsedData as BudgetImport)" />
+          
+          <Label>Budget Breakdown:</Label>
+          <BudgetTree :data="(parsedData as BudgetImport)" />
+        </CardContent>
+        <CardFooter class="mb-5 flex justify-between">
+          <Button @click="MergeData">
+            Merge Data
+          </Button>
+          <Button @click="OverwriteData">
+            Overwrite Existing
+          </Button>
+          <Button @click="reset" variant="destructive">
+            Cancel</Button> 
+        </CardFooter>
+      </Card>
     </div>
 
-    <div v-else-if="!isFileValid && !fileLoaded">
-      file summary (bad)
-      <Button @click="reset">Start Over</Button>
+    <div v-else-if="!isFileValid && !fileImported">
+      <Card class="summaryCard">
+        <CardHeader>
+          <CardTitle>
+            File Summary: <span class="font-semibold">{{ fileName }}</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Label>File Details:</Label>
+          <BudgetSummary>
+            This file does not contain any data to import. 
+            ERROR MESSAGE ALSO
+          </BudgetSummary>
+        </CardContent>
+        <CardFooter class="mb-5 flex justify-between">
+          <Button @click="reset">Start Over</Button>
+        </CardFooter>
+      </Card>
     </div>
 
-    <div v-if="fileLoaded && files != null">
-      <p>import summary</p>
-      <Button @click="restart" variant="destructive">Start Over</Button>
+    <div v-if="fileImported && files != null">
+      <Card class="summaryCard">
+        <CardHeader>
+          <CardTitle>
+            Import Summary
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-4">
+          <p>Successfully processed file '<span class="font-semibold">{{ fileName }}</span>'.</p>
+          <Label>New budget details:</Label>
+          <BudgetSummary :data="(currentData as BudgetImport)" />
+
+          <Label>New budget Breakdown:</Label>
+          <BudgetTree :data="(currentData as BudgetImport)" />
+        </CardContent>
+        <CardFooter class="mb-5 flex justify-between">
+          <Button @click="restart" variant="destructive">Start Over</Button>
+        </CardFooter>
+      </Card>
     </div>
 </template>
+
+<style scoped>
+
+summaryCard {
+  @apply border-gray-400 bg-transparent;
+}
+
+</style>
