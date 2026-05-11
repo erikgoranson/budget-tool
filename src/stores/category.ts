@@ -38,5 +38,14 @@ export const useCategoryStore = defineStore('category', () => {
         return category?.name;
     };
 
-    return { categories, addCategory, deleteCategory, updateCategory, getCategoryName };
+    const putCategory = (category: Category) => {
+        const index = categories.value.findIndex(x => x.id == category.id);
+        if (index !== -1) {
+            updateCategory(category);
+        } else {
+            addCategory(category);
+        }
+    };
+
+    return { categories, addCategory, deleteCategory, updateCategory, getCategoryName, putCategory };
 });

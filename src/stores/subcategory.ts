@@ -32,6 +32,15 @@ export const useSubcategoryStore = defineStore(storageKey, () => {
         setData();
     };
 
+    const putSubcategory = (subcategory: Subcategory) => {
+        const index = subcategories.value.findIndex(x => x.id == subcategory.id);
+        if (index !== -1) {
+            updateSubcategory(subcategory);
+        } else {
+            createSubcategory(subcategory);
+        }
+    };
+
     const getSubcategoryNameById = (id: string) => {
         const category = subcategories.value.find(c => c.id == id);
         return category?.name;
@@ -41,5 +50,5 @@ export const useSubcategoryStore = defineStore(storageKey, () => {
         return subcategories.value.filter(x => x.categoryId == categoryId);
     };
 
-    return { subcategories, createSubcategory, deleteSubcategory, updateSubcategory, getSubcategoryNameById, getSubcategoriesByCategoryId };
+    return { subcategories, createSubcategory, deleteSubcategory, updateSubcategory, getSubcategoryNameById, getSubcategoriesByCategoryId, putSubcategory };
 });

@@ -57,6 +57,15 @@ export const useTransactionStore = defineStore('transaction', () => {
         setData();
     };
 
+    const putTransaction = (transaction: Transaction) => {
+        const index = transactions.value.findIndex(x => x.id == transaction.id);
+        if (index !== -1) {
+            updateTransaction(transaction);
+        } else {
+            createTransaction(transaction);
+        }
+    };
+
     const getTransactionName = (tran: Transaction) => {
         if (tran.categoryId == incomeGuid){
             return `Income for ${dateFormatter.format(tran.date, 'monthName')}`;
@@ -71,5 +80,5 @@ export const useTransactionStore = defineStore('transaction', () => {
         return `${categoryName} : ${subcategoryName}`;
     };
 
-    return { transactions, transactionRows, lastTouchedDate, setLastTouchedDate, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid };
+    return { transactions, transactionRows, lastTouchedDate, setLastTouchedDate, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid, putTransaction };
 });

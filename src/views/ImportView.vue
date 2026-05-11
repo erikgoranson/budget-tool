@@ -3,6 +3,13 @@ import type { BudgetImport } from '@/types';
 import { ref, computed } from 'vue';
 import { useFileDialog } from '@vueuse/core';
 
+import * as localStorageHelper from '@/helpers/localStorage';
+import { useTransactionStore } from '@/stores/transaction';
+import { useCategoryStore } from '@/stores/category';
+import { useGoalStore } from '@/stores/goal';
+import { useSubcategoryStore } from '@/stores/subcategory';
+import { useBudgetStore } from '@/stores/budget';
+
 import { HardDriveUpload } from 'lucide-vue-next';
 
 import {
@@ -13,10 +20,28 @@ import {
   ItemActions,
 } from '@/components/ui/item';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+
+import BudgetSummary from '@/components/import/BudgetSummary.vue';
+import BudgetTree from '@/components/import/BudgetTree.vue';
+
+const transactionStore = useTransactionStore();
+const categoryStore = useCategoryStore();
+const subcategoryStore = useSubcategoryStore();
+const budgetStore = useBudgetStore();
+const goalStore = useGoalStore();
 
 const parsedData = ref<BudgetImport | null>(null);
 const fileName = ref<string | null>(null);
-const fileLoaded = ref(false); 
+const fileLoaded = ref(false);
 
 const isFileValid = computed(() => {
   var anyRecords = parsedData.value?.category?.length || parsedData.value?.budgets?.length || parsedData.value?.subcategories?.length || parsedData.value?.transactions?.length || parsedData.value?.goals?.length || 0;
@@ -59,9 +84,46 @@ onChange((selectedFiles) => {
   reader.readAsText(file)
 });
 
+const currentData = computed(() => {
+  const transactions = transactionStore.transactions;
+  const category = categoryStore.categories;
+  const subcategories = subcategoryStore.subcategories;
+  const budgets = budgetStore.budgets;
+  const goals = goalStore.goals;
+
+  const json = JSON.stringify({ budgets, category, subcategories, transactions, goals });
+  return JSON.parse(json) as BudgetImport;
+});
+
+const PutParsedData = () => {
+  parsedData.value?.category?.forEach(category => categoryStore.putCategory(category));
+  parsedData.value?.subcategories?.forEach(subcategory => subcategoryStore.putSubcategory(subcategory));
+  parsedData.value?.budgets?.forEach(budget => budgetStore.putBudget(budget));
+  parsedData.value?.goals?.forEach(goal => goalStore.putGoal(goal));
+  parsedData.value?.transactions?.forEach(transaction => transactionStore.putTransaction(transaction));
+};
+
+const OverwriteData = () => {
+  localStorageHelper.default.clearData();
+  categoryStore.categories = [];
+  subcategoryStore.subcategories = [];
+  budgetStore.budgets = [];
+  goalStore.goals = [];
+  transactionStore.transactions = [];
+
+  PutParsedData();
+  fileLoaded.value = true;
+};
+
+const MergeData = () => {
+  PutParsedData();
+  fileLoaded.value = true;
+};
 </script>
 
 <template>
+
+<div class="grid w-full items-center gap-4 my-2"></div>
 
     <div v-if="files == null" class="flex flex-col gap-6">
         <Item variant="outline" size="sm" class="!border-gray-400">
@@ -78,14 +140,14 @@ onChange((selectedFiles) => {
 
     <div v-else-if="isFileValid && !fileLoaded">
       file summary (good)
-      <Button @click="reset">
-            Merge Data
-          </Button>
-          <Button @click="reset">
-            Overwrite Existing
-          </Button>
-          <Button @click="reset" variant="destructive">
-            Cancel</Button> 
+      <Button @click="MergeData">
+        Merge Data
+      </Button>
+      <Button @click="OverwriteData">
+        Overwrite Existing
+      </Button>
+      <Button @click="reset" variant="destructive">
+        Cancel</Button> 
     </div>
 
     <div v-else-if="!isFileValid && !fileLoaded">
