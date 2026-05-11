@@ -24,7 +24,7 @@ const buildBudgetTree = (data: BudgetData) => {
 
   const outputThingy = data.category.map(cat => {
 
-    const subcategory = data?.subcategory.filter(x => x.categoryId == cat.id).map(subcat => {
+    const subcategory = data?.subcategory?.filter(x => x.categoryId == cat.id).map(subcat => {
       const budgets = data?.budget?.filter(b => b.subcategoryId == subcat.id) as Budget[];
       const goals = data?.goal?.filter(g => g.subcategoryId == subcat.id) as Goal[];
       
@@ -95,7 +95,7 @@ const getCategoryLabel = (tran: Transaction) => {
             </ul>
         </ul>
 
-        <p v-if="tree.transaction.length > 0">Transactions:</p>
+        <p v-if="tree.transaction?.length > 0">Transactions:</p>
         <ul v-for="tran in tree.transaction" class="list-disc pl-5" >
             <li>
             {{ tran.income ? '+' : '-' }}${{ tran.amount }} on {{ tran.date }} : {{ getCategoryLabel(tran) }}
