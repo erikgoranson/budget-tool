@@ -41,8 +41,8 @@ const goalStore = useGoalStore();
 
 const parsedData = ref<BudgetImport | null>(null);
 const fileName = ref<string | null>(null);
-const fileImported = ref(false);
-
+const fileImported = ref(false); 
+const fileErrorMessage = ref<string | null>(null);
 
 const isFileValid = computed(() => {
   var anyRecords = parsedData.value?.category?.length || parsedData.value?.budgets?.length || parsedData.value?.subcategories?.length || parsedData.value?.transactions?.length || parsedData.value?.goals?.length || 0;
@@ -52,6 +52,7 @@ const isFileValid = computed(() => {
 const restart = () => {
   reset();
   fileImported.value = false;
+  fileErrorMessage.value = null;
 };
 
 const { files, open, onChange, reset } = useFileDialog({
@@ -71,7 +72,7 @@ onChange((selectedFiles) => {
       const rawText = reader.result as string;
       parsedData.value = JSON.parse(rawText) as BudgetImport;
     } catch (error) {
-      console.log('Invalid file format');
+      fileErrorMessage.value = 'Invalid file format';
       parsedData.value = null;
       fileName.value = null;
       files.value = null;
@@ -79,7 +80,7 @@ onChange((selectedFiles) => {
   }
 
   reader.onerror = () => {
-    console.log('Error reading file.');
+    fileErrorMessage.value =  'Error reading file.';
   }
   
   reader.readAsText(file)
@@ -177,7 +178,9 @@ const MergeData = () => {
           <Label>File Details:</Label>
           <BudgetSummary>
             This file does not contain any data to import. 
-            ERROR MESSAGE ALSO
+            <div v-if="fileErrorMessage">
+              Error: {{ fileErrorMessage }}
+            </div>
           </BudgetSummary>
         </CardContent>
         <CardFooter class="mb-5 flex justify-between">
