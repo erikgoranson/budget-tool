@@ -2,11 +2,8 @@
 import type { BudgetData } from '@/types';
 import { ref, computed } from 'vue';
 
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import currencyFormatter from '@/helpers/numberFormat';
 
 const props = defineProps({
     data : {
@@ -18,12 +15,12 @@ const props = defineProps({
 
 const incomeTotal = computed(() => {
     const income = props.data?.transaction?.filter(x => x.income).map(t => t.amount);
-    return income?.reduce((a, b) => a + b, 0);
+    return income?.reduce((a, b) => a + b, 0) || 0;
 });
 
 const expenseTotal = computed(() => {
     const income = props.data?.transaction?.filter(x => !x.income)?.map(t => t.amount);
-    return income?.reduce((a, b) => a + b, 0);
+    return income?.reduce((a, b) => a + b, 0) || 0;
 });
 </script>
 
@@ -44,8 +41,8 @@ const expenseTotal = computed(() => {
                 </ul>
             </div>
             
-            <p class="mt-2">Total income: ${{ incomeTotal }}</p>
-            <p>Total expenses: ${{ expenseTotal }}</p>
+            <p class="mt-2">Total income: {{ currencyFormatter.format(incomeTotal) }}</p>
+            <p>Total expenses: {{ currencyFormatter.format(expenseTotal) }}</p>
         </CardContent>
         <CardContent v-else class="p-6">
             <slot />

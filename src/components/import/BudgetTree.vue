@@ -71,7 +71,7 @@ const getCategoryLabel = (tran: Transaction) => {
       
       <TreeItem v-for="category in tree.category">
         Category: {{ category.name }}
-        <template #content>
+        <template #content v-if="category?.subcategory?.length > 0">
           <TreeItem v-for="subcategory in category.subcategory">
             Budget: {{ subcategory.name }}
             <template #content v-if="subcategory.budget?.length > 0 || subcategory.goal?.length > 0">
@@ -87,8 +87,8 @@ const getCategoryLabel = (tran: Transaction) => {
         </template>
       </TreeItem>
 
-      <TreeItem>
-        Transactions: ({{tree.transaction.length}})
+      <TreeItem v-if="tree.transaction">
+        Transactions: ({{tree?.transaction.length}})
         <template #content>
           <TreeItem v-for="tran in tree.transaction">
             {{ dateFormatter.format(tran.date, 'murica') }} &nbsp; {{ tran.income ? '+' : '' }}{{currencyFormatter.format(tran.amount)}}
