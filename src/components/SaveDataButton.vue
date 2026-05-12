@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import * as localStorageHelper from '@/helpers/localStorage';
+import { computed } from 'vue';
 import { saveAs } from 'file-saver';
+import { Download } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
+import { useBudgetDataStore } from '@/stores/budgetData';
+
+const dataStore = useBudgetDataStore();
 
 const content = computed(() => {
-    const budgets = localStorageHelper.default.getData('budget');
-    const category = localStorageHelper.default.getData('category');
-    const subcategories = localStorageHelper.default.getData('subcategory');
-    const transactions = localStorageHelper.default.getData('transactions');
-    const goals = localStorageHelper.default.getData('goal');
-
-    const obj = { budgets, category, subcategories, transactions, goals };
+    const obj = dataStore.getAllBudgetData()
     return JSON.stringify(obj);
 })
 
@@ -41,5 +38,5 @@ const saveData = () => {
 </script>
 
 <template>
-    <button @click="saveData">Export Data</button>
+    <Button @click="saveData"><Download class="icon" />Download</Button>
 </template>

@@ -32,6 +32,15 @@ export const useGoalStore = defineStore(storeKey, () => {
         setData();
     };
 
+    const putGoal = (goal: Goal) => {
+        const index = goals.value.findIndex(x => x.id == goal.id);
+        if (index !== -1) {
+            updateGoal(goal);
+        } else {
+            createGoal(goal);
+        }
+    };
+
     const markGoalComplete  = (goal: Goal) => {
         goal.isComplete = true;
         updateGoal(goal);
@@ -43,5 +52,5 @@ export const useGoalStore = defineStore(storeKey, () => {
         goals.value.splice(index, 1, goal);
     };
 
-    return { goals, createGoal, updateGoal, deleteGoal, markGoalComplete, updateGoalTotal };
+    return { goals, createGoal, updateGoal, deleteGoal, markGoalComplete, updateGoalTotal, putGoal };
 });

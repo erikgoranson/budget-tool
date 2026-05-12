@@ -32,33 +32,6 @@ export const validationSchema = toTypedSchema(
 
 export const handleSubmission = (userInput: any, original: Goal | BudgetRow) => {
   const goalStore = useGoalStore();
-  const goalAlreadyExists = ('goalOption' in original);
-  const valuesMatch = compareObjects(userInput, original);
-
-  if (goalAlreadyExists)
-  {
-    if (!valuesMatch)
-    {
-      const mergedValues: Goal = { ...original, ...userInput }; 
-      console.log('existing values', JSON.stringify(original, null, 2));
-      console.log('new values', JSON.stringify(userInput, null, 2));
-      console.log('MERGED values', JSON.stringify(mergedValues, null, 2));
-
-      goalStore.updateGoal(mergedValues);
-    }
-  }
-  else 
-  {
-    const newGoal = <Goal>{
-      id: userInput.id,
-      amount: userInput.amount,
-      targetDate: userInput.targetDate,
-      createdDate: userInput.createdDate,
-      subcategoryId: userInput.subcategoryId,
-      goalOption: userInput.goalOption,
-      isComplete: userInput.isComplete,
-    };
-    console.log('new goal is', JSON.stringify(newGoal, null, 2));
-    goalStore.createGoal(newGoal);
-  }
+  const mergedValues: Goal = { ...original, ...userInput }
+  goalStore.putGoal(mergedValues);
 };

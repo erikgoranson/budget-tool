@@ -7,7 +7,8 @@ const formatOptions = {
     "longDate": { dateStyle: 'long' },
     "monthYearDate": { month: 'long', year: 'numeric' },
     "monthName": { month: 'long', },
-    "yearNumeric": { year: 'numeric' }
+    "yearNumeric": { year: 'numeric' },
+    "murica": { month: '2-digit', day: '2-digit', year: 'numeric'}
 };
 
 const format = (dateValue: string | CalendarDate, optionName: string, locale: string = defaultLocale) => {

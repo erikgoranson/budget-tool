@@ -5,6 +5,8 @@ import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
 import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
+import BudgetDashboard from '@/components/budgetRow/BudgetDashboard.vue';
+import CreateCategoryDialog from '../components/category/CreateCategoryDialog.vue';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -37,8 +39,10 @@ const uncategorizedBudget = computed(() => {
 </script>
 
 <template>
+  <BudgetDashboard/>
   <BudgetCard v-if="uncategorizedTransactionsExist" :budgetCategory="uncategorizedBudget"/>
   <div v-for="budgetCategory in categories">
       <BudgetCard :budgetCategory="budgetCategory"/>
   </div>
+  <CreateCategoryDialog />
 </template>

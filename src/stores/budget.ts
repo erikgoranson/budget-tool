@@ -33,6 +33,15 @@ export const useBudgetStore = defineStore('budget', () => {
         setData();
     };
 
+    const putBudget = (budget: Budget) => {
+        const index = budgets.value.findIndex(x => x.id == budget.id);
+        if (index !== -1) {
+            updateBudget(budget);
+        } else {
+            createBudget(budget);
+        }
+    };
+
     const resetBudget = (row: BudgetRow) => {
         const budget = <Budget>{
             id: row.id,
@@ -47,5 +56,5 @@ export const useBudgetStore = defineStore('budget', () => {
         return budgets.value.filter(x => x.subcategoryId == subcategoryId);
     };
 
-    return { budgets, createBudget, deleteBudget, resetBudget, updateBudget, getBudgetsBySubcategoryId };
+    return { budgets, createBudget, deleteBudget, resetBudget, updateBudget, getBudgetsBySubcategoryId, putBudget };
 });

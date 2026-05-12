@@ -46,9 +46,9 @@ const allGoalsData = computed(() => [
 ]);
 </script>
 
-<template>
+<template >
     <ConfettiExplosion v-if="confettiStore.isActive" />
-    <div class="mt-6 overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300 ">
+    <div class="overflow-hidden rounded-md shadow-lg mx-2 bg-indigo-300 ">
         <div class="flex items-center justify-center bg-indigo-400 py-2">
             <div class="flex-1"></div>
             <div class="font-semibold text-2xl truncate">All Goals</div>
