@@ -6,6 +6,7 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/vue-table';
+import { useMediaQuery } from '@vueuse/core';
 
 import { h, ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -46,12 +47,12 @@ const { transactionRows } = storeToRefs(transactionStore);
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
-const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
+const isDesktop = useMediaQuery('(min-width: 768px)');
 
 const selectedTotalText = computed(() => {
-    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const selectedRows = table.value.getFilteredSelectedRowModel().rows;
     const rowAmounts = selectedRows.map(x => x.original.amount);
     
     if(selectedRows.length == 0){
@@ -63,29 +64,41 @@ const selectedTotalText = computed(() => {
 });
 
 const columns = transactionColumns;
-const table = useVueTable({
-    data: transactionRows,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
-    onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
-    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
-    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
-    state: {
-        get sorting() { return sorting.value },
-        get columnFilters() { return columnFilters.value },
-        get columnVisibility() { return columnVisibility.value },
-        get rowSelection() { return rowSelection.value },
-        get globalFilter() { return filter.value },
-    },
+
+const columnVisibility = computed<VisibilityState>(() => ({
+    mobile: !isDesktop.value,
+    date: isDesktop.value,
+    budgetCategoryName: isDesktop.value,
+    note: isDesktop.value,
+    amount: isDesktop.value,
+}));
+
+
+const table = computed(() => { 
+    return useVueTable({
+        data: transactionRows,
+        columns: columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+        onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+        onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+        onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+        state: {
+            get sorting() { return sorting.value },
+            get columnFilters() { return columnFilters.value },
+            get columnVisibility() { return columnVisibility.value },
+            get rowSelection() { return rowSelection.value },
+            get globalFilter() { return filter.value },
+        },
+    })
 });
 </script>
 
 <template>
- 
+
     <div class="flex items-center py-4">
         <input
             type="text"
@@ -113,7 +126,7 @@ const table = useVueTable({
         
         <Table>
             <TableHeader>
-                <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+                <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id" >
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">
                         <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                     </TableHead>
@@ -122,7 +135,7 @@ const table = useVueTable({
             <TableBody>
                 <template v-if="table.getRowModel().rows?.length">
                     <template v-for="row in table.getRowModel().rows" :key="row.id">
-                        <TableRow :data-state="row.getIsSelected() && 'selected'">
+                        <TableRow :data-state="row.getIsSelected() && 'selected'" class="border-b border-gray-400">
                             <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>

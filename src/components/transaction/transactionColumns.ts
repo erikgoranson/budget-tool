@@ -8,6 +8,7 @@ import Button from '../ui/button/Button.vue';
 import Checkbox from '../ui/checkbox/Checkbox.vue';
 import { ArrowUpDown, FilePenLine, } from 'lucide-vue-next';
 import TransactionActionsMenu from './TransactionActionsMenu.vue';
+import TransactionDetailCard from './TransactionDetailCard.vue';
 
 export const transactionColumns: ColumnDef<Transaction>[] = [
     {
@@ -25,6 +26,16 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
             }),
         enableSorting: false,
         enableHiding: false,
+    },
+    {
+        id: 'mobile',
+        header: () => ['Details'],
+        enableSorting: false,
+        cell: ({ row }) => {
+            return h(TransactionDetailCard, {
+                data: row.original,
+            })
+        },
     },
     {
         accessorKey: 'date',
