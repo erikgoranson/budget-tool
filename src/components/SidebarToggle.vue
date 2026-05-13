@@ -6,6 +6,6 @@ const sidebarStore = useSidebarStore();
 
 <template>
     <button class="text-gray-500 focus:outline-none lg:hidden" @click="sidebarStore.isOpen = true">
-        <MenuIcon class="font-medium text-black-700 h-10 w-10"/>
+        <MenuIcon class="font-medium text-black-800 h-8 w-8"/>
     </button>
 </template>
