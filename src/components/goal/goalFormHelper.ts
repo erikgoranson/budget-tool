@@ -20,7 +20,7 @@ export const goalOptionKeys = Object.keys(GoalOption) as [keyof typeof GoalOptio
 
 export const validationSchema = toTypedSchema(
   zod.object({
-    id: zod.string().default(uuidv4()),
+    id: zod.string().default(() => uuidv4()),
     amount: zod.number(),
     createdDate: zod.string().default(today(getLocalTimeZone()).toString()),
     targetDate: zod.string(),

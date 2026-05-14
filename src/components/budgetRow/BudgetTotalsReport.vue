@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Budget, Category  } from "@/types";
-import { ref, toRef, computed } from "vue";
+import type { Category  } from "@/types";
+import { computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useTransactionStore } from '@/stores/transaction';
 import { useBudgetStore } from '@/stores/budget';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import { useCarouselStore } from '@/stores/carousel';
-import currencyFormatter from '@/helpers/numberFormat';
+import CurrencyBadge from "../CurrencyBadge.vue";
 
 const props = defineProps({
     category : {
@@ -49,12 +49,24 @@ const expensedTotal = computed(() => {
 const remainingTotal = computed(() => {
     return budgetTotal.value - expensedTotal.value;
 });
+
 </script>
 
 <template>
-    <div class="font-semibold w-sm">
-        <div>Budgeted {{ currencyFormatter.format(budgetTotal) }}</div>
-        <div>Expensed {{ currencyFormatter.format(expensedTotal) }}</div>
-        <div>Remaining {{ currencyFormatter.format(remainingTotal) }}</div>
+
+    <div class="flex flex-row gap-2">
+        <!-- labels -->
+        <div class="flex flex-col w-fit text-sm font-semibold font-mono justify-center">
+            <div>Budgeted</div>
+            <div>Expensed</div>
+            <div>Remaining</div>
+        </div>
+
+        <!-- badges -->
+        <div class="flex flex-col w-fit">
+            <CurrencyBadge :currencyValue="budgetTotal" :base-style="true"/>
+            <CurrencyBadge :currencyValue="expensedTotal" :base-style="true"/>
+            <CurrencyBadge :currencyValue="remainingTotal"/>
+        </div>
     </div>
 </template>

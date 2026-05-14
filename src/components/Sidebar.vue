@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Download, Link, PiggyBank } from 'lucide-vue-next';
+import { Link } from 'lucide-vue-next';
+import BudgetSpinner from '@/components/BudgetSpinner.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useSidebarStore } from '@/stores/sidebar';
 
@@ -33,7 +34,7 @@ const inactiveClass = ref(
         >
             <div class="flex items-center justify-center mt-8">
                 <div class="flex items-center">
-                    <PiggyBank class="h-16 w-16" />
+                    <BudgetSpinner/>
                     <span class="mx-2 text-2xl font-semibold text-black">Budget Tool</span>
                 </div>
             </div>

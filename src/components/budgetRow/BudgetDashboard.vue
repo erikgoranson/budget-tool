@@ -56,17 +56,24 @@ const totalFutureBudget = computed(() => (totalIncome.value > 0) ? totalBudgetIn
         <div class="flex ml-auto items-center justify-center">
             <div class="flex flex-col items-center">
                 <BudgetMonthCarousel />
-                <div > 
-                    <div class="flex flex-col" id="dashboard thingy">
-                        <div class="flex flex-col justify-center items-center">
-                            <div class="flex flex-col items-end justify-end">
-                                <CurrencyBadge :currencyValue="totalIncome" label="Total Income: "/>
-                                <CurrencyBadge :currencyValue="totalBudgetForCurrentMonth" :label="`Budgeted for ${carouselStore.selectedMonthName}`"/>
-                                <CurrencyBadge v-if="totalFutureBudget > 0" :currencyValue="totalFutureBudget" label="Budgeted in future"/>
-                                <CurrencyBadge :currencyValue="remainingToSpend" label="Unspent Income" warning-label="Overspent Income"/>
-                                <CurrencyBadge :currencyValue="totalBudgetRemaining" label="Left to Budget" warning-label="Over Budgeted"/>
-                            </div>
-                        </div>
+
+                <div class="flex flex-row gap-2">
+                    <!-- labels -->
+                    <div class="flex flex-col w-fit text-sm font-semibold font-mono justify-center">
+                        <div>Total Income</div>
+                        <div>{{`Budgeted for ${carouselStore.selectedMonthName}`}}</div>
+                        <div v-if="totalFutureBudget > 0">Budgeted in future</div>
+                        <div>{{ remainingToSpend < 0 ? 'Overspent Income' : 'Unspent Income'}}</div>
+                        <div>Left to Budget</div>
+                    </div>
+
+                    <!-- badges -->
+                    <div class="flex flex-col w-fit">
+                        <CurrencyBadge :currencyValue="totalIncome" :base-style="true"/>
+                        <CurrencyBadge :currencyValue="totalBudgetForCurrentMonth" :base-style="true"/>
+                        <CurrencyBadge v-if="totalFutureBudget > 0" :currencyValue="totalFutureBudget" :base-style="true"/>
+                        <CurrencyBadge :currencyValue="remainingToSpend"/>
+                        <CurrencyBadge :currencyValue="totalBudgetRemaining"/>
                     </div>
                 </div>
             </div>

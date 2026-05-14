@@ -1,4 +1,3 @@
-
 import type { BudgetRow } from '@/types';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
@@ -7,8 +6,7 @@ import currencyFormatter from '@/helpers/numberFormat';
 import dateFormatter from '@/helpers/dateFormatter';
 import { useCarouselStore } from '@/stores/carousel';
 import { useTransactionStore } from '@/stores/transaction';
-import { ArrowUpDown, FilePenLine, } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
+import { FilePenLine, } from 'lucide-vue-next';
 import BudgetActionsMenu from './BudgetActionsMenu.vue';
 
 const getTotalExpensed = (row: BudgetRow) => {
@@ -31,32 +29,17 @@ export const editableColumns = ['name','dueDate','amount'] as string[];
 export const budgetColumns: ColumnDef<BudgetRow>[] = [
     {
         accessorKey: 'name',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Category', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
+        header: ({ column }) => h('div', { }, 'name'),
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
     },
     {
         accessorKey: 'dueDate',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Due', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
+        header: ({ column }) => h('div', { }, 'due'),
         cell: ({ row }) => h('div', { class: 'capitalize' }, dateFormatter.addDateSuffix(row.getValue('dueDate'))),
     },
     {
         accessorKey: 'amount',
-        header: ({ column }) => {
-            return h(Button, {
-                variant: 'ghost',
-                onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Budget', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-        },
+        header: ({ column }) => h('div', { }, 'budget'),
         cell: ({ row }) => h('div', { class: 'capitalize' }, currencyFormatter.format(row.getValue('amount'))),
     },
     {

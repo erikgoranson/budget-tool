@@ -31,6 +31,7 @@ export const useTransactionStore = defineStore('transaction', () => {
 
             const transName = getTransactionName(tran);
             transformed.budgetCategoryName = transName;
+            transformed.note = tran.note ?? '';
             return transformed;
         })
     });
