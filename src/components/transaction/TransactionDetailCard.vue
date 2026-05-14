@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="py-4 flex justify-between items-center ">
+    <div class=" flex justify-between items-center ">
         <div class="flex flex-col gap-1">
             <span class="text-sm font-medium tracking-tight">
                 {{ data.date }}

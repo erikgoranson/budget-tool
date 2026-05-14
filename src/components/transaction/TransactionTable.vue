@@ -124,7 +124,7 @@ const table = computed(() => {
 
     <div class="rounded-md border">
         
-        <Table>
+        <Table class="bg-card rounded-md">
             <TableHeader>
                 <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id" >
                     <TableHead v-for="header in headerGroup.headers" :key="header.id">

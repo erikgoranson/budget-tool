@@ -10,7 +10,7 @@ import Footer from '../components/Footer.vue';
     <div class="flex-1 flex flex-col overflow-hidden">
       <Header />
       <main class="flex-1 h-screen overflow-x-hidden overflow-y-auto bg-gray-200 relative ">
-        <div class="container mx-auto px-6 py-8">
+        <div class="container mx-auto px-2 py-2 md:px-6 md:py-4">
           <slot />
         </div>
       </main>
