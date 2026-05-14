@@ -60,7 +60,7 @@ const cardStyles = {
             <CollapsibleContent>
                 <CardContent class="p-0">
                     <BudgetTable :category="budgetCategory"/>
-                    <CreateBudgetForm />
+                    <CreateBudgetForm :category="budgetCategory"/>
                 </CardContent>
                 
                 <CardFooter class="py-2">
