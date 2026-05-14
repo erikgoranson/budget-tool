@@ -79,7 +79,7 @@ const MergeData = () => {
 
 <template>
 
-<div class="grid w-full items-center gap-4 my-2"></div>
+<div class="grid w-full items-center gap-4"></div>
 
     <div v-if="files == null" class="flex flex-col gap-6">
         <Item variant="outline" size="sm" class="!border-gray-400">
