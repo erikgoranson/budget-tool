@@ -32,6 +32,8 @@ const columnVisibility = computed<VisibilityState>(() => {
     return {
         dueDate: props.category.hasDueDates,
         totalExpensed: isDesktop.value,
+        totalRemaining: isDesktop.value,
+        spentRemainToggle: !isDesktop.value,
     };
 });
 const rowSelection = ref({});
@@ -121,7 +123,6 @@ th {
 }
 
 td {
-  text-transform: capitalize;
-  @apply px-3 py-2.5 text-right border border-gray-200;
+  @apply px-3 py-2.5 text-right border border-gray-200 uppercase;
 }
 </style>
