@@ -31,15 +31,16 @@ const cardStyles = {
 <template>
     <Collapsible v-model:open="isOpen" >
         <Card class="w-full my-6 overflow-hidden shadow-md " :class="isOpen ? '' : cardStyles[cardColor].border">
+            <CollapsibleTrigger as-child>
             <CardHeader class="h-25 p-3 flex flex-row items-center justify-between gap-2" :class="cardStyles[cardColor].bg">
                 <div class="flex items-center  gap-3 flex-1 min-w-0">
 
-                    <CollapsibleTrigger as-child>
+                    
                         <div class="flex-shrink-0">
                             <ChevronRight v-if="!isOpen" />
                             <ChevronDown v-else />
                         </div>
-                    </CollapsibleTrigger>
+                    
 
                     <div class="min-w-0">
                         <CardTitle>
@@ -56,6 +57,7 @@ const cardStyles = {
                     <BudgetTotalsReport :category="budgetCategory"/>
                 </div>
             </CardHeader>
+            </CollapsibleTrigger>
 
             <CollapsibleContent>
                 <CardContent class="p-0">
