@@ -4,7 +4,9 @@ import { computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
-import BudgetCard from '@/components/BudgetCard.vue';
+import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
+import BudgetDashboard from '@/components/budgetRow/BudgetDashboard.vue';
+import CreateCategoryDialog from '../components/category/CreateCategoryDialog.vue';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -13,7 +15,7 @@ const { transactions } = storeToRefs(transactionStore);
 
 const uncategorizedTransactionsExist = computed(() => {
   const amounts = transactions.value.filter(tran => {
-    return tran.categoryId == categoryStore.uncategorizedBudgetGuid;
+    return tran.categoryId == transactionStore.uncategorizedGuid;
   });
 
   if (amounts.length > 0){
@@ -26,11 +28,10 @@ const uncategorizedTransactionsExist = computed(() => {
 
 const uncategorizedBudget = computed(() => {
   const uncat = <Category>{
-    id: categoryStore.uncategorizedBudgetGuid,
+    id: transactionStore.uncategorizedGuid,
     name: 'Uncategorized',
     description: 'Transactions have been added that have no budget category.',
     hasDueDates: false,
-    budgets: [],
   }
 
   return uncat;
@@ -38,8 +39,10 @@ const uncategorizedBudget = computed(() => {
 </script>
 
 <template>
+  <BudgetDashboard/>
   <BudgetCard v-if="uncategorizedTransactionsExist" :budgetCategory="uncategorizedBudget"/>
   <div v-for="budgetCategory in categories">
       <BudgetCard :budgetCategory="budgetCategory"/>
   </div>
+  <CreateCategoryDialog />
 </template>
