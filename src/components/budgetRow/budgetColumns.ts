@@ -29,7 +29,7 @@ export const editableColumns = ['name','dueDate','amount'] as string[];
 export const budgetColumns: ColumnDef<BudgetRow>[] = [
     {
         accessorKey: 'name',
-        header: ({ column }) => h('div', { }, 'name'),
+        header: ({ column }) => h('div', { }, 'budget'),
         cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
     },
     {
@@ -39,7 +39,7 @@ export const budgetColumns: ColumnDef<BudgetRow>[] = [
     },
     {
         accessorKey: 'amount',
-        header: ({ column }) => h('div', { }, 'budget'),
+        header: ({ column }) => h('div', { }, 'amt'),
         cell: ({ row }) => h('div', { class: 'capitalize' }, currencyFormatter.format(row.getValue('amount'))),
     },
     {
