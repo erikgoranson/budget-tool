@@ -6,6 +6,7 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/vue-table';
+import type { Transaction } from '@/types';
 import { useMediaQuery } from '@vueuse/core';
 
 import { h, ref, computed } from 'vue';
@@ -45,7 +46,9 @@ import {
 const transactionStore = useTransactionStore();
 const { transactionRows } = storeToRefs(transactionStore);
 
-const sorting = ref<SortingState>([]);
+const sorting = ref<SortingState>([
+  { id: 'date', desc: true }
+]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const rowSelection = ref({});
 const filter = ref<GlobalFilterTableState>();
@@ -63,7 +66,7 @@ const selectedTotalText = computed(() => {
     }
 });
 
-const columns = transactionColumns;
+const columns = (transactionColumns as Transaction[]).sort((a, b) => Date.parse(a.date as string) - Date.parse(b.date));
 
 const columnVisibility = computed<VisibilityState>(() => ({
     mobile: !isDesktop.value,
