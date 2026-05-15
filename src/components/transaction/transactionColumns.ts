@@ -29,8 +29,22 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
     },
     {
         id: 'mobile',
-        header: () => ['Details'],
-        enableSorting: false,
+        header: ({ table }) => {
+            const dateColumn = table.getColumn('date');
+            return h(Button, { 
+                variant: 'ghost', 
+                onClick: () => { 
+                    if (dateColumn) {
+                        dateColumn.toggleSorting(dateColumn.getIsSorted() === 'asc');
+                    }
+                }}, 
+                () => [
+                    'Details', 
+                    h(ArrowUpDown, {  class: 'ml-2 h-4 w-4' })
+                ]
+            );
+        },
+        enableSorting: true,
         cell: ({ row }) => {
             return h(TransactionDetailCard, {
                 data: row.original,
