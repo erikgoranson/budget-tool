@@ -11,7 +11,7 @@ const deleteData = () => {
 <template>
     <AlertDialog>
         <AlertDialogTrigger as-child>
-            <div @click="deleteData">
+            <div>
                 <slot/>
             </div>
         </AlertDialogTrigger>
@@ -24,11 +24,11 @@ const deleteData = () => {
                 This action cannot be undone. This action will permanently delete all the data you have entered so far and it cannot be recovered unless you have already downloaded a copy. 
             </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-            <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+        <AlertDialogFooter class="flex flex-row justify-center gap-4">
+            <AlertDialogAction @click="deleteData" class="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
                 Delete
             </AlertDialogAction>
-            <AlertDialogCancel>
+            <AlertDialogCancel class="mt-0 w-full">
                 Cancel
             </AlertDialogCancel>
         </AlertDialogFooter>
