@@ -9,6 +9,12 @@ import { useTransactionStore } from '@/stores/transaction';
 import { FilePenLine, ArrowRightLeft } from 'lucide-vue-next';
 import BudgetActionsMenu from './BudgetActionsMenu.vue';
 import Button from '../ui/button/Button.vue';
+import CurrencyBadge from '../CurrencyBadge.vue';
+
+type BudgetTotalToggle = 'spent' | 'remaining';
+const activeToggleColumn = ref<BudgetTotalToggle>('spent'); 
+
+const cellStyle = 'capitalize';
 
 const getTotalExpensed = (row: BudgetRow) => {
     const carouselStore = useCarouselStore();
@@ -25,42 +31,49 @@ const getTotalExpensed = (row: BudgetRow) => {
         .reduce((t, {amount}) => t + amount, 0);
 };
 
-const activeToggleColumn = ref<'totalExpensed' | 'totalRemaining'>('totalExpensed'); 
+const getTotalCell = (row: BudgetRow, type: BudgetTotalToggle) => {
+    const spent = getTotalExpensed(row);
+    let totalValue = spent;
+    let warning = spent > row.amount;
+
+    if (type == 'remaining'){
+        const remaining = row.amount - spent;
+        totalValue = remaining;
+        warning = remaining < 0;
+    }
+
+    return h('div', { class: 'flex items-center justify-center' }, [
+        h(CurrencyBadge, { currencyValue: totalValue, class: 'text-base font-normal py-.5 px-1.5 truncate flex items-center justify-center' })
+    ]);
+};
+
 export const editableColumns = ['name','dueDate','amount'] as string[];
 
 export const budgetColumns: ColumnDef<BudgetRow>[] = [
     {
         accessorKey: 'name',
         header: ({ column }) => h('div', { }, 'budget'),
-        cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+        cell: ({ row }) => h('div', { class: cellStyle }, row.getValue('name')),
     },
     {
         accessorKey: 'dueDate',
         header: ({ column }) => h('div', { }, 'due'),
-        cell: ({ row }) => h('div', { class: 'capitalize' }, dateFormatter.addDateSuffix(row.getValue('dueDate'))),
+        cell: ({ row }) => h('div', { class: cellStyle }, dateFormatter.addDateSuffix(row.getValue('dueDate'))),
     },
     {
         accessorKey: 'amount',
         header: ({ column }) => h('div', { }, 'amt'),
-        cell: ({ row }) => h('div', { class: 'capitalize' }, currencyFormatter.format(row.getValue('amount'))),
+        cell: ({ row }) => h('div', { class: cellStyle }, currencyFormatter.format(row.getValue('amount'))),
     },
     {
         accessorKey: 'totalExpensed',
         header: ({ column }) => h('div', { }, 'spent'),
-        cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original);
-            return h('div', { }, currencyFormatter.format(totalExpensed));
-        },
+        cell: ({ row }) => getTotalCell(row.original, 'spent')
     },
     {
         accessorKey: 'totalRemaining',
         header: ({ column }) => h('div', { }, 'remain'),
-        cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original);
-            const totalRemaining = row.original.amount - totalExpensed;
-
-            return h('div', { }, currencyFormatter.format(totalRemaining));
-        },
+        cell: ({ row }) => getTotalCell(row.original, 'remaining')
     },
     {
         accessorKey: 'spentRemainToggle',
@@ -68,23 +81,18 @@ export const budgetColumns: ColumnDef<BudgetRow>[] = [
             return h(Button, 
                 {
                     class: 'p-0 px-1 bg-gray-100 h-8',
-                    onClick: () => activeToggleColumn.value = activeToggleColumn.value === 'totalExpensed' ? 'totalRemaining' : 'totalExpensed',
+                    onClick: () => activeToggleColumn.value = activeToggleColumn.value === 'spent' ? 'remaining' : 'spent',
                     variant: 'outline', 
                 },
-                [
-                    h('span', { class: 'uppercase' }, activeToggleColumn.value === 'totalExpensed' ? 'Spent' : 'Remain'),
-                    h(ArrowRightLeft, { class: 'w-1 h-1'}) 
-                ]
+                {
+                    default: () => [
+                        h('span', { class: 'uppercase w-10' }, activeToggleColumn.value === 'spent' ? 'Spent' : 'Remain'),
+                        h(ArrowRightLeft, { class: 'w-1 h-1'}) 
+                    ]
+                }
             );
         },
-        cell: ({ row }) => {
-            const totalExpensed = getTotalExpensed(row.original);
-            if (activeToggleColumn.value === 'totalRemaining') {
-                const totalRemaining = row.original.amount - totalExpensed;
-                return h('div', {}, currencyFormatter.format(totalRemaining));
-            }
-            return h('div', {}, currencyFormatter.format(totalExpensed));
-        },
+        cell: ({ row }) => getTotalCell(row.original, activeToggleColumn.value)
     },
     {
         id: 'actions',
