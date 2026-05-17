@@ -22,11 +22,11 @@ const deleteMessage = computed(() => props.message ?? `This action will permanen
     <div>
         <slot name="messageContent">{{ deleteMessage }}</slot>
     </div>
-    <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-x-2">
-        <AlertDialogAction class="bg-red-500" @click="onSubmitFunction">
+    <div class="flex flex-row justify-center gap-4">
+        <AlertDialogAction class="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90" @click="onSubmitFunction">
             Delete
         </AlertDialogAction>
-        <AlertDialogCancel variant="outline">
+        <AlertDialogCancel class="mt-0 w-full">
             Cancel
         </AlertDialogCancel>
     </div>
