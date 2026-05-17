@@ -102,11 +102,23 @@ const MergeData = () => {
           </CardTitle>
         </CardHeader>
         <CardContent class="grid gap-4">
-          <Label>Budget Details:</Label>
-          <BudgetSummary :data="(parsedData as BudgetData)" />
-          
-          <Label>Budget Breakdown:</Label>
-          <BudgetTree :data="(parsedData as BudgetData)" />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Current Budget Details:</Label>
+              <BudgetSummary :data="(parsedData as BudgetData)" />
+              
+              <Label>Current Budget Breakdown:</Label>
+              <BudgetTree :data="(parsedData as BudgetData)" />
+            </div>
+
+            <div>
+              <Label>Imported Budget Details:</Label>
+              <BudgetSummary :data="(currentData as BudgetData)" />
+              
+              <Label>Imported Budget Breakdown:</Label>
+              <BudgetTree :data="(currentData as BudgetData)" />
+            </div>
+          </div>
         </CardContent>
         <CardFooter class="mb-5 flex justify-between">
           <Button @click="MergeData">
@@ -166,9 +178,7 @@ const MergeData = () => {
 </template>
 
 <style scoped>
-
 summaryCard {
   @apply border-gray-400 bg-transparent;
 }
-
 </style>
