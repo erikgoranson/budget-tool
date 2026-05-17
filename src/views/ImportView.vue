@@ -105,18 +105,18 @@ const MergeData = () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Current Budget Details:</Label>
-              <BudgetSummary :data="(parsedData as BudgetData)" />
+              <BudgetSummary :data="(currentData as BudgetData)" />
               
               <Label>Current Budget Breakdown:</Label>
-              <BudgetTree :data="(parsedData as BudgetData)" />
+              <BudgetTree :data="(currentData as BudgetData)" />
             </div>
 
             <div>
               <Label>Imported Budget Details:</Label>
-              <BudgetSummary :data="(currentData as BudgetData)" />
+              <BudgetSummary :data="(parsedData as BudgetData)" />
               
               <Label>Imported Budget Breakdown:</Label>
-              <BudgetTree :data="(currentData as BudgetData)" />
+              <BudgetTree :data="(parsedData as BudgetData)" />
             </div>
           </div>
         </CardContent>
