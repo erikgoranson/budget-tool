@@ -53,20 +53,20 @@ const remainingTotal = computed(() => {
 </script>
 
 <template>
-
     <div class="flex flex-row gap-2">
         <!-- labels -->
         <div class="flex flex-col w-fit text-sm font-semibold font-mono justify-center">
             <div>Budgeted</div>
-            <div>Expensed</div>
+            <div>Spent</div>
             <div>Remaining</div>
         </div>
 
         <!-- badges -->
         <div class="flex flex-col w-fit">
-            <CurrencyBadge :currencyValue="budgetTotal" :base-style="true"/>
-            <CurrencyBadge :currencyValue="expensedTotal" :base-style="true"/>
-            <CurrencyBadge :currencyValue="remainingTotal"/>
+            <CurrencyBadge :amount="budgetTotal"/>
+            <!-- only send warnings for these values if there is a budget -->
+            <CurrencyBadge :amount="expensedTotal" :is-warning="budgetTotal > 0 ? (expensedTotal > budgetTotal) : undefined"/>
+            <CurrencyBadge :amount="remainingTotal" :is-warning="budgetTotal > 0 ? (remainingTotal < 0) : undefined"/>
         </div>
     </div>
 </template>

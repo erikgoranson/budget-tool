@@ -43,7 +43,7 @@ const getTotalCell = (row: BudgetRow, type: BudgetTotalToggle) => {
     }
 
     return h('div', { class: 'flex items-center justify-center' }, [
-        h(CurrencyBadge, { currencyValue: totalValue, class: 'text-base font-normal py-.5 px-1.5 truncate flex items-center justify-center' })
+        h(CurrencyBadge, { amount: totalValue, isWarning: warning, class: 'text-base font-normal py-.5 px-1.5 truncate flex items-center justify-center' })
     ]);
 };
 
