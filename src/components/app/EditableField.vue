@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 
 const props = defineProps<{
@@ -8,30 +8,39 @@ const props = defineProps<{
 }>();
 
 const model = defineModel<T>({ required: true });
+const target = ref<HTMLElement | null>(null);
 
 const isEditing = ref<boolean>(false);
 const tempValue = ref<T>(model.value);
 
-const target = ref<HTMLElement | null>(null);
+const startEditing = async () => {
+    tempValue.value = model.value;
+    isEditing.value = true;
 
-const startEditing = () => {
-  tempValue.value = model.value;
-  isEditing.value = true;
-}
+    await nextTick();
+    if (target.value) target.value.focus();
+};
+
+const handleBlur = () => {
+    if (!isEditing.value) return;
+
+    model.value = tempValue.value;
+    isEditing.value = false;
+};
 
 const save = () => {
-  model.value = tempValue.value;
-  isEditing.value = false;
-}
+    model.value = tempValue.value
+    isEditing.value = false
+};
 
 const cancel = () => {
-  isEditing.value = false;
-}
+    isEditing.value = false;
+};
 
 onClickOutside(target, () => {
-  if (isEditing.value) {
-    save();
-  }
+    if (isEditing.value) {
+        save();
+    }
 })
 </script>
 
@@ -46,6 +55,7 @@ onClickOutside(target, () => {
                 autofocus
                 @keydown.enter="save"
                 @keydown.escape="cancel"
+                @blur="handleBlur"
             />
         </div>
         
