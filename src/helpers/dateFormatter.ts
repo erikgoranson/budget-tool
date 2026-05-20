@@ -33,6 +33,11 @@ const format = (dateValue: string | CalendarDate, optionName: string, locale: st
     return formatter.format(date);
 };
 
+const isDate = (possibleDate: string): boolean => {
+    const parsedString = new Date(possibleDate);
+    return !isNaN(parsedString.getTime());
+};
+
 const addDateSuffix = (dateString: string) => {
     const date = parseInt(dateString);
     if(isNaN(date)){
@@ -51,4 +56,4 @@ const addDateSuffix = (dateString: string) => {
     }
 };
 
-export default { format, addDateSuffix };
+export default { format, addDateSuffix, isDate };
