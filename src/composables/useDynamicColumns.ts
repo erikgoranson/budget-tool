@@ -32,12 +32,6 @@ export function useDynamicColumns(parentData: Ref<any[]>) {
         cell: ({ row }) => h('div', { }, row.getValue(accessorKey)),
     });
 
-    const createActionsColumn = (accessorKey: string = 'actions', menu: VNode) => ({
-        accessorKey,
-        header: () => ['', h(FilePenLine, { class: 'ml-2 h-4 w-4' })],
-        cell: ({ row }) => menu,
-    });
-
     const createSelectorColumn = (accessorKey: string = 'select') => ({
         accessorKey,
         header: ({ table }) => 
@@ -63,5 +57,5 @@ export function useDynamicColumns(parentData: Ref<any[]>) {
         () => [accessorKey, h(ArrowUpDown, { class: 'ml-2 h-4 w-4 text-right capitalize' })]);
     };
     
-    return { createEditableColumn, createReadOnlyColumn, createActionsColumn, createSelectorColumn };
+    return { createEditableColumn, createReadOnlyColumn, createSelectorColumn, createSortableHeader};
 };
