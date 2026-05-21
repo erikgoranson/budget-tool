@@ -9,9 +9,9 @@ import EditableField from '@/components/app/EditableField.vue';
 
 export function useDynamicColumns(parentData: Ref<any[]>) {
 
-    const createEditableColumn = (accessorKey: string, headerName: string, isSortable: boolean = true) => ({
+    const createEditableColumn = (accessorKey: string, headerName?: string, isSortable: boolean = true) => ({
         accessorKey,
-        header: ({ column }) => isSortable ? createSortableHeader(column, accessorKey) : headerName,
+        header: ({ column }) => isSortable ? createSortableHeader(column, headerName ?? accessorKey) : headerName ?? accessorKey,
         cell: (info: any) => h(EditableField, {
             model: info.getValue(),
                 'onUpdate:model': (newValue: any) => {
@@ -26,9 +26,9 @@ export function useDynamicColumns(parentData: Ref<any[]>) {
         )
     });
 
-    const createReadOnlyColumn = (accessorKey: string, headerName: string, isSortable: boolean = true) => ({
+    const createReadOnlyColumn = (accessorKey: string, headerName?: string, isSortable: boolean = true) => ({
         accessorKey,
-        header: ({ column }) => isSortable ? createSortableHeader(column, accessorKey) : headerName,
+        header: ({ column }) => isSortable ? createSortableHeader(column, headerName ?? accessorKey) : headerName ?? accessorKey,
         cell: ({ row }) => h('div', { }, row.getValue(accessorKey)),
     });
 
