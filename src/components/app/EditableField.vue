@@ -1,27 +1,30 @@
 <script setup lang="ts" generic="T">
-import { ref, nextTick, computed } from 'vue';
+import { ref, nextTick, computed, watch } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 import dateFormatter from '@/helpers/dateFormatter';
 import { Switch } from '@/components/ui/switch'
 
 const props = defineProps<{
-    label?: string,
-    type?: inputType 
+    model: T,
+    type?: inputType,
 }>();
 
 type inputType = 'text' | 'number' | 'email' | 'date' | 'bool';
 
-const model = defineModel<T>({ required: true });
+const emit = defineEmits<{
+    (e: 'update:model', value: T): void 
+}>();
+
 const target = ref<HTMLElement | null>(null);
 const isEditing = ref<boolean>(false);
-const tempValue = ref<T>(model.value);
+const tempValue = ref<T>(props.model);
 
 const inputType = computed(() => {
     if (props.type !== undefined){
         return props.type;
     }
 
-    return lookupInputType(model.value);
+    return lookupInputType(props.model);
 })
 
 const lookupInputType = (value: unknown): inputType => {
@@ -41,7 +44,7 @@ const lookupInputType = (value: unknown): inputType => {
 };
 
 const startEditing = async () => {
-    tempValue.value = model.value;
+    tempValue.value = props.model;
     isEditing.value = true;
 
     await nextTick();
@@ -50,13 +53,11 @@ const startEditing = async () => {
 
 const handleBlur = () => {
     if (!isEditing.value) return;
-
-    model.value = tempValue.value;
-    isEditing.value = false;
+    save();
 };
 
 const save = () => {
-    model.value = tempValue.value;
+    emit('update:model', tempValue.value);
     isEditing.value = false;
 };
 
@@ -66,6 +67,7 @@ const saveBool = () => {
 };
 
 const cancel = () => {
+    tempValue.value = props.model
     isEditing.value = false;
 };
 
@@ -73,7 +75,11 @@ onClickOutside(target, () => {
     if (isEditing.value) {
         save();
     }
-})
+});
+
+watch(() => props.model, (newVal) => {
+    tempValue.value = newVal;
+});
 </script>
 
 <template>
@@ -84,8 +90,7 @@ onClickOutside(target, () => {
         @update:checked="saveBool"
     />
     <div v-else>
-        <div v-if="isEditing" >
-            <label v-if="props.label">{{ props.label }}</label>
+        <div v-if="isEditing">
             <input 
                 ref="target"
                 v-model="tempValue" 
@@ -97,7 +102,6 @@ onClickOutside(target, () => {
             />
         </div>
         <div v-else  @click="startEditing">
-            <span v-if="props.label" >{{ props.label }}:</span>
             <span>{{ model }}</span>
         </div>
     </div>
