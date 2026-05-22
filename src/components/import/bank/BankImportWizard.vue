@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import type { TransactionImport } from '@/types/TransactionImport';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from '@/components/ui/card';
 import CsvParser from './steps/CsvParser.vue';
+
+const importData = ref<TransactionImport>({} as TransactionImport);
 
 const currentStep = ref<number>(0); 
 const stepComplete = ref<boolean>(false);
@@ -26,7 +29,9 @@ const setStep = (step: number) => {
 
       <CardContent>
 
-        <CsvParser />
+        <CsvParser v-model="importData" v-model:stepComplete="stepComplete"/>
+
+        <!-- {{ importData.fileData }} -->
 
       </CardContent>
 

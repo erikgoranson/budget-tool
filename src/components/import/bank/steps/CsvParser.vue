@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ParseResult } from 'papaparse';
+import type { TransactionImport } from '@/types';
 import { ref } from 'vue';
 import Papa from 'papaparse';
 import { useFileDialog } from '@vueuse/core';
@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Item, ItemContent, ItemTitle, ItemActions, ItemDescription } from '@/components/ui/item';
 import { Label } from '@/components/ui/label';
 
-const selectedFile = ref<File>();
-
-const importData = ref<ParseResult<any>>();
+const importData = defineModel<TransactionImport>( { required: true, } );
 const importError = ref<string>('');
+const stepComplete = defineModel<boolean>('stepComplete', { required: true, default: false});
 
 const { files, open, onChange } = useFileDialog({
   accept: '.csv',
@@ -18,9 +17,9 @@ const { files, open, onChange } = useFileDialog({
 });
 
 onChange((selectedFiles) => {
-    const file = selectedFiles?.[0]
+    const file = selectedFiles?.[0];
     if (!file) return;
-    selectedFile.value = file;
+    importData.value.selectedFile = file;
 
     //TODO: add trycatch tho
     Papa.parse(file, {
@@ -28,10 +27,12 @@ onChange((selectedFiles) => {
         skipEmptyLines: true,
         complete: (results) => {
             console.log('Parsed CSV Data:', results.data)
-            importData.value = results;
+            importData.value.fileData = results;
+            stepComplete.value = true;
         },
         error: (error) => {
             console.error('Error parsing file:', error);
+            stepComplete.value = false;
         }
     });
 })
@@ -47,8 +48,8 @@ onChange((selectedFiles) => {
         </ItemContent>
         <ItemActions>
             <Button variant="ghost" class="border border-gray-500 bg-gray-200" @click="open">Browse</Button>
-            <Label class="text-sm text-gray-500" v-if="selectedFile == null">No file selected.</Label>
-            <Label class="text-sm text-gray-500" v-if="selectedFile != null">{{ selectedFile.name }}</Label>
+            <Label class="text-sm text-gray-500" v-if="importData.selectedFile == null">No file selected.</Label>
+            <Label class="text-sm text-gray-500" v-if="importData.selectedFile != null">{{ importData.selectedFile.name }}</Label>
         </ItemActions>
     </Item>
 
@@ -56,6 +57,5 @@ onChange((selectedFiles) => {
 
     <p v-if="importData !== undefined" class="text-sm text-green-600 font-medium">
         File parsed successfully!
-        {{ importData }}
-        </p>
+    </p>
 </template>

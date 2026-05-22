@@ -6,6 +6,7 @@ import type { DialogDropdownItem } from "./DialogDropdownItem";
 import type { Goal } from "./Goal";
 import { GoalOption } from "./GoalOption";
 import type { Transaction } from "./Transaction";
+import type { TransactionImport } from "./TransactionImport";
 import type { TransactionRow } from "./TransactionRow";
 import type { Subcategory } from "./Subcategory";
 
@@ -17,6 +18,7 @@ export type {
     DialogDropdownItem,
     Goal,
     Transaction,
+    TransactionImport,
     TransactionRow,
     Subcategory,
 };
