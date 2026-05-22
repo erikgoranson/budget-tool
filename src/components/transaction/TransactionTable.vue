@@ -1,16 +1,17 @@
 <script setup lang="ts" >
-import type { ColumnDef, ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
-import type { Transaction } from '@/types';
+import type { ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia'
 import { h, ref, computed } from 'vue';
 import { useMediaQuery } from '@vueuse/core';
 import { valueUpdater } from '@/lib/utils'; 
 import currencyFormatter from '@/helpers/numberFormat';
-import { Button } from '../ui/button';
+import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
+
+import { useDynamicColumns } from '@/composables/useDynamicColumns';
 
 import { FilePenLine, ArrowUpDown } from 'lucide-vue-next';
-import { FlexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
-import { useDynamicColumns } from '@/composables/useDynamicColumns';
+import { Button } from '../ui/button'
+import BaseTransactionTable from './BaseTransactionTable.vue';
 import TransactionActionsMenu from './TransactionActionsMenu.vue';
 import TransactionDetailCard from './TransactionDetailCard.vue';
 
@@ -21,7 +22,6 @@ const { transactionRows } = storeToRefs(transactionStore);
 const { createReadOnlyColumn, createSelectorColumn, createSortableHeader } = useDynamicColumns(transactionRows);
 const columns = [
     createSelectorColumn(),
-    //mobile
     createReadOnlyColumn('date', 'Date'),
     createReadOnlyColumn('budgetCategoryName', 'Category'),
     createReadOnlyColumn('note', 'Note'),
@@ -72,8 +72,6 @@ const columns = [
     },
 ];
 
-
-
 const sorting = ref<SortingState>([
   { id: 'date', desc: true }
 ]);
@@ -108,9 +106,6 @@ const table = useVueTable({
         get globalFilter() { return filter.value },
     },
 });
-
-import BaseTransactionTable from './BaseTransactionTable.vue';
-
 </script>
 
 <template>
