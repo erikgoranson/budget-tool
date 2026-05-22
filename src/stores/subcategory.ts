@@ -2,9 +2,12 @@ import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Subcategory } from '../types/';
 import localStorageHelper from '@/helpers/localStorage';
+import { useCategoryStore } from '@/stores/category';
 
 const storageKey : string = 'subcategory';
 export const useSubcategoryStore = defineStore(storageKey, () => {
+
+    const categoryStore = useCategoryStore();
     
     const getData = () => localStorageHelper.getData(storageKey) as Subcategory[];
     const setData = () => {
@@ -50,5 +53,10 @@ export const useSubcategoryStore = defineStore(storageKey, () => {
         return subcategories.value.filter(x => x.categoryId == categoryId);
     };
 
-    return { subcategories, createSubcategory, deleteSubcategory, updateSubcategory, getSubcategoryNameById, getSubcategoriesByCategoryId, putSubcategory };
+    const getBudgetCategoryName = (subcategory: Subcategory) => {
+        const categoryName = categoryStore.getCategoryName(subcategory.categoryId);
+        return `${categoryName} : ${subcategory.name}`;
+    };
+
+    return { subcategories, createSubcategory, deleteSubcategory, updateSubcategory, getSubcategoryNameById, getSubcategoriesByCategoryId, putSubcategory, getBudgetCategoryName };
 });
