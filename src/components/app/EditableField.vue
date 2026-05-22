@@ -7,12 +7,14 @@ import { Switch } from '@/components/ui/switch'
 const props = defineProps<{
     model: T,
     type?: inputType,
+    writeToStore?: boolean,
 }>();
 
 type inputType = 'text' | 'number' | 'email' | 'date' | 'bool';
 
 const emit = defineEmits<{
-    (e: 'update:model', value: T): void 
+    (e: 'update:model', value: T): void;
+    (e: 'updateStore', value: T): void;
 }>();
 
 const target = ref<HTMLElement | null>(null);
@@ -57,7 +59,14 @@ const handleBlur = () => {
 };
 
 const save = () => {
-    emit('update:model', tempValue.value);
+    if (props.writeToStore === true){
+        console.log('EMIT THE WHOLE ROW DUDE. not this:', tempValue.value);
+        emit('updateStore', tempValue.value);
+    }
+    else {
+        emit('update:model', tempValue.value);
+    }
+
     isEditing.value = false;
 };
 
@@ -102,7 +111,7 @@ watch(() => props.model, (newVal) => {
             />
         </div>
         <div v-else  @click="startEditing">
-            <span>{{ model }}</span>
+            <span>{{ tempValue }}</span>
         </div>
     </div>
 </template>

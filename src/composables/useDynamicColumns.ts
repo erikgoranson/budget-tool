@@ -9,21 +9,27 @@ import EditableField from '@/components/app/EditableField.vue';
 
 export function useDynamicColumns(parentData: Ref<any[]>) {
 
-    const createEditableColumn = (accessorKey: string, headerName?: string, isSortable: boolean = true) => ({
+    const createEditableColumn = (accessorKey: string, headerName?: string, isSortable: boolean = true, storeUpdateMethod?: (value: any) => void) => ({
         accessorKey,
         header: ({ column }) => isSortable ? createSortableHeader(column, headerName ?? accessorKey) : headerName ?? accessorKey,
         cell: (info: any) => h(EditableField, {
             model: info.getValue(),
-                'onUpdate:model': (newValue: any) => {
-                    const rowIndex = info.row.index
-                    const columnId = info.column.id
+            writeToStore: storeUpdateMethod !== undefined,
+            'onUpdate:model': (newValue: any) => {
+                const rowIndex = info.row.index
+                const columnId = info.column.id
 
-                    const updatedData = [...parentData.value];
-                    updatedData[rowIndex] = { ...updatedData[rowIndex], [columnId]: newValue };
-                    parentData.value = updatedData;
-                }
-            }
-        )
+                const updatedData = [...parentData.value];
+                updatedData[rowIndex] = { ...updatedData[rowIndex], [columnId]: newValue };
+                parentData.value = updatedData;
+            },
+            'onUpdateStore': (newValue: any) => {
+                const row = info.row.original;
+                row[accessorKey] = newValue;
+
+                if (storeUpdateMethod !== undefined) storeUpdateMethod(row);
+            },
+        })
     });
 
     const createReadOnlyColumn = (accessorKey: string, headerName?: string, isSortable: boolean = true) => ({
