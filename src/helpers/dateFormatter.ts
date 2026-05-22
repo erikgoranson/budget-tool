@@ -38,6 +38,22 @@ const isDate = (possibleDate: string): boolean => {
     return !isNaN(parsedString.getTime());
 };
 
+const getDateValue = (dateString: string) => {
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        console.log("The date is invalid!");
+        return new CalendarDate(1900, 1, 1);
+    }
+
+    const dateValue = new CalendarDate(
+        date.getFullYear(), 
+        date.getMonth() + 1, // Note: getMonth() is 0-indexed (0-11), so add 1
+        date.getDate()
+    );
+    return dateValue;
+}
+
 const addDateSuffix = (dateString: string) => {
     const date = parseInt(dateString);
     if(isNaN(date)){
@@ -56,4 +72,4 @@ const addDateSuffix = (dateString: string) => {
     }
 };
 
-export default { format, addDateSuffix, isDate };
+export default { format, addDateSuffix, isDate, getDateValue };
