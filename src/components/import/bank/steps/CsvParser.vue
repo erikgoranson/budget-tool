@@ -3,13 +3,14 @@ import type { TransactionImport } from '@/types';
 import { ref } from 'vue';
 import Papa from 'papaparse';
 import { useFileDialog } from '@vueuse/core';
+
 import { Button } from '@/components/ui/button';
 import { Item, ItemContent, ItemTitle, ItemActions, ItemDescription } from '@/components/ui/item';
 import { Label } from '@/components/ui/label';
 
 const importData = defineModel<TransactionImport>( { required: true, } );
-const importError = ref<string>('');
 const stepComplete = defineModel<boolean>('stepComplete', { required: true, default: false});
+const importError = ref<string>('');
 
 const { files, open, onChange } = useFileDialog({
   accept: '.csv',
@@ -55,7 +56,5 @@ onChange((selectedFiles) => {
 
     <p v-if="importError" class="text-sm text-red-600 font-medium">{{ importError }}</p>
 
-    <p v-if="importData !== undefined" class="text-sm text-green-600 font-medium">
-        File parsed successfully!
-    </p>
+    <p v-if="importData?.fileData !== undefined" class="text-sm text-green-600 font-medium">File parsed successfully!</p>
 </template>
