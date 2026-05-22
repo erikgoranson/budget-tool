@@ -9,6 +9,7 @@ import { getOrAssignGuid } from '@/helpers/baseFormHelper';
 import { Button } from '@/components/ui/button';
 import { Item, ItemContent, ItemTitle, ItemActions, ItemDescription } from '@/components/ui/item';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import BasicTable from '@/components/app/BasicTable.vue';
 
 const importData = defineModel<TransactionImport>({ required: true });
 const stepComplete = defineModel<boolean>('stepComplete', { required: true });
@@ -84,7 +85,7 @@ const confirm = () => {
     
 
     <div class='mt-10'>
-            {{ importData?.fileData?.data?.slice(0, 3) }}
+        <BasicTable :data="importData.fileData.data.slice(0, 3) || []" />
         <div v-if="(importData?.fileData?.data?.length ?? 0) >= 3" class="p-2 text-center text-xs text-gray-400 bg-gray-50">
             Showing 3 of {{ importData?.fileData?.data?.length }} rows
         </div>
