@@ -25,8 +25,8 @@ const columns = computed(() => {
 </script>
 
 <template>
-  <div class="border rounded-md">
-      <Table>
+  <div class="border rounded-md  border-gray-500 overflow-hidden">
+      <Table class="w-full border-separate border-spacing-0 [&_th]:border-b [&_th]:border-black [&_td]:border-b [&_td]:border-black [&_tr:last-child_td]:border-b-0 [&_th:not(:first-child)]:border-l [&_th:not(:first-child)]:border-gray-500 [&_td:not(:first-child)]:border-l [&_td:not(:first-child)]:border-gray-500">
       <TableHeader>
           <TableRow >
               <TableHead v-for="column in columns" :key="column" class="p-0">
