@@ -10,10 +10,18 @@ import {
 } from '@/components/ui/table';
 
 const props = defineProps<{
-  data: any[];
+    data: any[],
+    headers?: any[],
 }>();
 
-const columns = computed(() => Object.keys(props.data[0] || []));
+const columns = computed(() => {
+    if (props.headers !== undefined){
+        return props.headers;
+    }
+    else {
+        return Object.keys(props.data[0] || []);
+    }
+});
 </script>
 
 <template>
@@ -21,15 +29,19 @@ const columns = computed(() => Object.keys(props.data[0] || []));
       <Table>
       <TableHeader>
           <TableRow >
-              <TableHead v-for="column in columns">
-                  {{ column }}
+              <TableHead v-for="column in columns" :key="column" class="p-0">
+                <slot :name="`column-${column}`" :columnKey="column">
+                    {{ column }}
+                </slot>
               </TableHead>
           </TableRow>
       </TableHeader>
           <TableBody>
-              <TableRow v-for="row in data">
-                  <TableCell v-for="column in columns">
-                      {{ row[column] }}
+              <TableRow v-for="(row, index) in data" :key="index">
+                  <TableCell v-for="column in columns" :key="column" class="p-0">
+                    <slot :name="column" :value="row[column]" :columnKey="column">
+                        {{ row[column] }}
+                    </slot>
                   </TableCell>
               </TableRow>
           </TableBody>
