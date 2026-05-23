@@ -14,14 +14,32 @@ import BasicTable from '@/components/app/BasicTable.vue';
 const importData = defineModel<TransactionImport>({ required: true });
 const stepComplete = defineModel<boolean>('stepComplete', { required: true });
 
+const styleMap = {
+    amount: { itemClass: 'bg-red-100', tableClass: 'bg-red-200' },
+    date: { itemClass: 'bg-blue-100', tableClass: 'bg-blue-200' },
+    description: { itemClass: 'bg-green-100', tableClass: 'bg-green-200' },
+};
+
 const columnMap = ref({
     amount: '',
     date: '',
     description: '',
 });
+const getColumnByMappedValue  = (value) => Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === value);
+//const key = Object.keys(obj).find(k => obj[k as keyof typeof obj] === searchValue);
+
+const getStyleByMappedColumn = (col) => {
+    const key = Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === col) ?? '';
+
+    return styleMap[key]
+}
 
 const columnsToMap = Object.keys(columnMap.value);
 const selectionsComplete = computed(() => Object.values(columnMap.value).every(value => value !== ''));
+
+const previewData = computed(() => importData.value.fileData.data.slice(0, 3) || []);
+const previewDataHeaders = computed(() => Object.keys(previewData.value[0] || []));
+
 
 const getMappedTransactions = () => {
     return importData.value.fileData.data.map(row => {
@@ -60,7 +78,7 @@ watch(() => selectionsComplete.value, (newVal) => {
 
     <div class="mt-10" >
         <div v-for="col in columnsToMap">
-            <Item variant="outline" class="mt-5" >
+            <Item variant="outline" class="mt-5" :class="styleMap[col].itemClass">
                 <ItemContent>
                     <ItemTitle class="font-semibold capitalize">{{ col }}</ItemTitle>
                 </ItemContent>
@@ -91,7 +109,19 @@ watch(() => selectionsComplete.value, (newVal) => {
     </div>
 
     <div class='mt-10'>
-        <BasicTable :data="importData.fileData.data.slice(0, 3) || []" />
+        <BasicTable :data="previewData" :headers="previewDataHeaders">
+            <template v-for="header in previewDataHeaders" :key="header" #[`column-${header}`]="{ columnKey }">
+                <div :class="getStyleByMappedColumn(columnKey)?.tableClass" class="w-full h-full flex justify-center items-center">
+                    {{ columnKey }}
+                </div>
+            </template>
+
+            <template v-for="header in previewDataHeaders" :key="header" #[header]="{ columnKey, value }" >
+                <div :class="getStyleByMappedColumn(columnKey)?.tableClass" class="w-full h-full p-4 pr-0">
+                    {{ value }}
+                </div>
+            </template>
+        </BasicTable>
         <div v-if="(importData?.fileData?.data?.length ?? 0) >= 3" class="p-2 text-center text-xs text-gray-400 bg-gray-50">
             Showing 3 of {{ importData?.fileData?.data?.length }} rows
         </div>
