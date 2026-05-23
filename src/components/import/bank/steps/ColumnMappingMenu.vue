@@ -2,6 +2,7 @@
 import type { TransactionImport } from '@/types/TransactionImport';
 import type { TransactionRow } from '@/types';
 import { ref, computed, watch } from 'vue';
+import { useTransactionStore } from '@/stores/transaction';
 
 import dateFormatter from '@/helpers/dateFormatter';
 import { getOrAssignGuid } from '@/helpers/baseFormHelper';
@@ -13,6 +14,7 @@ import BasicTable from '@/components/app/BasicTable.vue';
 
 const importData = defineModel<TransactionImport>({ required: true });
 const stepComplete = defineModel<boolean>('stepComplete', { required: true });
+const transactionStore = useTransactionStore();
 
 const columnMap = ref({
     amount: '',
@@ -35,26 +37,22 @@ const previewDataHeaders = computed(() => Object.keys(previewData.value[0] || []
 const getStyleByMappedColumn = (col) => {
     const key = Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === col) ?? '';
 
-    return styleMap[key]
+    return styleMap[key];
 };
 
 const getMappedTransactions = () => {
     return importData.value.fileData.data.map(row => {
+        const income = !row[columnMap.value['amount']]?.includes('-');
         const transaction: Partial<TransactionRow> = {
             id: getOrAssignGuid(''),
             date: dateFormatter.getDateValue(row[columnMap.value['date']]).toString(),
             amount: Number(row[columnMap.value['amount']]?.replace('-','')),
             note: row[columnMap.value['description']],
-            income: row[columnMap.value['amount']]?.includes('-') ? false : true,
+            income: income,
 
-            //TODO: set category as 'income' if it was income
-            budgetCategoryName: 'Uncategorized', 
-
-            //TODO: set these as applicable
-            categoryId: 'string',
-            subcategoryId: 'string',
-
-            //TODO: check if these generate automatically in via existing schema
+            budgetCategoryName: income ? 'Income' : 'Uncategorized',
+            categoryId: income ? transactionStore.incomeGuid : transactionStore.uncategorizedGuid,
+            subcategoryId: transactionStore.uncategorizedGuid,
         };
         return transaction;
     })
