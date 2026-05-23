@@ -86,6 +86,16 @@ const router = createRouter({
         sidebarVisible: false,
       },
     },
+    {
+      path: '/bankImport',
+      name: 'bankimport',
+      component: () => import('../views/BankImport.vue'),
+      meta: {
+        layout: 'default',
+        displayName: 'Bank CSV',
+        sidebarVisible: false,
+      },
+    },
   ]
 })
 

@@ -3,7 +3,7 @@ import { h } from 'vue';
 import { RouterLink } from 'vue-router';
 import Button from '@/components/ui/button/Button.vue';
 import { Item, ItemContent, ItemDescription, ItemTitle, ItemActions } from '@/components/ui/item';
-import { ChevronRightIcon, Shredder, ShredderIcon, Download } from 'lucide-vue-next';
+import { ChevronRightIcon, Shredder, ShredderIcon, FileUp } from 'lucide-vue-next';
 
 import SaveDataButton from '@/components/SaveDataButton.vue';
 import EraseLocalStorage from '@/components/EraseLocalStorage.vue'; //need to rename
@@ -31,6 +31,23 @@ const deleteButton = () => {
     });
 };
 
+const bankImportButton = () => {
+    return h(
+      RouterLink,
+      { to: '/bankImport' },
+      {
+        default: () => [
+            h(Button, null, {
+                default: () => [
+                    h(FileUp),
+                    'Import CSV'
+                ]
+            })
+        ]
+      }
+    );
+}
+
 const settingsOptions = [
     {
         title: 'Export Budget Data',
@@ -46,6 +63,11 @@ const settingsOptions = [
         title: 'Delete Budget Data',
         description: 'Delete all budget data that has been saved to local storage',
         action: deleteButton,
+    },
+    {
+        title: 'Import Bank Statement',
+        description: 'Import a CSV file from your bank to auto-fill all the contained transactions directly into your budget. (IDGAF about your financial details -- this is all stored locally, never transmitted anywhere else)',
+        action: bankImportButton,
     }
 ];
 </script>
