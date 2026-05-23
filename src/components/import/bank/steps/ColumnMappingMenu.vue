@@ -14,25 +14,17 @@ import BasicTable from '@/components/app/BasicTable.vue';
 const importData = defineModel<TransactionImport>({ required: true });
 const stepComplete = defineModel<boolean>('stepComplete', { required: true });
 
-const styleMap = {
-    amount: { itemClass: 'bg-red-100', tableClass: 'bg-red-200' },
-    date: { itemClass: 'bg-blue-100', tableClass: 'bg-blue-200' },
-    description: { itemClass: 'bg-green-100', tableClass: 'bg-green-200' },
-};
-
 const columnMap = ref({
     amount: '',
     date: '',
     description: '',
 });
-const getColumnByMappedValue  = (value) => Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === value);
-//const key = Object.keys(obj).find(k => obj[k as keyof typeof obj] === searchValue);
 
-const getStyleByMappedColumn = (col) => {
-    const key = Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === col) ?? '';
-
-    return styleMap[key]
-}
+const styleMap = {
+    amount: { itemClass: 'bg-red-100', tableClass: 'bg-red-200' },
+    date: { itemClass: 'bg-blue-100', tableClass: 'bg-blue-200' },
+    description: { itemClass: 'bg-green-100', tableClass: 'bg-green-200' },
+};
 
 const columnsToMap = Object.keys(columnMap.value);
 const selectionsComplete = computed(() => Object.values(columnMap.value).every(value => value !== ''));
@@ -40,6 +32,11 @@ const selectionsComplete = computed(() => Object.values(columnMap.value).every(v
 const previewData = computed(() => importData.value.fileData.data.slice(0, 3) || []);
 const previewDataHeaders = computed(() => Object.keys(previewData.value[0] || []));
 
+const getStyleByMappedColumn = (col) => {
+    const key = Object.keys(columnMap.value).find(k => columnMap.value[k as keyof typeof columnMap.value] === col) ?? '';
+
+    return styleMap[key]
+};
 
 const getMappedTransactions = () => {
     return importData.value.fileData.data.map(row => {
