@@ -1,33 +1,39 @@
 <script setup lang="ts">
-import type { TransactionImport } from '@/types/TransactionImport';
+import type { TransactionImport, TransactionRow } from '@/types';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, } from '@/components/ui/card';
 
 import CsvUploadForm from './steps/CsvUploadForm.vue';
 import ColumnMappingMenu from './steps/ColumnMappingMenu.vue';
+import TransactionReviewTable from './steps/TransactionReviewTable.vue';
+import ImportReviewPanel from './steps/ImportReviewPanel.vue';
 
 const importData = ref<TransactionImport>({} as TransactionImport);
+const importComplete = ref<boolean>(false);
 
 const currentStep = ref<number>(0); 
 const stepComplete = ref<boolean>(false);
 const steps = [
   CsvUploadForm,
   ColumnMappingMenu,
+  TransactionReviewTable,
+  ImportReviewPanel,
 ];
 
 const setStep = (step: number) => {
   currentStep.value = step;
   stepComplete.value = false;
 };
+
+const startOver = () => {
+  setStep(0);
+  importComplete.value = false;
+  importData.value = {} as TransactionImport;
+};
 </script>
 
 <template>
-
-  <div class="my-10 h-20 overflow-y-scroll">
-    <pre>{{ JSON.stringify(importData, null, 2) }}</pre>
-  </div>
-
   <div>
     <Card class="border-gray-400 ">
       <CardHeader>
@@ -41,21 +47,21 @@ const setStep = (step: number) => {
             :is="steps[currentStep]" 
             v-model="importData" 
             v-model:stepComplete="stepComplete"
+            v-on:complete="importComplete = true"
+            v-on:cancel="startOver"
           />
       </CardContent>
 
       <CardFooter class="mt-5 border-t pt-5 justify-between">
-        <Button 
-          :disabled="currentStep == 0" 
-          @click="setStep(currentStep -1)"
-        >
-            Prev
+        <Button v-if="!importComplete" :disabled="currentStep == 0" @click="setStep(currentStep -1)">
+          Prev
         </Button>
-        <Button 
-          :disabled="!stepComplete || currentStep+1 >= steps.length" 
-          @click="setStep(currentStep +1)"
-        >
+        <Button v-if="!importComplete" :disabled="!stepComplete || currentStep+1 >= steps.length" @click="setStep(currentStep +1)">
           Next
+        </Button>
+
+        <Button  v-if="importComplete" @click="startOver">
+          Start Over
         </Button>
       </CardFooter>
     </Card>
