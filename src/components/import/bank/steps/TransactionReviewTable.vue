@@ -9,6 +9,7 @@ import { useSubcategoryStore } from '@/stores/subcategory';
 import { useCategoryStore } from '@/stores/category';
 import { useDynamicColumns } from '@/composables/useDynamicColumns';
 
+import { Trash, FilePenLine } from 'lucide-vue-next';
 import BaseTransactionTable from '@/components/transaction/BaseTransactionTable.vue';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label';
@@ -43,6 +44,20 @@ const columns = [
     createEditableColumn('amount'),
     createEditableColumn('note'),
     //TODO: mobile
+    {
+        accessorKey: 'delete',
+        header: ({ column }) => h('div', { class:'flex items-center text-center justify-center' }, h(FilePenLine, { class: 'h-4 w-4' })),
+        cell: ({ row }) => h('div', { class:'flex items-center rounded-lg justify-center p-2 bg-red-100 text-red-600 hover:bg-red-600 hover:text-white transition-colors duration-200' }, h(
+            Trash, 
+            { 
+                class: 'h-4 w-4', 
+                onClick: () => {
+                    console.log('Button clicked!');
+                    transactions.value = transactions.value.filter(x => x.id !== row.original.id);
+                } 
+            }
+        ))
+    }
 ];
 
 const sorting = ref<SortingState>([
