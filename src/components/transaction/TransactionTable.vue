@@ -1,4 +1,5 @@
 <script setup lang="ts" >
+import type { TransactionRow } from '@/types';
 import type { ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
 import { storeToRefs } from 'pinia'
 import { h, ref, computed } from 'vue';
@@ -18,6 +19,8 @@ import TransactionDetailCard from './TransactionDetailCard.vue';
 import { useTransactionStore } from '@/stores/transaction';
 const transactionStore = useTransactionStore();
 const { transactionRows } = storeToRefs(transactionStore);
+
+const items = defineModel<TransactionRow[]>( { required: false} );
 
 const { createReadOnlyColumn, createSelectorColumn, createSortableHeader } = useDynamicColumns(transactionRows);
 const columns = [
@@ -88,7 +91,7 @@ const columnVisibility = computed<VisibilityState>(() => ({
 }));
 
 const table = useVueTable({
-    get data() { return transactionRows.value },
+    get data() { return items.value ?? transactionRows.value },
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

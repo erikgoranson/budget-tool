@@ -7,6 +7,8 @@ import { useTransactionStore } from '@/stores/transaction';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import BudgetTotalsReport from "../budgetRow/BudgetTotalsReport.vue";
 import CollapsibleCard from "../app/CollapsibleCard.vue";
+import CurrencyBadge from "../CurrencyBadge.vue";
+import TransactionTable from "../transaction/TransactionTable.vue";
 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
@@ -16,6 +18,8 @@ const uncategorizedTransactions = computed(() => {
         return tran.categoryId == transactionStore.uncategorizedGuid;
     });
 });
+
+const total = computed(() => uncategorizedTransactions.value.reduce((t, {amount}) => t + amount, 0))
 
 const uncategorizedBudget = computed(() => {
   const uncat = <Category>{
@@ -42,14 +46,16 @@ const uncategorizedBudget = computed(() => {
                         {{ uncategorizedBudget.description }}
                     </CardDescription>
                 </div>
-                <div class="flex flex-col gap-2 text-right shrink-0">
-                    <BudgetTotalsReport :category="uncategorizedBudget"/>
+                <div class="flex flex-col gap-1 text-center items-center shrink-0">
+                    <span class="w-fit text-sm font-semibold font-mono justify-center items-center">Total</span>
+                    
+                    <CurrencyBadge :amount="total" :is-warning="total > 0"/>
                 </div>
             </div>
         </template>
         <template #content>
             <div class="p-4 overflow-y-scroll">
-                {{ uncategorizedTransactions }}
+                <TransactionTable :model-value="uncategorizedTransactions"/>
             </div>
         </template>
     </CollapsibleCard>

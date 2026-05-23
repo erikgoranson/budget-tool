@@ -7,6 +7,7 @@ import { useTransactionStore } from '@/stores/transaction';
 import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
 import BudgetDashboard from '@/components/budgetRow/BudgetDashboard.vue';
 import CreateCategoryDialog from '../components/category/CreateCategoryDialog.vue';
+import UncategorizedCard from '@/components/budgetRow/UncategorizedCard.vue';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -24,23 +25,12 @@ const uncategorizedTransactionsExist = computed(() => {
   else {
     return false;
   }; 
-})
-
-const uncategorizedBudget = computed(() => {
-  const uncat = <Category>{
-    id: transactionStore.uncategorizedGuid,
-    name: 'Uncategorized',
-    description: 'Transactions have been added that have no budget category.',
-    hasDueDates: false,
-  }
-
-  return uncat;
 });
 </script>
 
 <template>
   <BudgetDashboard/>
-  <BudgetCard v-if="uncategorizedTransactionsExist" :budgetCategory="uncategorizedBudget"/>
+  <UncategorizedCard v-if="uncategorizedTransactionsExist"/>
   <div v-for="budgetCategory in categories">
       <BudgetCard :budgetCategory="budgetCategory"/>
   </div>
