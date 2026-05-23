@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TransactionImport } from '@/types/TransactionImport';
 import type { TransactionRow } from '@/types';
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import dateFormatter from '@/helpers/dateFormatter';
 import { getOrAssignGuid } from '@/helpers/baseFormHelper';
@@ -14,8 +14,14 @@ import BasicTable from '@/components/app/BasicTable.vue';
 const importData = defineModel<TransactionImport>({ required: true });
 const stepComplete = defineModel<boolean>('stepComplete', { required: true });
 
-const columnsToMap = ['amount', 'date', 'description'];
-const columnMap = ref<Record<string, any>>({});
+const columnMap = ref({
+    amount: '',
+    date: '',
+    description: '',
+});
+
+const columnsToMap = Object.keys(columnMap.value);
+const selectionsComplete = computed(() => Object.values(columnMap.value).every(value => value !== ''));
 
 const getMappedTransactions = () => {
     return importData.value.fileData.data.map(row => {
@@ -39,11 +45,12 @@ const getMappedTransactions = () => {
     })
 };
 
-const confirm = () => {
-    importData.value.mappedTransactions = getMappedTransactions() as TransactionRow[];
-    stepComplete.value = true;
-    //TODO: detects if all the dropdowns have been completed. then set stepComplete to true
-};
+watch(() => selectionsComplete.value, (newVal) => {
+    if (selectionsComplete.value == true){
+        importData.value.mappedTransactions = getMappedTransactions() as TransactionRow[];
+        stepComplete.value = true;
+    }
+});
 </script>
 
 <template>
@@ -51,38 +58,37 @@ const confirm = () => {
         Please select the closest match for the following columns:
     </div>
 
-    <div class="mt-15" v-for="col in columnsToMap">
-        <div>
-            <Item variant="outline">
+    <div class="mt-10" >
+        <div v-for="col in columnsToMap">
+            <Item variant="outline" class="mt-5" >
                 <ItemContent>
                     <ItemTitle class="font-semibold capitalize">{{ col }}</ItemTitle>
                 </ItemContent>
                 <ItemActions>
 
                     <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                    <Button variant="outline" class="w-full justify-between">
-                    {{ columnMap[col] || 'Select a field...' }}
-                    </Button>
-                    </DropdownMenuTrigger>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="outline" class="w-full justify-between">
+                                {{ columnMap[col] || 'Select a field...' }}
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                    <DropdownMenuContent class="w-56">
-                    <DropdownMenuItem
-                    v-for="field in importData.fileData.meta.fields"
-                    :key="field"
-                    @click="columnMap[col] = field"
-                    :class="{ 'bg-accent text-accent-foreground': columnMap[col] === field }"
-                    >
-                    {{ field }}
-                    </DropdownMenuItem>
-                    </DropdownMenuContent>
+                        <DropdownMenuContent class="w-56">
+                            <DropdownMenuItem
+                                v-for="field in importData.fileData.meta.fields"
+                                :key="field"
+                                @click="columnMap[col] = field"
+                                :class="{ 'bg-accent text-accent-foreground': columnMap[col] === field }"
+                            >
+                                {{ field }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
                     </DropdownMenu>
 
                 </ItemActions>
             </Item>
         </div>
     </div>
-    
 
     <div class='mt-10'>
         <BasicTable :data="importData.fileData.data.slice(0, 3) || []" />
@@ -90,6 +96,4 @@ const confirm = () => {
             Showing 3 of {{ importData?.fileData?.data?.length }} rows
         </div>
     </div>
-
-    <Button @click="confirm">confirm mapping</Button>
 </template>
