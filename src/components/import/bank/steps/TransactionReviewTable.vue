@@ -1,7 +1,7 @@
 <script setup lang="ts" >
 import type { TransactionImport, Subcategory, Transaction, TransactionRow } from '@/types';
 import type { ColumnFiltersState, GlobalFilterTableState, SortingState, VisibilityState } from '@tanstack/vue-table';
-import { h, ref, computed } from 'vue';
+import { h, ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { valueUpdater } from '@/lib/utils'; 
 import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
@@ -20,6 +20,11 @@ const subcategoryStore = useSubcategoryStore();
 const { subcategories } = storeToRefs(subcategoryStore);
 
 const importData = defineModel<TransactionImport>( { required: true, } );
+const stepComplete = defineModel<boolean>('stepComplete', { required: true, default: false});
+
+onMounted(() => {
+  stepComplete.value = true;
+});
 
 const transactions = computed({
     get: () => importData.value?.mappedTransactions ?? [],
