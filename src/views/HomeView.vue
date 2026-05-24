@@ -4,6 +4,7 @@ import { computed } from "vue";
 import { storeToRefs } from 'pinia';
 import { useCategoryStore } from '@/stores/category';
 import { useTransactionStore } from '@/stores/transaction';
+import uncategorized from '@/helpers/uncategorizedHelper';
 import BudgetCard from '@/components/budgetRow/BudgetCard.vue';
 import BudgetDashboard from '@/components/budgetRow/BudgetDashboard.vue';
 import CreateCategoryDialog from '../components/category/CreateCategoryDialog.vue';
@@ -16,7 +17,7 @@ const { transactions } = storeToRefs(transactionStore);
 
 const uncategorizedTransactionsExist = computed(() => {
   const amounts = transactions.value.filter(tran => {
-    return tran.categoryId == transactionStore.uncategorizedGuid;
+    return tran.categoryId == uncategorized.guid;
   });
 
   if (amounts.length > 0){

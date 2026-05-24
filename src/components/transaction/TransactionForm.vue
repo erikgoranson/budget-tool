@@ -10,6 +10,7 @@ import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from '@/stores/subcategory';
 import dateFormatter from '@/helpers/dateFormatter';
+import uncategorized from '@/helpers/uncategorizedHelper';
 import { handleSubmission, formProps, getTransactionRowSchema } from './transactionFormHelper';
 
 import { Button } from '@/components/ui/button';
@@ -165,7 +166,7 @@ const onSubmit = handleSubmit(values => {
                     <CommandItem 
                       v-if="categories.length === 0"
                       key="none"
-                      value="Uncategorized"
+                      :value="uncategorized.label"
                       @select="() => {
                         isComboBoxOpen = false;
                         }"></CommandItem>

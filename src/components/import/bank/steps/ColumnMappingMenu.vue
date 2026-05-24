@@ -4,6 +4,7 @@ import type { TransactionRow } from '@/types';
 import { ref, computed, watch } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 
+import uncategorized from '@/helpers/uncategorizedHelper';
 import dateFormatter from '@/helpers/dateFormatter';
 import { getOrAssignGuid } from '@/helpers/baseFormHelper';
 
@@ -50,9 +51,9 @@ const getMappedTransactions = () => {
             note: row[columnMap.value['description']],
             income: income,
 
-            budgetCategoryName: income ? 'Income' : 'Uncategorized',
-            categoryId: income ? transactionStore.incomeGuid : transactionStore.uncategorizedGuid,
-            subcategoryId: transactionStore.uncategorizedGuid,
+            budgetCategoryName: income ? 'Income' : uncategorized.label,
+            categoryId: income ? uncategorized.incomeGuid : uncategorized.guid,
+            subcategoryId: uncategorized.guid,
         };
         return transaction;
     })

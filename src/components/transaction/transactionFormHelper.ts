@@ -3,6 +3,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import * as zod from 'zod';
 import { getOrAssignGuid, compareObjects, baseProps } from '@/helpers/baseFormHelper';
 import { useTransactionStore } from '@/stores/transaction';
+import uncategorized from '@/helpers/uncategorizedHelper';
 
 export const formProps = {
     ...baseProps,
@@ -14,19 +15,19 @@ export const formProps = {
 };
 
 export const getTransactionRowSchema = () => {
-    const transactionStore = useTransactionStore();
+    //const transactionStore = useTransactionStore();
     return toTypedSchema(
         zod.object({
             id: zod.string().default(''),
             date: zod.string().refine(v => v, { message: 'A date is required.' }),
             income: zod.boolean().default(false),
             //payee: zod.string().default(''), //not used
-            categoryId: zod.string().default(transactionStore.uncategorizedGuid),
-            subcategoryId: zod.string().default(transactionStore.uncategorizedGuid),
+            categoryId: zod.string().default(uncategorized.guid),
+            subcategoryId: zod.string().default(uncategorized.guid),
             note: zod.string().optional(),
             hasCleared: zod.boolean().default(false),
             amount: zod.number(),
-            budgetCategoryName: zod.string().default('Uncategorized'),
+            budgetCategoryName: zod.string().default(uncategorized.label),
         })
     );
 };
@@ -44,7 +45,7 @@ export const handleSubmission = (userInput: any, originalRow: Transaction) => {
         mergedValues.id = getOrAssignGuid(mergedValues.id);
         if (mergedValues.income)
         {
-            mergedValues.categoryId = transactionStore.incomeGuid;
+            mergedValues.categoryId = uncategorized.incomeGuid;
         }
         // console.log('validated values', JSON.stringify(mergedValues, null, 2));
 

@@ -2,6 +2,7 @@ import { ref, computed} from 'vue';
 import { defineStore } from 'pinia';
 import type { Category, Budget } from '../types/';
 import localStorageHelper from '@/helpers/localStorage';
+import uncategorized from '@/helpers/uncategorizedHelper';
 
 export const useCategoryStore = defineStore('category', () => {
 
@@ -35,7 +36,7 @@ export const useCategoryStore = defineStore('category', () => {
 
     const getCategoryName = (id: string) => {
         const category = categories.value.find(c => c.id == id);
-        return category?.name;
+        return category?.name ?? uncategorized.label;
     };
 
     const putCategory = (category: Category) => {

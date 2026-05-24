@@ -7,6 +7,7 @@ import { useCategoryStore } from '@/stores/category';
 import { useSubcategoryStore } from './subcategory';
 import localStorageHelper from '@/helpers/localStorage';
 import dateFormatter from '@/helpers/dateFormatter';
+import uncategorized from '@/helpers/uncategorizedHelper';
 
 export const useTransactionStore = defineStore('transaction', () => {
 
@@ -16,10 +17,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         console.log('transaction store saved to localstorage');
         localStorageHelper.setData(storageKey, transactions.value);
     };
-
-    const uncategorizedGuid = '00000000-0000-0000-0000-000000000000';
-    const incomeGuid = '00000000-0000-0000-0000-000000000001';
-
+    
     const categoryStore = useCategoryStore();
     const subcategoryStore = useSubcategoryStore();
 
@@ -68,12 +66,12 @@ export const useTransactionStore = defineStore('transaction', () => {
     };
 
     const getTransactionName = (tran: Transaction) => {
-        if (tran.categoryId == incomeGuid){
+        if (tran.categoryId == uncategorized.incomeGuid){
             return `Income for ${dateFormatter.format(tran.date, 'monthName')}`;
         };
 
-        if (tran.categoryId == uncategorizedGuid){
-            return 'Uncategorized';
+        if (tran.categoryId == uncategorized.guid){
+            return uncategorized.label;
         };
 
         const categoryName = categoryStore.getCategoryName(tran.categoryId);
@@ -81,5 +79,5 @@ export const useTransactionStore = defineStore('transaction', () => {
         return `${categoryName} : ${subcategoryName}`;
     };
 
-    return { transactions, transactionRows, lastTouchedDate, setLastTouchedDate, createTransaction, updateTransaction, deleteTransaction, uncategorizedGuid, incomeGuid, putTransaction };
+    return { transactions, transactionRows, lastTouchedDate, setLastTouchedDate, createTransaction, updateTransaction, deleteTransaction, putTransaction };
 });

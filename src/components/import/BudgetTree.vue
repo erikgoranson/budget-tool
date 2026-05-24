@@ -2,6 +2,7 @@
 import type { BudgetData, Budget, Category, Goal, Subcategory, Transaction } from '@/types';
 import dateFormatter from '@/helpers/dateFormatter';
 import currencyFormatter from '@/helpers/numberFormat';
+import uncategorized from '@/helpers/uncategorizedHelper';
 import { ref, computed } from 'vue';
 
 import { Card, CardContent, } from '@/components/ui/card';
@@ -57,7 +58,7 @@ const getCategoryLabel = (tran: Transaction) => {
   const subcategoryName = props.data.subcategory.find(x => x.id == tran.subcategoryId)?.name;
 
   if (categoryName === undefined || subcategoryName === undefined){
-    return 'Uncategorized';
+    return uncategorized.label;
   }
   else {
     return `${categoryName} : ${subcategoryName}`;
