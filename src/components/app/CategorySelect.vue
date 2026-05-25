@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Subcategory, Transaction, TransactionRow, Category} from '@/types';
 import { computed, h, ref, onMounted, watch } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 import { storeToRefs } from 'pinia';
 import { ChevronsUpDown, Calendar as CalendarIcon, Plus } from 'lucide-vue-next';
 import { useCategoryStore } from '@/stores/category';
@@ -41,6 +42,38 @@ const displayedLabel = computed(() => {
 });
 
 const isIncome = computed(() => transaction.value?.income ?? false);
+
+const commandMatches = computed(() => {
+    if (!searchTerm.value) return subcategories.value?.map(x => x.name);
+        return subcategories.value.filter(item => 
+        item.name.toLowerCase().includes(searchTerm.value.toLowerCase())
+    )
+});
+
+const commandEmpty = computed(() => commandMatches.value.length == 0); 
+
+const createFromSearch = () => {
+    if (!commandEmpty.value) return;
+
+    categoryStore.putCategory(uncategorized.importedCategory);
+    const subcategory = <Subcategory>{
+        id: uuidv4(),
+        name: searchTerm.value,
+        dueDate: null,
+        categoryId: uncategorized.importedGuid,
+    };
+    subcategoryStore.putSubcategory(subcategory);
+
+    updateCategory(subcategory);
+};
+
+const updateCategory = (subcat: Subcategory) => {
+    transaction.value.categoryId = subcat.categoryId;
+    transaction.value.subcategoryId = subcat.id;
+    transaction.value.budgetCategoryName = displayedLabel.value;
+
+    emit('update:model', transaction.value);
+}
 </script>
 
 <template>
@@ -60,8 +93,8 @@ const isIncome = computed(() => transaction.value?.income ?? false);
 
         <PopoverContent class="flex w-[350px] p-0">
             <Command v-model:search-term="searchTerm">
-            <CommandInput placeholder="Search categories..." />
-            <CommandEmpty>Nothing found.</CommandEmpty>
+            <CommandInput @keydown.enter="createFromSearch" placeholder="Search categories..." />
+            <CommandEmpty @click="createFromSearch" >Click to create '{{ searchTerm }}'</CommandEmpty>
             <CommandList>
 
                 <CommandGroup v-for="group in categoryGroups" :key="group.id"  :heading="group.name">
@@ -70,12 +103,7 @@ const isIncome = computed(() => transaction.value?.income ?? false);
                     :key="subcategory.id"
                     :value="subcategory.name"
                     @select="() => {
-                        transaction.categoryId = subcategory.categoryId;
-                        transaction.subcategoryId = subcategory.id;
-                        transaction.budgetCategoryName = displayedLabel;
-
-                        emit('update:model', transaction);
-                        console.log('we emitted update model')
+                        updateCategory(subcategory);
                         isComboBoxOpen = false;
                     }">
                         {{ subcategory.name }}
