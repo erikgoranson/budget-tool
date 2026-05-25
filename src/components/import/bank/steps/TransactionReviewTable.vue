@@ -8,14 +8,13 @@ import { getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedR
 import { useSubcategoryStore } from '@/stores/subcategory';
 import { useCategoryStore } from '@/stores/category';
 import { useDynamicColumns } from '@/composables/useDynamicColumns';
-import uncategorized from '@/helpers/uncategorizedHelper';
 
 import { Trash, FilePenLine, X } from 'lucide-vue-next';
 import BaseTransactionTable from '@/components/transaction/BaseTransactionTable.vue';
+import CategorySelect from '@/components/app/CategorySelect.vue';
+
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuRadioItem, DropdownMenuRadioGroup} from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 
 const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
@@ -45,51 +44,14 @@ const columns = [
         accessorKey: 'categorySelect',
         header: ({ column }) => createSortableHeader(column, 'Category'),
         cell: (info: any) => {
-            const rowIndex = info.row.index
-            const category = info.row.original.budgetCategoryName;
-            return h(DropdownMenu, {}, {
-                default: () => [
-                    h(DropdownMenuTrigger, { asChild: true }, {
-                        default: () => h(Button, { variant: 'outline' }, () => category)
-                    }),
-                    h(DropdownMenuContent, { class: 'w-56 overflow-y-scroll' }, {
-                        default: () => [
-                            h(DropdownMenuRadioGroup, {
-                                modelValue: category,
-                                'onUpdate:modelValue': (subcategoryId: string) => {
-                                    const base = uncategorized.subcategory;
-                                    const subcategory = subcategories.value.find(sc => sc.id === subcategoryId) ?? base as Subcategory;
-                                    const budgetCategoryName = subcategoryStore.getBudgetCategoryName(subcategory);
-                                    const updatedData = [...transactions.value];
-
-                                    updatedData[rowIndex] = { 
-                                        ...updatedData[rowIndex], 
-                                        categoryId: subcategory.categoryId,
-                                        subcategoryId: subcategory.id,
-                                        budgetCategoryName: budgetCategoryName,
-                                    };
-                                    transactions.value = updatedData;
-                                }
-                            }, {
-                                default: () => [
-                                    h(DropdownMenuRadioItem, { value: '' }, () => uncategorized.label),
-                                    categories.value.map(category => {
-                                        return h(Label, {}, { 
-                                            default: () => [
-                                                h('div', {}, category.name),
-                                                subcategories.value.filter(subcategory => subcategory.categoryId == category.id).map(x => {
-                                                    return [
-                                                        h(DropdownMenuRadioItem, { value: x.id }, () => x.name)
-                                                    ]
-                                                })
-                                            ]} 
-                                        )}
-                                    )
-                                ]
-                            })
-                        ]
-                    })
-                ]
+            const rowIndex = info.row.index;
+            return h(CategorySelect, { 
+                modelValue: info.row.original,
+                'onUpdate:model': (tran: TransactionRow) => {
+                    const updatedData = [...transactions.value];
+                    updatedData[rowIndex] = tran;
+                    transactions.value = updatedData;
+                }
             })
         }
     },
